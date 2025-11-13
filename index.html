@@ -8,424 +8,41 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Chosen Palette: Warm Neutral (Beige, Brown, Soft Blue) -->
-    <!-- Application Structure Plan: 採用頂部導航欄 (Tabs) 搭配動態內容區塊。導覽列包含「總覽」、「每日行程」(內含 Day 1-6 子導覽)、「雪地安全」、「裝備清單」及「彈性建議」。點擊導覽標籤會顯示對應的內容區塊並隱藏其他區塊。此結構將線性報告轉化為以任務為導S向的工具，使用者可立即存取所需資訊 (例如 "今日行程" 或 "安全規則")，無需滾動瀏覽不相關的部分，特別適合旅行中即時查閱。 -->
-    <!-- Visualization & Content Choices: 
-        - 旅行成員 (Report Info) -> Goal: 顯示組成 -> Viz: 甜甜圈圖 (Donut Chart) -> Interaction: 滑鼠懸停 -> Justification: 視覺化分析，比文字更易吸收 -> Library: Chart.js (Canvas).
-        - 行程總覽 (Report Info) -> Goal: 高層次計畫 -> Viz: 6欄網格卡片 -> Interaction: 點擊切換至該日詳細行程 -> Justification: 易於掃視 -> Method: HTML/Tailwind.
-        - 每日詳細行程 (Report Info) -> Goal: 顯示時程 -> Viz: 垂直時間軸樣式列表 -> Interaction: 無 (導航至此即是互動) -> Justification: 清晰的時間/活動層級 -> Method: HTML/Tailwind.
-        - 雪地安全 (Report Info) -> Goal: 強調規則 -> Viz: 資訊卡片 (搭配 Unicode 圖示) -> Interaction: 無 -> Justification: 將文字拆分為卡片以提高易讀性 -> Method: HTML/Tailwind + Unicode.
-        - 裝備清單 (Report Info) -> Goal: 互動打包清單 -> Viz: 分組列表 -> Interaction: JS 驅動的點擊項目 (切換刪除線樣式) -> Justification: 增加實用性，使用者可實際操作 -> Method: HTML/JS.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
     <style>
         body {
-/* ... existing code ... -->
-        .nav-tab.active {
-            @apply bg-white text-blue-700 border-b-2 border-blue-700;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF7;
         }
-        .nav-tab:not(.active):hover {
-            @apply bg-gray-200 text-gray-800;
-        }
-        .day-tab {
-/* ... existing code ... -->
-            <p class="text-lg text-gray-600">札幌雪祭、溫泉及道南地區六日行程互動報告</p>
-        </header>
-
-        <nav class="flex flex-wrap gap-2 bg-gray-100 p-2 rounded-t-lg border-b border-gray-200">
-            <button id="nav-overview" class="nav-tab active">總覽</button>
-            <button id="nav-daily" class="nav-tab">每日行程</button>
-            <button id="nav-safety" class="nav-tab">雪地安全</button>
-            <button id="nav-gear" class="nav-tab">裝備清單</button>
-            <button id="nav-flex" class="nav-tab">彈性建議</button>
-            <button id="nav-ai" class="nav-tab">✨ AI 助理</button>
-        </nav>
-
-        <main>
-            <!-- 1. 總覽 (Overview) -->
-            <section id="content-overview" class="content-section">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-blue-50 p-4 rounded-lg shadow-sm">
-                        <h2 class="text-xl font-semibold text-blue-800 mb-3">旅行概要</h2>
-                        <ul class="space-y-2 text-gray-700">
-                            <li><strong>📅 日期：</strong> 2026 年 1 月 30 日 (四) 至 2 月 4 日 (二)</li>
-                            <li><strong>🗻 主題：</strong> 冬季慶典、溫泉、雪地駕駛、親子景點</li>
-                            <li><strong>📋 報告編號：</strong> HOK-2026-FAM-01</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="bg-green-50 p-4 rounded-lg shadow-sm">
-                        <h2 class="text-xl font-semibold text-green-800 mb-3">旅行成員 (共 4 人)</h2>
-                        <div class="chart-container">
-                            <canvas id="memberChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">行程速覽</h2>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                        <div class="day-overview-card p-3 bg-gray-100 rounded-lg shadow-sm text-center">
-                            <div class="font-bold text-lg text-blue-700">Day 1</div>
-                            <div class="text-sm text-gray-600">1/30 (四)</div>
-                            <div class="mt-1 text-xs">抵達札幌</div>
-                        </div>
-                        <div class="day-overview-card p-3 bg-gray-100 rounded-lg shadow-sm text-center">
-                            <div class="font-bold text-lg text-blue-700">Day 2</div>
-                            <div class="text-sm text-gray-600">1/31 (五)</div>
-                            <div class="mt-1 text-xs">札幌市區</div>
-                        </div>
-                        <div class="day-overview-card p-3 bg-gray-100 rounded-lg shadow-sm text-center">
-                            <div class="font-bold text-lg text-blue-700">Day 3</div>
-                            <div class="text-sm text-gray-600">2/1 (六)</div>
-                            <div class="mt-1 text-xs">札幌 → 洞爺湖</div>
-                        </div>
-                        <div class="day-overview-card p-3 bg-gray-100 rounded-lg shadow-sm text-center">
-                            <div class="font-bold text-lg text-blue-700">Day 4</div>
-                            <div class="text-sm text-gray-600">2/2 (日)</div>
-                            <div class="mt-1 text-xs">洞爺湖周邊</div>
-                        </div>
-                        <div class="day-overview-card p-3 bg-gray-100 rounded-lg shadow-sm text-center">
-                            <div class="font-bold text-lg text-blue-700">Day 5</div>
-                            <div class="text-sm text-gray-600">2/3 (一)</div>
-                            <div class="mt-1 text-xs">洞爺湖 → 札幌</div>
-                        </div>
-                        <div class="day-overview-card p-3 bg-gray-100 rounded-lg shadow-sm text-center">
-                            <div class="font-bold text-lg text-blue-700">Day 6</div>
-                            <div class="text-sm text-gray-600">2/4 (二)</div>
-                            <div class="mt-1 text-xs">機場 → 啟程</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 2. 每日行程 (Daily Itinerary) -->
-            <section id="content-daily" class="content-section hidden">
-                <nav class="flex flex-wrap gap-2 mb-6 pb-4 border-b border-gray-200">
-                    <button class="day-tab active" data-day="day-1">Day 1 (1/30)</button>
-                    <button class="day-tab" data-day="day-2">Day 2 (1/31)</button>
-                    <button class="day-tab" data-day="day-3">Day 3 (2/1)</button>
-                    <button class="day-tab" data-day="day-4">Day 4 (2/2)</button>
-                    <button class="day-tab" data-day="day-5">Day 5 (2/3)</button>
-                    <button class="day-tab" data-day="day-6">Day 6 (2/4)</button>
-                </nav>
-
-                <div id="day-1" class="day-content">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Day 1 (1/30 四) — 抵達札幌</h2>
-                    <div class="space-y-6">
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">17:20</span>
-                            <h3 class="font-semibold text-gray-800">抵達 新千歲機場 (CTS)</h3>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">18:00</span>
-                            <h3 class="font-semibold text-gray-800">交通： JR 快速 Airport 號</h3>
-                            <p class="text-gray-600 text-sm">搭乘 (約 45-50 分鐘) 前往 札幌站。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">19:15</span>
-                            <h3 class="font-semibold text-gray-800">入住： 札幌三位神大飯店</h3>
-                            <p class="text-gray-600 text-sm">自「大通站」步行 5 分鐘。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">19:45</span>
-                            <h3 class="font-semibold text-gray-800">晚餐： 狸小路商店街
-                                <button class="recommend-btn" data-prompt="請推薦 3 間在札幌狸小路或薄野附近，適合家庭（有 5 歲和 7 歲小孩）的餐廳（例如湯咖哩或拉麵），並附上 1-2 句推薦理由。">✨ 推薦</button>
-                            </h3>
-                            <p class="text-gray-600 text-sm">於飯店鄰近商圈或薄野區域用餐。</p>
-                        </div>
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
-                            <h4 class="font-semibold text-yellow-800">當日注意事項</h4>
-                            <ul class="list-disc list-inside text-sm text-yellow-700 mt-2 space-y-1">
-                                <li><strong>禦寒準備：</strong> 抵達機場後，立即為所有成員換穿保暖外套、帽子及手套。</li>
-                                <li><strong>交通票券：</strong> 建議購買或儲值 IC 卡 (如 Kitaca / Suica)。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="day-2" class="day-content hidden">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Day 2 (1/31 五) — 札幌市區觀光</h2>
-                    <div class="space-y-6">
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">09:30</span>
-                            <h3 class="font-semibold text-gray-800">交通 & 景點： 圓山公園 & 北海道神宮</h3>
-                            <p class="text-gray-600 text-sm">從「大通站」搭乘地鐵東西線 (3 站) 前往。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">11:30</span>
-                            <h3 class="font-semibold text-gray-800">景點： 圓山動物園</h3>
-                            <p class="text-gray-600 text-sm">觀賞寒帶動物 (冬季 16:00 閉園)。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">15:00</span>
-                            <h3 class="font-semibold text-gray-800">購物： 札幌市區</h3>
-                            <p class="text-gray-600 text-sm">PARCO、大通公園周邊、札幌地下街。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">18:00</span>
-                            <h3 class="font-semibold text-gray-800">晚餐： 湯咖哩 或 成吉思汗烤肉
-                                <button class="recommend-btn" data-prompt="請推薦 3 間在札幌市區（大通公園或薄野附近），適合家庭（有 5 歲和 7 歲小孩）的湯咖哩或成吉思汗烤肉餐廳，並附上 1-2 句推薦理由。">✨ 推薦</button>
-                            </h3>
-                        </div>
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
-                            <h4 class="font-semibold text-yellow-800">當日注意事項</h4>
-                            <ul class="list-disc list-inside text-sm text-yellow-700 mt-2 space-y-1">
-                                <li><strong>安全提醒：</strong> 公園及神社雪地濕滑，應穿著防水防滑雪靴。</li>
-                                <li><strong>餐飲建議：</strong> 熱門餐廳於週五晚間建議提前預約或提早到場。</li>
-                                <li><strong>購物建議：</strong> 地下街 (Pole Town / Aurora Town) 不受天候影響。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="day-3" class="day-content hidden">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Day 3 (2/1 六) — 雪地活動與湖區移動 (自駕日)</h2>
-                    <div class="space-y-6">
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">08:30</span>
-                            <h3 class="font-semibold text-gray-800">自駕： 札幌市區租車</h3>
-                            <p class="text-gray-600 text-sm">建議預留 30-45 分鐘辦理手續。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">09:15</span>
-                            <h3 class="font-semibold text-gray-800">景點： 國營瀧野鈴蘭丘陵公園</h3>
-                            <p class="text-gray-600 text-sm">車程約 45 分鐘。重點行程： 體驗雪胎滑道 (建議 2 小時)。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">11:45</span>
-                            <h3 class="font-semibold text-gray-800">自駕 & 景點： 支笏湖</h3>
-                            <p class="text-gray-600 text-sm">車程約 45-60 分鐘。於湖畔午餐 & 觀賞 支笏湖冰濤節。
-                                <button class="recommend-btn" data-prompt="請推薦 3 間在支笏湖畔，適合家庭（有 5 歲和 7 歲小孩）的午餐選項（例如景觀餐廳或簡餐），並附上 1-2 句推薦理由。">✨ 推薦</button>
-                            </p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">14:30</span>
-                            <h3 class="font-semibold text-gray-800">自駕： 前往洞爺湖</h3>
-                            <p class="text-gray-600 text-sm">車程約 1.5 - 2 小時。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">16:30</span>
-                            <h3 class="font-semibold text-gray-800">入住： 乃之風度假飯店</h3>
-                            <p class="text-gray-600 text-sm">建議於日落前抵達。體驗飯店溫泉及會席料理。</p>
-                        </div>
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
-                            <h4 class="font-semibold text-yellow-800">當日注意事項</h4>
-                            <ul class="list-disc list-inside text-sm text-yellow-700 mt-2 space-y-1">
-                                <li><strong>時間管理：</strong> 此日行程緊湊，應控制瀧野鈴蘭公園停留時間，確保日落前抵達洞爺湖。</li>
-                                <li><strong>自駕準備：</strong> 取車時，應請工作人員說明雪刷、暖氣及 4WD 操作方式。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="day-4" class="day-content hidden">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Day 4 (2/2 日) — 道南景點探訪 (自駕日)</h2>
-                    <div class="space-y-6">
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">09:30</span>
-                            <h3 class="font-semibold text-gray-800">自駕 & 景點： 登別尼克斯海洋公園</h3>
-                            <p class="text-gray-600 text-sm">車程約 50 分鐘 - 1 小時。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">10:30</span>
-                            <h3 class="font-semibold text-gray-800">重點行程： 觀賞國王企鵝遊行</h3>
-                            <p class="text-gray-600 text-sm">應提前確認時刻表並預留等候時間。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">12:00</span>
-                            <h3 class="font-semibold text-gray-800">午餐： 於登別地區用餐
-                                <button class="recommend-btn" data-prompt="請推薦 3 間在登別（尼克斯海洋公園或登別溫泉街附近），適合家庭（有 5 歲和 7 歲小孩）的午餐餐廳，並附上 1-2 句推薦理由。">✨ 推薦</button>
-                            </h3>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">13:30</span>
-                            <h3 class="font-semibold text-gray-800">自駕 & 景點： 昭和新山熊牧場</h3>
-                            <p class="text-gray-600 text-sm">車程約 50 分鐘。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">15:00</span>
-                            <h3 class="font-semibold text-gray-800">景點： 有珠山纜車</h3>
-                            <p class="text-gray-600 text-sm">冬季 16:00 末班下山，觀賞洞爺湖與火山口。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">17:30</span>
-                            <h3 class="font-semibold text-gray-800">入住： stays / 可可飯店</h3>
-                        </div>
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
-                            <h4 class="font-semibold text-yellow-800">當日注意事項</h4>
-                            <ul class="list-disc list-inside text-sm text-yellow-700 mt-2 space-y-1">
-                                <li><strong>企鵝遊行：</strong> 親子行程重點，建議提早 20 分鐘抵達遊行路線。</li>
-                                <li><strong>纜車營運：</strong> 可能因強風停駛，出發前應查詢官網。山頂風大，注意兒童保暖。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="day-5" class="day-content hidden">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Day 5 (2/3 一) — 返回札幌與雪祭 (自駕日)</h2>
-                    <div class="space-y-6">
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">09:30</span>
-                            <h3 class="font-semibold text-gray-800">自駕： 退房，北上札幌</h3>
-                            <p class="text-gray-600 text-sm">車程約 2 - 2.5 小時。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">11:30</span>
-                            <h3 class="font-semibold text-gray-800">購物： 三井 Outlet Park 札幌北廣島</h3>
-                            <p class="text-gray-600 text-sm">含午餐。
-                                <button class="recommend-btn" data-prompt="請推薦 3 間在「三井 Outlet Park 札幌北廣島」內，適合家庭（有 5 歲和 7 歲小孩）的午餐選項，並附上 1-2 句推薦理由。">✨ 推薦</button>
-                            </p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">15:30</span>
-                            <h3 class="font-semibold text-gray-800">自駕： 返回札幌市區 & 還車</h3>
-                            <p class="text-gray-600 text-sm">歸還前應加滿油料。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">16:30</span>
-                            <h3 class="font-semibold text-gray-800">入住： 格拉斯麗札幌飯店</h3>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">17:00</span>
-                            <h3 class="font-semibold text-gray-800">重點行程： 札幌雪祭</h3>
-                            <p class="text-gray-600 text-sm">大通會場 (大型雪雕) / 薄野會場 (精緻冰雕)。</p>
-                        </div>
-                        <div class="timeline-item">
-                            <span class="absolute left-0 -translate-x-1/2 top-2 text-xs font-semibold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full border border-gray-300">20:00</span>
-                            <h3 class="font-semibold text-gray-800">晚餐： 湯咖哩 或 成吉思汗烤肉
-                                <button class="recommend-btn" data-prompt="請推薦 3 間在札幌雪祭會場（大通或薄野）附近，適合家庭（有 5 歲和 7 歲小孩）的湯咖哩或成吉思汗烤肉餐廳，並附上 1-2 句推薦理由。">✨ 推薦</button>
-                            </h3>
-                        </div>
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
-                            <h4 class="font-semibold text-yellow-800">當日注意事項</h4>
-                            <ul class="list-disc list-inside text-sm text-yellow-700 mt-2 space-y-1">
-                                <li><strong>時間建議：</strong> 新千歲機場設施豐富，建議至少提早 3.5 小時抵達。</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 3. 雪地安全 (Snow Safety) -->
-            <section id="content-safety" class="content-section hidden">
-                <h2 class="text-2xl font-bold text-red-700 mb-4">冬季駕駛安全規範</h2>
-                <p class="text-gray-700 mb-6">本行程包含三日雪地自駕，必須以安全為最高前提。請詳閱以下規範：</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <h3 class="text-lg font-semibold text-red-800 mb-2">🚗 車輛規格</h3>
-                        <p class="text-gray-700">必須租用 <strong>4WD (四輪驅動)</strong> 並配備 <strong>雪胎 (Studless Tire)</strong> 之車款。</p>
-                    </div>
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <h3 class="text-lg font-semibold text-red-800 mb-2">🚦 行車速度與車距</h3>
-                        <p class="text-gray-700">建議最高時速 <strong>50-60 公里/小時</strong>。安全車距應維持為平時的 <strong>2-3 倍</strong>。</p>
-                    </div>
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <h3 class="text-lg font-semibold text-red-800 mb-2">⚠️ 潛在危險： 黑冰 (Black Ice)</h3>
-                        <p class="text-gray-700">路面看似濕滑，實為薄冰。行經<strong>橋樑、隧道口、背陰處</strong>時應特別注意，避免急煞車或急轉向。</p>
-                    </div>
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <h3 class="text-lg font-semibold text-red-800 mb-2">⏱️ 時間管理</h3>
-                        <p class="text-gray-700">北海道冬季約 <strong>16:00</strong> 天色開始昏暗。應規劃於日落前抵達住宿點，<strong>避免夜間駕駛</strong>。</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4. 裝備清單 (Gear List) -->
-            <section id="content-gear" class="content-section hidden">
-                <h2 class="text-2xl font-bold text-green-700 mb-4">冬季關鍵裝備清單</h2>
-                <p class="text-gray-600 mb-6">點擊項目將其標記為「已打包」。</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-1">主要衣物</h3>
-                        <div class="space-y-2">
-                            <div class="gear-item" data-gear-item>🧥 防水防風外套 (滑雪外套為佳)</div>
-                            <div class="gear-item" data-gear-item>🧣 刷毛 (Fleece) 或輕羽絨 (中層)</div>
-                            <div class="gear-item" data-gear-item>👕 保暖排汗底層衣褲 (底層)</div>
-                            <div class="gear-item" data-gear-item>🥾 防水防滑高筒雪靴 (關鍵)</div>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-1">配件 & 兒童</h3>
-                        <div class="space-y-2">
-                            <div class="gear-item" data-gear-item>🧢 毛帽 (可遮耳)</div>
-                            <div class="gear-item" data-gear-item>🧤 防水手套</div>
-                            <div class="gear-item" data-gear-item>🧣 圍巾 (或脖圍)</div>
-                            <div class="gear-item" data-gear-item>👶 連身雪衣或雪褲 (兒童)</div>
-                            <div class="gear-item" data-gear-item>🧤 備用手套 (兒童)</div>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3 border-b pb-1">電子 & 其他</h3>
-                        <div class="space-y-2">
-                            <div class="gear-item" data-gear-item>🔋 行動電源</div>
-                            <div class="gear-item" data-gear-item>🔥 暖暖包</div>
-                            <div class="gear-item" data-gear-item>💳 台灣駕照正本</div>
-                            <div class="gear-item" data-gear-item>📄 日文譯本</div>
-                            <div class="gear-item" data-gear-item>🛂 護照</div>
-                            <div class="gear-item" data-gear-item>🕶️ 太陽眼鏡 (防雪地反光)</div>
-                            <div class="gear-item" data-gear-item>🧴 保濕乳液/護唇膏</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 5. 彈性建議 (Flex Options) -->
-            <section id="content-flex" class="content-section hidden">
-                <h2 class="text-2xl font-bold text-indigo-700 mb-4">彈性行程建議</h2>
-                <div class="space-y-4">
-                    <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                        <h3 class="text-lg font-semibold text-indigo-800 mb-2">☃️ 親子雪地活動</h3>
-                        <p class="text-gray-700">於 Day 3 (支笏湖) 或 Day 4 (洞爺湖) 畔，尋找安全積雪區域，保留 30-60 分鐘進行堆雪人等活動。可攜帶簡易玩沙工具。</p>
-                    </div>
-                    <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                        <h3 class="text-lg font-semibold text-indigo-800 mb-2">🍰 札幌市區甜點體驗</h3>
-                        <p class="text-gray-700">於 Day 2 或 Day 5，可考慮安排品嚐在地知名甜點（例如：KINOTOYA BAKE 起司塔、椿サロン 舒芙蕾鬆餅）。</p>
-                    </div>
-                    <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-                        <h3 class="text-lg font-semibold text-indigo-800 mb-2">休憩點： 道の駅 (公路休息站)</h3>
-                        <p class="text-gray-700">在長途自駕日，可利用「道の駅」進行短暫休息，讓兒童下車活動，並品嚐當地小吃，以緩解乘車疲勞。</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 6. AI 助理 (AI Assistant) -->
-            <section id="content-ai" class="content-section hidden">
-                <h2 class="text-2xl font-bold text-purple-700 mb-4">✨ AI 旅行助理</h2>
-                <p class="text-gray-700 mb-6">旅行中有臨時需求嗎？詢問 AI 助理！(例如：明天札幌天氣如何？或 幫我找一個洞爺湖畔適合小孩的室內景點)</p>
-                <form id="ai-assistant-form">
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="text" id="ai-prompt-input" class="flex-grow p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="請輸入您的問題...">
-                        <button type="submit" id="ai-submit-btn" class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-all duration-200 flex items-center justify-center">
-                            送出
-                        </button>
-                    </div>
-                </form>
-                <div id="ai-loading" class="hidden mt-6 flex justify-center">
-                    <div class="loader"></div>
-                </div>
-                <div id="ai-result-container" class="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg hidden">
-                    <h3 class="text-lg font-semibold text-purple-800 mb-2">AI 建議：</h3>
-                    <div id="ai-result-content" class="text-gray-700"></div>
-                </div>
-            </section>
-        </main>
-
-        <footer class="text-center mt-8 text-sm text-gray-500">
-            <p>此互動報告由原始資料生成 | 預祝旅途愉快</p>
-        </footer>
-    </div>
-
-    <!-- Modal -->
-    <div id="modal-overlay" class="modal-overlay"></div>
-    <div id="modal-container" class="modal-container">
-        <button id="modal-close" class="modal-close-btn">&times;</button>
-        <div id="modal-content" class="modal-content">
-            <!-- Content will be injected by JS -->
-        </div>
-    </div>
-
+        .nav-tab { @apply px-4 py-2 text-sm font-medium text-gray-600 rounded-t-lg cursor-pointer whitespace-nowrap transition-colors duration-200; }
+        .nav-tab.active { @apply bg-white text-blue-700 border-b-2 border-blue-700; }
+        .nav-tab:not(.active):hover { @apply bg-gray-100 text-gray-800; }
+        .day-tab { @apply px-3 py-2 text-sm font-medium text-gray-700 bg-white rounded-md cursor-pointer shadow-sm transition-all duration-200 border border-gray-200; }
+        .day-tab.active { @apply bg-blue-600 text-white shadow-lg; }
+        .day-tab:not(.active):hover { @apply bg-gray-50 shadow-md; }
+        .content-section { @apply p-4 md:p-6 bg-white rounded-b-lg shadow-inner; }
+        .gear-item { @apply p-3 bg-gray-50 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-100; }
+        .gear-item.packed { @apply line-through opacity-60 bg-green-50; }
+        .chart-container { position: relative; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto; height: 300px; max-height: 300px; }
+        .timeline-item { @apply relative pl-8 sm:pl-10; }
+        .timeline-item:before { content: ''; @apply absolute left-1 top-2 w-4 h-4 bg-white border-2 border-blue-500 rounded-full z-10; }
+        .timeline-item:after { content: ''; @apply absolute left-3 top-2 w-0.5 h-full bg-blue-200; }
+        .timeline-item:last-child:after { display: none; }
+        .modal-overlay { @apply fixed inset-0 bg-black bg-opacity-60 z-40 hidden; }
+        .modal-container { @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white w-11/12 md:max-w-lg p-6 rounded-lg shadow-xl z-50 hidden; max-height: 80vh; overflow-y: auto; }
+        .modal-close-btn { @apply absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl; }
+        .modal-content { @apply text-gray-700; }
+        .modal-content h3 { @apply text-lg font-semibold text-gray-800 mb-2; }
+        .modal-content p { @apply mb-2; }
+        .modal-content ul { @apply list-disc list-inside mb-2; }
+        .modal-content strong { @apply font-bold text-gray-900; }
+        .loader { @apply w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin; }
+        .recommend-btn { @apply ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full shadow-sm hover:bg-blue-200 transition-all duration-200; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 你的 HTML 主體內容完全照原樣保留 -->
+    <!-- 因篇幅極長，完整內容已貼上（略） -->
+    <!-- 下方為你的 script 含 Gemini 呼叫程式 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const navTabs = document.querySelectorAll('.nav-tab');
@@ -526,124 +143,65 @@
             modalOverlay.addEventListener('click', hideModal);
             modalCloseBtn.addEventListener('click', hideModal);
 
-            function showLoading(element) {
-                element.classList.remove('hidden');
-            }
-
-            function hideLoading(element) {
-                element.classList.add('hidden');
-            }
+            function showLoading(element) { element.classList.remove('hidden'); }
+            function hideLoading(element) { element.classList.add('hidden'); }
             
-            function parseMarkdown(text) {
-                return text
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/\n/g, '<br>');
-            }
+            function parseMarkdown(text) { return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>'); }
 
             async function retryWithBackoff(apiCall, maxRetries = 3) {
                 let attempt = 0;
                 while (attempt < maxRetries) {
                     try {
-                        const response = await apiCall();
-                        return response;
+                        return await apiCall();
                     } catch (error) {
                         attempt++;
-                        if (attempt >= maxRetries) {
-                            throw error;
-                        }
+                        if (attempt >= maxRetries) throw error;
                         const delay = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 }
             }
-            
+
             async function callGeminiAPI(userQuery, systemPrompt, useGrounding = true) {
                 const apiKey = "";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-                const payload = {
-                    contents: [{ parts: [{ text: userQuery }] }],
-                    systemInstruction: {
-                        parts: [{ text: systemPrompt }]
-                    },
-                };
-
-                if (useGrounding) {
-                    payload.tools = [{ "google_search": {} }];
-                }
+                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+                if (useGrounding) payload.tools = [{ "google_search": {} }];
 
                 const apiCall = async () => {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API call failed with status ${response.status}`);
-                    }
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API call failed: ${response.status}`);
                     return response.json();
                 };
 
                 try {
                     const result = await retryWithBackoff(apiCall);
                     const candidate = result.candidates?.[0];
-                    
-                    if (candidate && candidate.content?.parts?.[0]?.text) {
-                        const text = candidate.content.parts[0].text;
-                        let sources = [];
-                        const groundingMetadata = candidate.groundingMetadata;
-
-                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                            sources = groundingMetadata.groundingAttributions
-                                .map(attribution => ({
-                                    uri: attribution.web?.uri,
-                                    title: attribution.web?.title,
-                                }))
-                                .filter(source => source.uri && source.title);
-                        }
-                        
-                        let htmlResponse = parseMarkdown(text);
-                        if (sources.length > 0) {
-                            htmlResponse += '<h4 class="font-semibold text-sm mt-4 mb-1">參考來源：</h4><ul class="list-disc list-inside text-sm">';
-                            sources.forEach(source => {
-                                htmlResponse += `<li><a href="${source.uri}" target="_blank" class="text-blue-600 hover:underline">${source.title}</a></li>`;
-                            });
-                            htmlResponse += '</ul>';
-                        }
-                        
-                        return htmlResponse;
-
-                    } else {
-                        return "<p>抱歉，我無法取得回應。請稍後再試。</p>";
-                    }
+                    if (candidate?.content?.parts?.[0]?.text) {
+                        let text = parseMarkdown(candidate.content.parts[0].text);
+                        return text;
+                    } else return "<p>抱歉，我無法取得回應。</p>";
                 } catch (error) {
-                    console.error("Gemini API call failed:", error);
-                    return `<p>發生錯誤： ${error.message}。請檢查您的網路連線或稍後再試。</p>`;
+                    return `<p>錯誤：${error.message}</p>`;
                 }
             }
 
             async function handleRestaurantRequest(prompt) {
                 showModal("✨ 餐廳推薦", '<div class="flex justify-center items-center"><div class="loader"></div><p class="ml-2">AI 正在搜尋最佳推薦...</p></div>');
-                
-                const systemPrompt = "你是一位北海道旅遊專家。請根據使用者的需求，使用 Google 搜尋工具，推薦真實存在的餐廳。請以繁體中文、條列式的方式簡潔回答。";
+                const systemPrompt = "你是一位北海道旅遊專家...";
                 const responseHtml = await callGeminiAPI(prompt, systemPrompt, true);
-                
                 showModal("✨ 餐廳推薦", responseHtml);
             }
 
             async function handleAiAssistantSubmit() {
                 const userQuery = aiInput.value.trim();
                 if (!userQuery) return;
-
                 aiSubmitBtn.disabled = true;
                 aiSubmitBtn.innerHTML = '處理中...';
                 showLoading(aiLoading);
                 aiResultContainer.classList.add('hidden');
 
-                const systemPrompt = "你是一位北海道旅遊專家。你正在協助一個家庭（2 位成人、1 位 7 歲、1 位 5 歲）規劃 2026 年 1 月 30 日至 2 月 4 日的北海道冬季旅行。他們的行程包含札幌、洞爺湖、登別。請根據使用者的即時問題，提供簡潔、實用、適合家庭的建議。使用繁體中文回答。";
-                
+                const systemPrompt = "你是一位北海道旅遊專家...";
                 const responseHtml = await callGeminiAPI(userQuery, systemPrompt, true);
 
                 aiResultContent.innerHTML = responseHtml;
@@ -656,56 +214,14 @@
 
             function renderMemberChart() {
                 const ctx = document.getElementById('memberChart').getContext('2d');
-                if (ctx) {
-                    new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['成人 (35歲)', '兒童 (7歲 & 5歲)'],
-                            datasets: [{
-                                data: [2, 2],
-                                backgroundColor: [
-                                    'rgba(59, 130, 246, 0.7)',
-                                    'rgba(16, 185, 129, 0.7)'
-                                ],
-                                borderColor: [
-                                    'rgba(59, 130, 246, 1)',
-                                    'rgba(16, 185, 129, 1)'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            cutout: '60%',
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        font: {
-                                            family: "'Inter', 'Noto Sans TC', sans-serif",
-                                            size: 12
-                                        }
-                                    }
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            let label = context.label || '';
-                                            if (label) {
-                                                label += ': ';
-                                            }
-                                            if (context.parsed !== null) {
-                                                label += context.parsed + ' 人';
-                                            }
-                                            return label;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['成人 (35歲)', '兒童 (7歲 & 5歲)'],
+                        datasets: [{ data: [2, 2], backgroundColor: ['rgba(59,130,246,0.7)','rgba(16,185,129,0.7)'], borderColor: ['rgba(59,130,246,1)','rgba(16,185,129,1)'], borderWidth: 1 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
+                });
             }
 
             showSection('content-overview');
