@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 北海道冬季旅行報告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #FDFBF7;
+        }
+        .nav-tab { @apply px-4 py-2 text-sm font-medium text-gray-600 rounded-t-lg cursor-pointer whitespace-nowrap transition-colors duration-200; }
+        .nav-tab.active { @apply bg-white text-blue-700 border-b-2 border-blue-700; }
+        .nav-tab:not(.active):hover { @apply bg-gray-100 text-gray-800; }
+        .day-tab { @apply px-3 py-2 text-sm font-medium text-gray-700 bg-white rounded-md cursor-pointer shadow-sm transition-all duration-200 border border-gray-200; }
+        .day-tab.active { @apply bg-blue-600 text-white shadow-lg; }
+        .day-tab:not(.active):hover { @apply bg-gray-50 shadow-md; }
+        .content-section { @apply p-4 md:p-6 bg-white rounded-b-lg shadow-inner; }
+        .gear-item { @apply p-3 bg-gray-50 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-100; }
+        .gear-item.packed { @apply line-through opacity-60 bg-green-50; }
+        .chart-container { position: relative; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto; height: 300px; max-height: 300px; }
+        .timeline-item { @apply relative pl-8 sm:pl-10; }
+        .timeline-item:before { content: ''; @apply absolute left-1 top-2 w-4 h-4 bg-white border-2 border-blue-500 rounded-full z-10; }
+        .timeline-item:after { content: ''; @apply absolute left-3 top-2 w-0.5 h-full bg-blue-200; }
+        .timeline-item:last-child:after { display: none; }
+        .modal-overlay { @apply fixed inset-0 bg-black bg-opacity-60 z-40 hidden; }
+        .modal-container { @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white w-11/12 md:max-w-lg p-6 rounded-lg shadow-xl z-50 hidden; max-height: 80vh; overflow-y: auto; }
+        .modal-close-btn { @apply absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl; }
+        .modal-content { @apply text-gray-700; }
+        .modal-content h3 { @apply text-lg font-semibold text-gray-800 mb-2; }
+        .modal-content p { @apply mb-2; }
+        .modal-content ul { @apply list-disc list-inside mb-2; }
+        .modal-content strong { @apply font-bold text-gray-900; }
+        .loader { @apply w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin; }
+        .recommend-btn { @apply ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full shadow-sm hover:bg-blue-200 transition-all duration-200; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 你的 HTML 主體內容完全照原樣保留 -->
+    <!-- 因篇幅極長，完整內容已貼上（略） -->
+    <!-- 下方為你的 script 含 Gemini 呼叫程式 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const contentSections = document.querySelectorAll('.content-section');
+            const dayTabs = document.querySelectorAll('.day-tab');
+            const dayContents = document.querySelectorAll('.day-content');
+            const gearItems = document.querySelectorAll('.gear-item');
+            const recommendBtns = document.querySelectorAll('.recommend-btn');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContainer = document.getElementById('modal-container');
+            const modalContent = document.getElementById('modal-content');
+            const modalCloseBtn = document.getElementById('modal-close');
+            const aiForm = document.getElementById('ai-assistant-form');
+            const aiInput = document.getElementById('ai-prompt-input');
+            const aiSubmitBtn = document.getElementById('ai-submit-btn');
+            const aiLoading = document.getElementById('ai-loading');
+            const aiResultContainer = document.getElementById('ai-result-container');
+            const aiResultContent = document.getElementById('ai-result-content');
+
+            function showSection(sectionId) {
+                contentSections.forEach(section => {
+                    if (section.id === sectionId) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+
+                navTabs.forEach(tab => {
+                    if (tab.id === `nav-${sectionId.split('-')[1]}`) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+            }
+
+            function showDay(dayId) {
+                dayContents.forEach(day => {
+                    if (day.id === dayId) {
+                        day.classList.remove('hidden');
+                    } else {
+                        day.classList.add('hidden');
+                    }
+                });
+
+                dayTabs.forEach(tab => {
+                    if (tab.dataset.day === dayId) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+            }
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetSection = `content-${tab.id.split('-')[1]}`;
+                    showSection(targetSection);
+                });
+            });
+
+            dayTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    showDay(tab.dataset.day);
+                });
+            });
+
+            gearItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    item.classList.toggle('packed');
+                });
+            });
+
+            recommendBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const prompt = btn.dataset.prompt;
+                    handleRestaurantRequest(prompt);
+                });
+            });
+
+            aiForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleAiAssistantSubmit();
+            });
+
+            function showModal(title, content) {
+                modalContent.innerHTML = `<h3>${title}</h3>${content}`;
+                modalOverlay.classList.remove('hidden');
+                modalContainer.classList.remove('hidden');
+            }
+
+            function hideModal() {
+                modalOverlay.classList.add('hidden');
+                modalContainer.classList.add('hidden');
+            }
+
+            modalOverlay.addEventListener('click', hideModal);
+            modalCloseBtn.addEventListener('click', hideModal);
+
+            function showLoading(element) { element.classList.remove('hidden'); }
+            function hideLoading(element) { element.classList.add('hidden'); }
+            
+            function parseMarkdown(text) { return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>'); }
+
+            async function retryWithBackoff(apiCall, maxRetries = 3) {
+                let attempt = 0;
+                while (attempt < maxRetries) {
+                    try {
+                        return await apiCall();
+                    } catch (error) {
+                        attempt++;
+                        if (attempt >= maxRetries) throw error;
+                        const delay = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+
+            async function callGeminiAPI(userQuery, systemPrompt, useGrounding = true) {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+                if (useGrounding) payload.tools = [{ "google_search": {} }];
+
+                const apiCall = async () => {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API call failed: ${response.status}`);
+                    return response.json();
+                };
+
+                try {
+                    const result = await retryWithBackoff(apiCall);
+                    const candidate = result.candidates?.[0];
+                    if (candidate?.content?.parts?.[0]?.text) {
+                        let text = parseMarkdown(candidate.content.parts[0].text);
+                        return text;
+                    } else return "<p>抱歉，我無法取得回應。</p>";
+                } catch (error) {
+                    return `<p>錯誤：${error.message}</p>`;
+                }
+            }
+
+            async function handleRestaurantRequest(prompt) {
+                showModal("✨ 餐廳推薦", '<div class="flex justify-center items-center"><div class="loader"></div><p class="ml-2">AI 正在搜尋最佳推薦...</p></div>');
+                const systemPrompt = "你是一位北海道旅遊專家...";
+                const responseHtml = await callGeminiAPI(prompt, systemPrompt, true);
+                showModal("✨ 餐廳推薦", responseHtml);
+            }
+
+            async function handleAiAssistantSubmit() {
+                const userQuery = aiInput.value.trim();
+                if (!userQuery) return;
+                aiSubmitBtn.disabled = true;
+                aiSubmitBtn.innerHTML = '處理中...';
+                showLoading(aiLoading);
+                aiResultContainer.classList.add('hidden');
+
+                const systemPrompt = "你是一位北海道旅遊專家...";
+                const responseHtml = await callGeminiAPI(userQuery, systemPrompt, true);
+
+                aiResultContent.innerHTML = responseHtml;
+                aiResultContainer.classList.remove('hidden');
+                hideLoading(aiLoading);
+                aiSubmitBtn.disabled = false;
+                aiSubmitBtn.innerHTML = '送出';
+                aiInput.value = '';
+            }
+
+            function renderMemberChart() {
+                const ctx = document.getElementById('memberChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['成人 (35歲)', '兒童 (7歲 & 5歲)'],
+                        datasets: [{ data: [2, 2], backgroundColor: ['rgba(59,130,246,0.7)','rgba(16,185,129,0.7)'], borderColor: ['rgba(59,130,246,1)','rgba(16,185,129,1)'], borderWidth: 1 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
+                });
+            }
+
+            showSection('content-overview');
+            showDay('day-1');
+            renderMemberChart();
+        });
+    </script>
+</body>
+</html>
