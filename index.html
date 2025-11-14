@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2026 北海道冬季旅行報告</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Chosen Palette: Warm Neutrals & Subtle Blue -->
     <!-- Application Structure Plan: 採用頂部 "分頁標籤 (Tabs)" 結構。使用者可以點擊 "總覽", "每日行程", "安全", "裝備", "彈性建議" 之間切換。這種結構最符合使用者心智模型，能快速在報告的不同章節間跳轉。主要互動是點擊分頁切換內容區塊 (show/hide)，以及在行程中點擊地圖連結和 AI 推薦按鈕。選擇此結構是因其清晰、簡單，符合報告的線性閱讀邏B輯，同時允許非線性探索。 -->
@@ -22,54 +21,114 @@
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
         body {
             font-family: 'Inter', 'Noto Sans TC', sans-serif;
             background-color: #f8f9fa;
         }
-        /* 載入 Noto Sans TC 字體 */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
 
-        /* 導覽列標籤樣式 */
         .nav-tab {
-            @apply px-6 py-3 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 ease-in-out cursor-pointer;
-        }
-        .nav-tab.active {
-            @apply bg-white text-blue-700 shadow-md;
-        }
-        .nav-tab:not(.active) {
-            @apply text-gray-600 bg-gray-100 hover:bg-gray-200;
-        }
-        
-        /* 內容區塊 */
-        .content-section {
-            display: none; /* 預設隱藏 */
-            @apply p-4 sm:p-6 bg-white rounded-xl shadow-lg;
-        }
-        .content-section.active {
-            display: block; /* 顯示選中的區塊 */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            color: #4b5563;
+            background-color: #f3f4f6;
         }
 
-        /* 地圖連結樣式 */
+        .nav-tab:hover {
+            background-color: #e5e7eb;
+        }
+
+        .nav-tab.active {
+            background-color: #ffffff;
+            color: #1d4ed8;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -4px rgba(59, 130, 246, 0.1);
+        }
+
+        @media (min-width: 640px) {
+            .nav-tab {
+                font-size: 1rem;
+            }
+        }
+
+        .content-section {
+            display: none;
+            padding: 1rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -4px rgba(15, 23, 42, 0.1);
+        }
+
+        @media (min-width: 640px) {
+            .content-section {
+                padding: 1.5rem;
+            }
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
         .map-link {
-            @apply text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200;
+            color: #2563eb;
+            transition: color 0.2s ease-in-out;
         }
+
+        .map-link:hover {
+            color: #1e40af;
+            text-decoration: underline;
+        }
+
         .map-icon {
-            @apply ml-1 text-red-500 inline-block;
+            margin-left: 0.25rem;
+            color: #ef4444;
+            display: inline-block;
         }
-        
-        /* AI 推薦按鈕 */
+
         .ai-recommend-btn {
-            @apply ml-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold hover:bg-purple-200 transition-all duration-200 cursor-pointer;
+            margin-left: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background-color: #f3e8ff;
+            color: #7c3aed;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
         }
-        /* 載入中狀態 */
+
+        .ai-recommend-btn:hover {
+            background-color: #e9d5ff;
+        }
+
         .loading {
-            @apply animate-pulse cursor-wait;
+            animation: pulse 1.5s ease-in-out infinite;
+            cursor: wait;
         }
-        /* AI 回覆的樣式 */
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
         .ai-recommendation {
-            @apply mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg text-sm text-gray-700;
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background-color: #faf5ff;
+            border: 1px solid #ddd6fe;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #374151;
         }
-        
     </style>
 </head>
 <body class="bg-gray-100 p-4 sm:p-6 md:p-8">
@@ -179,11 +238,11 @@
                     <div class="border rounded-lg shadow-md bg-white p-5">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Day 1: 1/30 (四) — 抵達札幌</h3>
                         <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>17:20</strong> | 抵達 <a href="https://maps.google.com/maps?q=New+Chitose+Airport" target="_blank" class="map-link">新千歲機場 (CTS)<span class="map-icon">📍</span></a></li>
-                            <li><strong>18:00</strong> | 交通： 搭乘 JR 快速 Airport 號 (約 45-50 分鐘) 前往 <a href="https://maps.google.com/maps?q=Sapporo+Station" target="_blank" class="map-link">札幌站<span class="map-icon">📍</span></a></li>
+                            <li><strong>17:20</strong> | 抵達 <a href="https://maps.google.com/maps?q=New+Chitose+Airport" target="_blank" rel="noopener noreferrer" class="map-link">新千歲機場 (CTS)<span class="map-icon">📍</span></a></li>
+                            <li><strong>18:00</strong> | 交通： 搭乘 JR 快速 Airport 號 (約 45-50 分鐘) 前往 <a href="https://maps.google.com/maps?q=Sapporo+Station" target="_blank" rel="noopener noreferrer" class="map-link">札幌站<span class="map-icon">📍</span></a></li>
                             <li><strong>18:50</strong> | 交通： 札幌站轉乘地鐵南北線 (1 站) 至「大通站」</li>
-                            <li><strong>19:15</strong> | 入住： <a href="https://maps.google.com/maps?q=Hotel+Trinity+Sapporo" target="_blank" class="map-link">札幌三位神大飯店<span class="map-icon">📍</span></a> (鄰近大通公園及狸小路)</li>
-                            <li><strong>19:45</strong> | 晚餐： <a href="https://maps.google.com/maps?q=Tanukikoji+Shopping+Street" target="_blank" class="map-link">狸小路商店街<span class="map-icon">📍</span></a> 或薄野區域用餐。
+                            <li><strong>19:15</strong> | 入住： <a href="https://maps.google.com/maps?q=Hotel+Trinity+Sapporo" target="_blank" rel="noopener noreferrer" class="map-link">札幌三位神大飯店<span class="map-icon">📍</span></a> (鄰近大通公園及狸小路)</li>
+                            <li><strong>19:45</strong> | 晚餐： <a href="https://maps.google.com/maps?q=Tanukikoji+Shopping+Street" target="_blank" rel="noopener noreferrer" class="map-link">狸小路商店街<span class="map-icon">📍</span></a> 或薄野區域用餐。
                                 <button class="ai-recommend-btn" data-location="札幌狸小路或薄野" data-id="rec-1">✨ 推薦餐廳</button>
                                 <div id="rec-1-result" class="ai-recommendation" style="display: none;"></div>
                             </li>
@@ -198,10 +257,10 @@
                     <div class="border rounded-lg shadow-md bg-white p-5">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Day 2: 1/31 (五) — 札幌市區觀光</h3>
                         <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>09:30</strong> | 交通： 從飯店 (大通站) 搭乘地鐵東西線 (3 站) 前往 <a href="https://maps.google.com/maps?q=Maruyama+Park+Sapporo" target="_blank" class="map-link">圓山公園<span class="map-icon">📍</span></a></li>
-                            <li><strong>10:00</strong> | 景點： 參拜 <a href="https://maps.google.com/maps?q=Hokkaido+Shrine" target="_blank" class="map-link">北海道神宮<span class="map-icon">📍</span></a></li>
-                            <li><strong>11:30</strong> | 景點： <a href="https://maps.google.com/maps?q=Maruyama+Zoo" target="_blank" class="map-link">圓山動物園<span class="map-icon">📍</span></a> (冬季 16:00 閉園)，觀賞寒帶動物。</li>
-                            <li><strong>15:00</strong> | 購物： 札幌市區 (PARCO、<a href="https.google.com/maps?q=Odori+Park" target="_blank" class="map-link">大通公園<span class="map-icon">📍</span></a> 周邊、札幌地下街)。</li>
+                            <li><strong>09:30</strong> | 交通： 從飯店 (大通站) 搭乘地鐵東西線 (3 站) 前往 <a href="https://maps.google.com/maps?q=Maruyama+Park+Sapporo" target="_blank" rel="noopener noreferrer" class="map-link">圓山公園<span class="map-icon">📍</span></a></li>
+                            <li><strong>10:00</strong> | 景點： 參拜 <a href="https://maps.google.com/maps?q=Hokkaido+Shrine" target="_blank" rel="noopener noreferrer" class="map-link">北海道神宮<span class="map-icon">📍</span></a></li>
+                            <li><strong>11:30</strong> | 景點： <a href="https://maps.google.com/maps?q=Maruyama+Zoo" target="_blank" rel="noopener noreferrer" class="map-link">圓山動物園<span class="map-icon">📍</span></a> (冬季 16:00 閉園)，觀賞寒帶動物。</li>
+                            <li><strong>15:00</strong> | 購物： 札幌市區 (PARCO、<a href="https://maps.google.com/maps?q=Odori+Park" target="_blank" rel="noopener noreferrer" class="map-link">大通公園<span class="map-icon">📍</span></a> 周邊、札幌地下街)。</li>
                             <li><strong>18:00</strong> | 晚餐： 湯咖哩 或 成吉思汗烤肉。
                                 <button class="ai-recommend-btn" data-location="札幌市區 湯咖哩 或 成吉思汗烤肉" data-id="rec-2">✨ 推薦餐廳</button>
                                 <div id="rec-2-result" class="ai-recommendation" style="display: none;"></div>
@@ -219,15 +278,15 @@
                         <h4 class="text-lg font-semibold text-red-600 mb-3">🚗 開始自駕 🚗</h4>
                         <ul class="space-y-3 list-disc list-inside text-gray-700">
                             <li><strong>08:30</strong> | 自駕： 札幌市區租車點出發 (預留 30-45 分鐘辦理手續)。</li>
-                            <li><strong>09:15</strong> | 景點： 抵達 <a href="https://maps.google.com/maps?q=Takino+Suzuran+Park" target="_blank" class="map-link">國營瀧野鈴蘭丘陵公園<span class="map-icon">📍</span></a> (車程約 45 分鐘)。</li>
+                            <li><strong>09:15</strong> | 景點： 抵達 <a href="https://maps.google.com/maps?q=Takino+Suzuran+Park" target="_blank" rel="noopener noreferrer" class="map-link">國營瀧野鈴蘭丘陵公園<span class="map-icon">📍</span></a> (車程約 45 分鐘)。</li>
                             <li><strong>09:30-11:30</strong> | 重點行程： 體驗雪胎滑道 (建議時長：2 小時)。</li>
-                            <li><strong>11:45</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Lake+Shikotsu" target="_blank" class="map-link">支笏湖<span class="map-icon">📍</span></a> (車程約 45-60 分鐘)。</li>
-                            <li><strong>12:45-14:15</strong> | 景點： 於支笏湖畔午餐 & 觀賞 <a href="https.google.com/maps?q=Lake+Shikotsu+Ice+Festival" target="_blank" class="map-link">支笏湖冰濤節<span class="map-icon">📍</span></a>。
+                            <li><strong>11:45</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Lake+Shikotsu" target="_blank" rel="noopener noreferrer" class="map-link">支笏湖<span class="map-icon">📍</span></a> (車程約 45-60 分鐘)。</li>
+                            <li><strong>12:45-14:15</strong> | 景點： 於支笏湖畔午餐 & 觀賞 <a href="https://maps.google.com/maps?q=Lake+Shikotsu+Ice+Festival" target="_blank" rel="noopener noreferrer" class="map-link">支笏湖冰濤節<span class="map-icon">📍</span></a>。
                                 <button class="ai-recommend-btn" data-location="支笏湖畔 簡餐" data-id="rec-3">✨ 推薦餐廳</button>
                                 <div id="rec-3-result" class="ai-recommendation" style="display: none;"></div>
                             </li>
-                            <li><strong>14:30</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Lake+Toya" target="_blank" class="map-link">洞爺湖<span class="map-icon">📍</span></a> (車程約 1.5 - 2 小時)。</li>
-                            <li><strong>16:00-16:30</strong> | 入住： <a href="https.google.com/maps?q=Nonokaze+Resort" target="_blank" class="map-link">乃之風度假飯店<span class="map-icon">📍</span></a> (建議於日落前抵達)。</li>
+                            <li><strong>14:30</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Lake+Toya" target="_blank" rel="noopener noreferrer" class="map-link">洞爺湖<span class="map-icon">📍</span></a> (車程約 1.5 - 2 小時)。</li>
+                            <li><strong>16:00-16:30</strong> | 入住： <a href="https://maps.google.com/maps?q=Nonokaze+Resort" target="_blank" rel="noopener noreferrer" class="map-link">乃之風度假飯店<span class="map-icon">📍</span></a> (建議於日落前抵達)。</li>
                             <li><strong>17:00</strong> | 溫泉： 體驗飯店溫泉設施，欣賞湖景。</li>
                             <li><strong>18:00</strong> | 晚餐： 飯店內享用會席料理。</li>
                         </ul>
@@ -241,14 +300,14 @@
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Day 4: 2/2 (日) — 道南景點探訪</h3>
                         <h4 class="text-lg font-semibold text-red-600 mb-3">🚗 持續自駕 🚗</h4>
                         <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>09:30</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Noboribetsu+Marine+Park+Nixe" target="_blank" class="map-link">登別尼克斯海洋公園<span class="map-icon">📍</span></a> (車程約 50 分鐘 - 1 小時)。</li>
+                            <li><strong>09:30</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Noboribetsu+Marine+Park+Nixe" target="_blank" rel="noopener noreferrer" class="map-link">登別尼克斯海洋公園<span class="map-icon">📍</span></a> (車程約 50 分鐘 - 1 小時)。</li>
                             <li><strong>10:30</strong> | 重點行程： 觀賞國王企鵝遊行 (應提前確認時刻表)。</li>
                             <li><strong>12:00</strong> | 午餐： 於登別地區用餐。
                                 <button class="ai-recommend-btn" data-location="登別地區" data-id="rec-4">✨ 推薦餐廳</button>
                                 <div id="rec-4-result" class="ai-recommendation" style="display: none;"></div>
                             </li>
-                            <li><strong>13:30</strong> | 自駕： 返回洞爺湖區域，前往 <a href="https.google.com/maps?q=Showa+Shinzan+Bear+Ranch" target="_blank" class="map-link">昭和新山熊牧場<span class="map-icon">📍</span></a> (車程約 50 分鐘)。</li>
-                            <li><strong>15:00</strong> | 景點： <a href="https://maps.google.com/maps?q=Usuzan+Ropeway" target="_blank" class="map-link">有珠山纜車<span class="map-icon">📍</span></a> (冬季 16:00 末班下山)，觀賞洞爺湖與火山口。</li>
+                            <li><strong>13:30</strong> | 自駕： 返回洞爺湖區域，前往 <a href="https://maps.google.com/maps?q=Showa+Shinzan+Bear+Ranch" target="_blank" rel="noopener noreferrer" class="map-link">昭和新山熊牧場<span class="map-icon">📍</span></a> (車程約 50 分鐘)。</li>
+                            <li><strong>15:00</strong> | 景點： <a href="https://maps.google.com/maps?q=Usuzan+Ropeway" target="_blank" rel="noopener noreferrer" class="map-link">有珠山纜車<span class="map-icon">📍</span></a> (冬季 16:00 末班下山)，觀賞洞爺湖與火山口。</li>
                             <li><strong>17:30</strong> | 入住： stays / 可可飯店。</li>
                         </ul>
                         <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg">
@@ -262,10 +321,10 @@
                         <h4 class="text-lg font-semibold text-red-600 mb-3">🚗 自駕最終日 🚗</h4>
                         <ul class="space-y-3 list-disc list-inside text-gray-700">
                             <li><strong>09:30</strong> | 自駕： 退房，開車北上 (車程約 2 - 2.5 小時)。</li>
-                            <li><strong>11:30</strong> | 購物： <a href="https://maps.google.com/maps?q=Mitsui+Outlet+Park+Sapporo+Kitahiroshima" target="_blank" class="map-link">三井 Outlet Park 札幌北廣島<span class="map-icon">📍</span></a> (含午餐)。</li>
+                            <li><strong>11:30</strong> | 購物： <a href="https://maps.google.com/maps?q=Mitsui+Outlet+Park+Sapporo+Kitahiroshima" target="_blank" rel="noopener noreferrer" class="map-link">三井 Outlet Park 札幌北廣島<span class="map-icon">📍</span></a> (含午餐)。</li>
                             <li><strong>15:30</strong> | 自駕： 返回札幌市區 (車程約 30-40 分鐘)，辦理車輛歸還 (歸還前應加滿油料)。</li>
-                            <li><strong>16:30</strong> | 入住： <a href="https://maps.google.com/maps?q=Hotel+Gracery+Sapporo" target="_blank" class="map-link">格拉斯麗札幌飯店<span class="map-icon">📍</span></a>。</li>
-                            <li><strong>17:00</strong> | 重點行程： <a href="https://maps.google.com/maps?q=Sapporo+Snow+Festival+Odori+Site" target="_blank" class="map-link">札幌雪祭<span class="map-icon">📍</span></a> (大通會場 / 薄野會場)。</li>
+                            <li><strong>16:30</strong> | 入住： <a href="https://maps.google.com/maps?q=Hotel+Gracery+Sapporo" target="_blank" rel="noopener noreferrer" class="map-link">格拉斯麗札幌飯店<span class="map-icon">📍</span></a>。</li>
+                            <li><strong>17:00</strong> | 重點行程： <a href="https://maps.google.com/maps?q=Sapporo+Snow+Festival+Odori+Site" target="_blank" rel="noopener noreferrer" class="map-link">札幌雪祭<span class="map-icon">📍</span></a> (大通會場 / 薄野會場)。</li>
                             <li><strong>20:00</strong> | 晚餐： 湯咖哩 或 成吉思汗烤肉。
                                 <button class="ai-recommend-btn" data-location="札幌 靠近札幌雪祭會場" data-id="rec-5">✨ 推薦餐廳</button>
                                 <div id="rec-5-result" class="ai-recommendation" style="display: none;"></div>
@@ -280,9 +339,9 @@
                     <div class="border rounded-lg shadow-md bg-white p-5">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Day 6: 2/4 (二) — 機場設施巡禮與啟程</h3>
                         <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>08:30</strong> | 退房，交通： 搭乘 JR 快速 Airport 號 (約 45-50 分鐘) 前往 <a href="https.google.com/maps?q=New+Chitose+Airport" target="_blank" class="map-link">新千歲機場<span class="map-icon">📍</span></a>。</li>
+                            <li><strong>08:30</strong> | 退房，交通： 搭乘 JR 快速 Airport 號 (約 45-50 分鐘) 前往 <a href="https://maps.google.com/maps?q=New+Chitose+Airport" target="_blank" rel="noopener noreferrer" class="map-link">新千歲機場<span class="map-icon">📍</span></a>。</li>
                             <li><strong>10:30</strong> | 景點： 新千歲機場 (CTS)。</li>
-                            <li><strong>11:00</strong> | 重點行程： Royce' 巧克力世界、<a href="https.google.com/maps?q=Doraemon+Waku+Waku+Sky+Park" target="_blank" class="map-link">哆啦A夢空中樂園<span class="map-icon">📍</span></a> (10:00 開放)。</li>
+                            <li><strong>11:00</strong> | 重點行程： Royce' 巧克力世界、<a href="https://maps.google.com/maps?q=Doraemon+Waku+Waku+Sky+Park" target="_blank" rel="noopener noreferrer" class="map-link">哆啦A夢空中樂園<span class="map-icon">📍</span></a> (10:00 開放)。</li>
                             <li><strong>13:00</strong> | 機場午餐 (例如：北海道拉麵道場) 及 採購伴手禮。</li>
                             <li><strong>14:40</strong> | 🛫 啟程返台。</li>
                         </ul>
