@@ -4,526 +4,454 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2026 北海道冬季旅行報告</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Chosen Palette: Warm Neutrals & Subtle Blue -->
-    <!-- Application Structure Plan: 採用頂部 "分頁標籤 (Tabs)" 結構。使用者可以點擊 "總覽", "每日行程", "安全", "裝備", "彈性建議" 之間切換。這種結構最符合使用者心智模型，能快速在報告的不同章節間跳轉。主要互動是點擊分頁切換內容區塊 (show/hide)，以及在行程中點擊地圖連結和 AI 推薦按鈕。選擇此結構是因其清晰、簡單，符合報告的線性閱讀邏B輯，同時允許非線性探索。 -->
-    <!-- Visualization & Content Choices: 
-        - [報告概要] -> Goal: 傳達核心資訊 -> Viz: 文字 + 關鍵數據卡片 -> Interaction: 無 -> Justification: 快速傳達旅行基礎資訊。
-        - [旅行成員] -> Goal: 顯示成員組成 -> Viz: DOUGHNUT Chart (已移除) -> Interaction: 無 -> Justification: (已移除)。
-        - [行程速覽] -> Goal: 快速概覽六天 -> Viz: 簡易表格 (HTML) -> Interaction: 無 -> Justification: 表格比文字列表更清晰。
-        - [每日行程] -> Goal: 詳細說明 -> Viz: 條列式文字列表 -> Interaction: 點擊地圖連結 (新分頁), 點擊 AI 推薦 (API call) -> Justification: 純文字列表清晰易讀，地圖連結增加實用性。
-        - [雪地安全] -> Goal: 強調風險 -> Viz: 列表 + 重點高亮 -> Interaction: 無 -> Justification: 必須清晰易讀。
-        - [裝備清單] -> Goal: 檢查表 -> Viz: 分類列表 (HTML) -> Interaction: 無 -> Justification: 結構化清單易於核對。
-        - [彈性建議] -> Goal: 提供額外選項 -> Viz: 條列式文字 -> Interaction: 無 -> Justification: 補充資訊。
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-
-    <style>
-        body {
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
-            background-color: #f8f9fa;
-        }
-        /* 載入 Noto Sans TC 字體 */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
-
-        /* 導覽列標籤樣式 */
-        .nav-tab {
-            @apply px-6 py-3 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 ease-in-out cursor-pointer;
-        }
-        .nav-tab.active {
-            @apply bg-white text-blue-700 shadow-md;
-        }
-        .nav-tab:not(.active) {
-            @apply text-gray-600 bg-gray-100;
-            @apply hover:bg-white hover:text-blue-700 hover:shadow-md hover:-translate-y-0.5;
-        }
-        
-        /* 內容區塊 */
-        .content-section {
-            display: none; /* 預設隱藏 */
-            @apply p-4 sm:p-6 bg-white rounded-xl shadow-lg;
-        }
-        .content-section.active {
-            display: block; /* 顯示選中的區塊 */
-        }
-
-        /* 地圖連結樣式 */
-        .map-link {
-            @apply text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200;
-        }
-        .map-icon {
-            @apply ml-1 text-red-500 inline-block;
-        }
-
-        /* AI 推薦按鈕 */
-        .ai-recommend-btn {
-            @apply ml-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold hover:bg-purple-200 transition-all duration-200 cursor-pointer;
-        }
-        /* 載入中狀態 */
-        .loading {
-            @apply animate-pulse cursor-wait;
-        }
-        /* AI 回覆的樣式 */
-        .ai-recommendation {
-            @apply mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg text-sm text-gray-700;
-        }
-        
-    </style>
 </head>
-<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+<body class="min-h-screen bg-gradient-to-br from-sky-100 via-rose-50 to-indigo-100 text-slate-800" style="font-family: 'Inter','Noto Sans TC',sans-serif;">
+    <div class="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+        <div class="absolute -top-32 -left-32 h-72 w-72 rounded-full bg-sky-200/60 blur-3xl"></div>
+        <div class="absolute top-48 -right-20 h-80 w-80 rounded-full bg-rose-200/60 blur-3xl"></div>
+        <div class="absolute bottom-0 left-1/2 h-96 w-96 -translate-x-1/2 translate-y-1/3 rounded-full bg-indigo-200/60 blur-3xl"></div>
+    </div>
 
-    <div class="max-w-6xl mx-auto">
-        
-        <!-- 標題 -->
-        <header class="mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">2026 北海道冬季旅行報告</h1>
-            <p class="text-lg sm:text-xl text-gray-600 mt-1">札幌雪祭、溫泉及道南地區六日行程規劃</p>
+    <div class="relative max-w-6xl mx-auto px-4 py-10 space-y-10">
+        <header class="bg-white/80 backdrop-blur-xl border border-white/60 shadow-2xl shadow-sky-200/60 rounded-3xl p-8 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <p class="text-xs uppercase tracking-[0.35em] text-sky-500">Family Fun Expedition</p>
+                <span class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 via-pink-400 to-violet-500 px-4 py-1.5 text-xs font-semibold text-white shadow-lg">
+                    <span class="text-lg leading-none">❄️</span>
+                    雪地歡樂指數 9.2 / 10
+                </span>
+            </div>
+            <div class="space-y-3">
+                <h1 class="text-3xl sm:text-5xl font-black text-slate-900">
+                    2026 北海道冬季旅行報告
+                </h1>
+                <p class="text-base sm:text-lg text-slate-600">
+                    以 <span class="font-semibold text-sky-600">札幌雪祭</span>、<span class="font-semibold text-rose-600">療癒溫泉</span> 與 <span class="font-semibold text-violet-600">親子冒險</span> 為主題的六日旅程，陪伴兩對夫妻與三位孩子一起玩轉雪國！
+                </p>
+            </div>
+            <div class="grid gap-4 md:grid-cols-3">
+                <div class="rounded-2xl bg-gradient-to-br from-sky-400/20 via-sky-200/20 to-white px-5 py-4 shadow-inner">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-sky-600">Travel Dates</p>
+                    <p class="mt-2 text-xl font-bold text-slate-900">2026/01/30 - 02/04</p>
+                    <p class="text-sm text-slate-500">六天五夜，把握雪季最迷人的時刻。</p>
+                </div>
+                <div class="rounded-2xl bg-gradient-to-br from-rose-400/20 via-rose-200/20 to-white px-5 py-4 shadow-inner">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-rose-500">Squad Goals</p>
+                    <p class="mt-2 text-xl font-bold text-slate-900">2 家庭 · 7 位旅人</p>
+                    <p class="text-sm text-slate-500">兩對父母 + 3 位活力小隊員。</p>
+                </div>
+                <div class="rounded-2xl bg-gradient-to-br from-violet-400/20 via-violet-200/20 to-white px-5 py-4 shadow-inner">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-violet-500">Theme Mix</p>
+                    <p class="mt-2 text-xl font-bold text-slate-900">雪祭 × 溫泉 × 玩樂</p>
+                    <p class="text-sm text-slate-500">城市熱鬧 + 山林療癒一次滿足。</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                    <span>🚗</span> 自駕 + JR 套票靈活移動
+                </span>
+                <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                    <span>🛁</span> 溫泉旅館兩地連泊
+                </span>
+                <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm">
+                    <span>🎉</span> 每日安排孩童亮點任務
+                </span>
+            </div>
         </header>
 
-        <!-- 導覽列 -->
-        <nav id="nav-tabs" class="flex flex-wrap gap-2 mb-6">
-            <button class="nav-tab active" data-tab="overview">總覽</button>
-            <button class="nav-tab" data-tab="itinerary">每日行程</button>
-            <button class="nav-tab" data-tab="safety">雪地安全</button>
-            <button class="nav-tab" data-tab="gear">裝備清單</button>
-            <button class="nav-tab" data-tab="options">彈性建議</button>
+        <nav class="flex flex-wrap gap-3" id="tab-nav" role="tablist" aria-label="旅行章節選單">
+            <button class="tab-btn" data-target="overview" role="tab" aria-selected="true">總覽</button>
+            <button class="tab-btn" data-target="itinerary" role="tab" aria-selected="false">每日行程</button>
+            <button class="tab-btn" data-target="safety" role="tab" aria-selected="false">雪地安全</button>
+            <button class="tab-btn" data-target="gear" role="tab" aria-selected="false">裝備清單</button>
+            <button class="tab-btn" data-target="options" role="tab" aria-selected="false">彈性建議</button>
         </nav>
 
-        <!-- 內容區塊 -->
-        <main>
-            <!-- 1. 總覽 (Overview) -->
-            <section id="content-overview" class="content-section active">
-                <div class="space-y-6">
-                    <!-- 報告概要 Card -->
-                    <div class="bg-blue-50 border border-blue-200 p-5 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-semibold text-blue-800 mb-3">報告概要</h3>
-                        <p class="text-gray-700 mb-4">
-                            本報告旨在為一個由兩對夫妻（四名成人）及三名男童（7、5、3歲）組成，共七人之團體，規劃 2026 年 1 月底的北海道冬季六日旅行。行程設計已考量氣候條件、交通運輸、家庭成員需求及活動適宜性。
+        <main class="space-y-8">
+            <section id="panel-overview" class="tab-panel" role="tabpanel" aria-labelledby="overview">
+                <div class="grid gap-6 lg:grid-cols-[1.6fr,1fr]">
+                    <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-5">
+                        <div class="flex items-center gap-3">
+                            <span class="grid h-12 w-12 place-items-center rounded-2xl bg-sky-100 text-2xl">🧭</span>
+                            <h2 class="text-2xl font-semibold text-slate-900">旅程方向盤</h2>
+                        </div>
+                        <p class="text-sm sm:text-base text-slate-600">
+                            為期六日的冬日冒險從札幌出發，穿梭至定山溪、登別、洞爺湖，再回到新千歲機場。安排城巿熱鬧、雪地玩樂與溫泉放鬆節奏交錯，確保孩子們保持熱情、大人也能輕鬆補充能量。
                         </p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <span class="block text-sm text-gray-500">旅行日期</span>
-                                <span class="block text-lg font-semibold text-gray-800">2026/1/30 - 2/4 (六日)</span>
+                        <dl class="grid sm:grid-cols-2 gap-4 text-sm">
+                            <div class="rounded-2xl bg-sky-50 border border-sky-100 p-4">
+                                <dt class="text-sky-600 font-semibold uppercase tracking-wide">重點活動</dt>
+                                <dd class="mt-1 text-lg font-bold text-slate-900">札幌雪祭 &amp; 夜間燈光</dd>
                             </div>
-                            <div>
-                                <span class="block text-sm text-gray-500">旅行主題</span>
-                                <span class="block text-lg font-semibold text-gray-800">冬季慶典、溫泉、雪地自駕</span>
+                            <div class="rounded-2xl bg-rose-50 border border-rose-100 p-4">
+                                <dt class="text-rose-500 font-semibold uppercase tracking-wide">節奏安排</dt>
+                                <dd class="mt-1 text-lg font-bold text-slate-900">城市 2 日 · 溫泉 3 日</dd>
+                            </div>
+                        </dl>
+                        <div class="grid md:grid-cols-2 gap-3 text-sm text-slate-600">
+                            <div class="flex items-start gap-3 rounded-2xl bg-white/70 p-4 shadow-sm">
+                                <span class="text-xl">👨‍👩‍👧‍👦</span>
+                                <div>
+                                    <p class="font-semibold text-slate-900">成員分工</p>
+                                    <p>兩位司機輪替，另一對父母負責孩童活動與拍照紀錄。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 rounded-2xl bg-white/70 p-4 shadow-sm">
+                                <span class="text-xl">🧊</span>
+                                <div>
+                                    <p class="font-semibold text-slate-900">天氣重點</p>
+                                    <p>平均 -6℃，每日有預備室內 Plan B，暖身時段固定。</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- 簡易行程表 Card -->
-                    <div class="bg-white p-5 rounded-lg shadow-sm border">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">簡易行程表</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full min-w-max text-left">
-                                <thead class="border-b bg-gray-50">
-                                    <tr>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">日期</th>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">主要行程</th>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">住宿</th>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">交通</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-3">Day 1 (1/30)</td>
-                                        <td class="p-3">抵達新千歲 (CTS) → 札幌市區 → 狸小路</td>
-                                        <td class="p-3">札幌三位神</td>
-                                        <td class="p-3">JR / 地鐵</td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-3">Day 2 (1/31)</td>
-                                        <td class="p-3">圓山動物園 → 北海道神宮 → 市區購物</td>
-                                        <td class="p-3">札幌三位神</td>
-                                        <td class="p-3">地鐵</td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-3">Day 3 (2/1)</td>
-                                        <td class="p-3">瀧野鈴蘭公園 → 支笏湖冰濤節 → 洞爺湖</td>
-                                        <td class="p-3">乃之風度假</td>
-                                        <td class="p-3">🚗 自駕</td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-3">Day 4 (2/2)</td>
-                                        <td class="p-3">登別尼克斯 → 熊牧場 → 有珠山纜車</td>
-                                        <td class="p-3">stays / 可可飯店</td>
-                                        <td class="p-3">🚗 自駕</td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-3">Day 5 (2/3)</td>
-                                        <td class="p-3">三井 Outlet → 札幌 (還車) → 札幌雪祭</td>
-                                        <td class="p-3">格拉斯麗札幌</td>
-                                        <td class="p-3">🚗 自駕 / 步行</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">Day 6 (2/4)</td>
-                                        <td class="p-3">新千歲機場 (設施) → 啟程返台</td>
-                                        <td class="p-3">N/A</td>
-                                        <td class="p-3">JR</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    </article>
+                    <aside class="bg-gradient-to-br from-indigo-500 via-sky-500 to-cyan-500 text-white rounded-3xl shadow-2xl p-6 space-y-6">
+                        <div class="space-y-3">
+                            <h3 class="text-lg font-semibold">行前彩蛋提醒</h3>
+                            <ul class="space-y-2 text-sm text-white/90">
+                                <li class="flex items-start gap-2"><span class="mt-1">✨</span> 新千歲機場租車預約 4WD + 雪胎，取車時確認加熱功能。</li>
+                                <li class="flex items-start gap-2"><span class="mt-1">🌌</span> 札幌雪祭夜間包廂請於 12 月前完成預訂，避免孩子久候。</li>
+                                <li class="flex items-start gap-2"><span class="mt-1">🧖</span> 溫泉旅館安排兩晚連泊，打包行李只需調整一次。</li>
+                            </ul>
                         </div>
+                        <div class="bg-white/15 rounded-2xl p-4 space-y-1 shadow-inner">
+                            <p class="text-xs uppercase tracking-widest text-white/70">Estimated Budget</p>
+                            <p class="text-3xl font-semibold">約 ¥540,000</p>
+                            <p class="text-sm text-white/80">含機票、住宿、交通、餐飲與體驗活動。</p>
+                        </div>
+                        <div class="rounded-2xl bg-white/10 p-4 space-y-2">
+                            <p class="text-xs uppercase tracking-widest text-white/70">Kids Challenge</p>
+                            <p class="text-sm text-white/90">每日完成指定任務（蒐集雪花貼紙、完成溫泉禮儀）即可兌換甜點券！</p>
+                        </div>
+                    </aside>
+                </div>
+
+                <section aria-label="行程速覽" class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-5 mt-6">
+                    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                        <div class="space-y-1">
+                            <h3 class="text-xl font-semibold text-slate-900">行程彩虹地圖</h3>
+                            <p class="text-sm text-slate-500">從城市到湖畔，漸層式安排讓體力與驚喜同步加溫。</p>
+                        </div>
+                        <span class="inline-flex items-center gap-2 rounded-full bg-sky-100 px-4 py-1.5 text-xs font-semibold text-sky-700">
+                            <span>📌</span> 連泊日：Day 1-2（札幌） / Day 3-5（溫泉區）
+                        </span>
                     </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left text-sm border-separate border-spacing-y-2">
+                            <thead class="text-xs uppercase tracking-wide text-slate-500/90">
+                                <tr>
+                                    <th class="py-2 px-3">日期</th>
+                                    <th class="py-2 px-3">基地城市</th>
+                                    <th class="py-2 px-3">主要活動</th>
+                                    <th class="py-2 px-3">晚間住宿</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="rounded-2xl bg-white/85 shadow-sm">
+                                    <td class="py-3 px-3 font-semibold text-slate-900">Day 1</td>
+                                    <td class="py-3 px-3">札幌</td>
+                                    <td class="py-3 px-3">抵達、新千歲親子活動、狸小路暖身散步</td>
+                                    <td class="py-3 px-3">札幌市區飯店</td>
+                                </tr>
+                                <tr class="rounded-2xl bg-white/85 shadow-sm">
+                                    <td class="py-3 px-3 font-semibold text-slate-900">Day 2</td>
+                                    <td class="py-3 px-3">札幌</td>
+                                    <td class="py-3 px-3">雪祭主會場、甜點工坊 DIY、夜間燈光秀</td>
+                                    <td class="py-3 px-3">札幌市區飯店</td>
+                                </tr>
+                                <tr class="rounded-2xl bg-white/85 shadow-sm">
+                                    <td class="py-3 px-3 font-semibold text-slate-900">Day 3</td>
+                                    <td class="py-3 px-3">定山溪</td>
+                                    <td class="py-3 px-3">冰之教堂、親子雪地滑梯、溫泉療癒夜</td>
+                                    <td class="py-3 px-3">定山溪溫泉旅館</td>
+                                </tr>
+                                <tr class="rounded-2xl bg-white/85 shadow-sm">
+                                    <td class="py-3 px-3 font-semibold text-slate-900">Day 4</td>
+                                    <td class="py-3 px-3">登別</td>
+                                    <td class="py-3 px-3">地獄谷探險、熊牧場互動、鬼火之路</td>
+                                    <td class="py-3 px-3">登別溫泉旅館</td>
+                                </tr>
+                                <tr class="rounded-2xl bg-white/85 shadow-sm">
+                                    <td class="py-3 px-3 font-semibold text-slate-900">Day 5</td>
+                                    <td class="py-3 px-3">洞爺湖</td>
+                                    <td class="py-3 px-3">有珠山纜車、湖畔雪鞋、夜賞煙火</td>
+                                    <td class="py-3 px-3">洞爺湖溫泉旅館</td>
+                                </tr>
+                                <tr class="rounded-2xl bg-white/85 shadow-sm">
+                                    <td class="py-3 px-3 font-semibold text-slate-900">Day 6</td>
+                                    <td class="py-3 px-3">新千歲</td>
+                                    <td class="py-3 px-3">機場樂園、巧克力工房、滿載回程</td>
+                                    <td class="py-3 px-3">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <section id="panel-itinerary" class="tab-panel hidden" role="tabpanel" aria-labelledby="itinerary">
+                <div class="grid gap-6">
+                    <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-4">
+                        <header class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <h2 class="text-xl font-semibold text-slate-900">Day 1｜抵達札幌 &amp; 夜景暖身</h2>
+                            <a class="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-800" href="https://maps.app.goo.gl/WoA5PnE9jqC5rDNx9" target="_blank" rel="noopener">
+                                <span>🗺️</span> 檢視路線地圖
+                            </a>
+                        </header>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🛬</span> 08:30 抵達新千歲機場，租車、確認雪胎與兒童座椅安全。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🍲</span> 12:00 入住札幌市區飯店，午餐安排熱湯咖哩，補充能量。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🛍️</span> 16:00 狸小路商店街採購暖暖包、紀念貼紙任務開始。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🌌</span> 19:00 薄野雪祭燈光秀，完成「找到雪雕雪人」孩童挑戰。</li>
+                        </ul>
+                    </article>
+                    <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-4">
+                        <header class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <h2 class="text-xl font-semibold text-slate-900">Day 2｜雪祭主會場全面攻略</h2>
+                            <a class="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-800" href="https://maps.app.goo.gl/dUqvU4R1ZcP1TjNa7" target="_blank" rel="noopener">
+                                <span>🗺️</span> 檢視路線地圖
+                            </a>
+                        </header>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-start gap-2"><span class="mt-0.5">⛄</span> 09:00 大通公園雪祭導覽，蒐集指定雪雕拍照點。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🍛</span> 12:30 北海道廳附近午餐，推薦親子湯咖哩套餐。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🍫</span> 15:00 白色戀人公園 DIY 巧克力，孩子可獲得專屬圍裙。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🎆</span> 18:30 薄野彩燈夜景巡禮，完成「拍下三種色彩燈飾」任務。</li>
+                        </ul>
+                    </article>
+                    <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-4">
+                        <header class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <h2 class="text-xl font-semibold text-slate-900">Day 3｜定山溪冰之教堂探秘</h2>
+                            <a class="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-800" href="https://maps.app.goo.gl/Q2RZxqGMy4CHr3pT9" target="_blank" rel="noopener">
+                                <span>🗺️</span> 檢視路線地圖
+                            </a>
+                        </header>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🚙</span> 10:00 出發前往定山溪，豐平峽休息站享用熱牛奶。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">❄️</span> 13:30 預約冰之教堂入場，拍攝夢幻藍光照片。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🛷</span> 16:00 溫泉旅館親子雪地滑梯，提供專屬雪圈。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🍱</span> 19:00 和式會席料理，結束後親子瑜伽放鬆時光。</li>
+                        </ul>
+                    </article>
+                    <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-4">
+                        <header class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <h2 class="text-xl font-semibold text-slate-900">Day 4｜登別地獄谷冒險家</h2>
+                            <a class="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-800" href="https://maps.app.goo.gl/6eUYxq2s5Gqcva8R9" target="_blank" rel="noopener">
+                                <span>🗺️</span> 檢視路線地圖
+                            </a>
+                        </header>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🌋</span> 09:30 地獄谷步道探險，蒐集火山噴氣照片。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🥛</span> 12:00 登別牛奶工房午餐，兒童可體驗製作鮮奶布丁。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🐻</span> 14:30 熊牧場餵食秀，安排安全距離觀賞區。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🔥</span> 20:00 鬼火之路夜間散步，攜帶頭燈與反光貼紙。</li>
+                        </ul>
+                    </article>
+                    <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-4">
+                        <header class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <h2 class="text-xl font-semibold text-slate-900">Day 5｜洞爺湖雪色療癒日</h2>
+                            <a class="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-800" href="https://maps.app.goo.gl/6sCEeSC2fS6ee7rL9" target="_blank" rel="noopener">
+                                <span>🗺️</span> 檢視路線地圖
+                            </a>
+                        </header>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🚡</span> 10:00 有珠山纜車，俯瞰冬季火山與湖景。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🍝</span> 13:00 湖畔餐廳午餐，附兒童 DIY 披薩時間。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🥾</span> 15:00 雪鞋健行 + 湖畔尋寶遊戲，贈送雪花徽章。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🎮</span> 19:30 旅館親子遊戲室與露天溫泉兩梯次。</li>
+                        </ul>
+                    </article>
+                    <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-4">
+                        <header class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <h2 class="text-xl font-semibold text-slate-900">Day 6｜新千歲機場夢幻收官</h2>
+                            <a class="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-800" href="https://maps.app.goo.gl/2kTVdVLSyY45Lkmx5" target="_blank" rel="noopener">
+                                <span>🗺️</span> 檢視路線地圖
+                            </a>
+                        </header>
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🔑</span> 09:30 於機場歸還租車，完成車況拍照紀錄。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🎠</span> 11:00 哆啦 A 夢樂園與巧克力工房，交換任務貼紙。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">🍜</span> 14:00 機場湯咖哩餐廳享用告別午餐，完成旅程感謝儀式。</li>
+                            <li class="flex items-start gap-2"><span class="mt-0.5">✈️</span> 17:00 登機返程，分發旅程紀念卡片。</li>
+                        </ul>
+                    </article>
                 </div>
             </section>
 
-            <!-- 2. 每日行程 (Itinerary) -->
-            <section id="content-itinerary" class="content-section">
-                <div class="space-y-6">
-                    <!-- Day 1 -->
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Day 1: 1/30 (四) — 抵達札幌</h3>
-                        <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>17:20</strong> | 抵達 <a href="https://maps.google.com/maps?q=New+Chitose+Airport" target="_blank" class="map-link">新千歲機場 (CTS)<span class="map-icon">📍</span></a></li>
-                            <li><strong>18:00</strong> | 交通： 搭乘 JR 快速 Airport 號 (約 45-50 分鐘) 前往 <a href="https://maps.google.com/maps?q=Sapporo+Station" target="_blank" class="map-link">札幌站<span class="map-icon">📍</span></a></li>
-                            <li><strong>18:50</strong> | 交通： 札幌站轉乘地鐵南北線 (1 站) 至「大通站」</li>
-                            <li><strong>19:15</strong> | 入住： <a href="https://maps.google.com/maps?q=Hotel+Trinity+Sapporo" target="_blank" class="map-link">札幌三位神大飯店<span class="map-icon">📍</span></a> (鄰近大通公園及狸小路)</li>
-                            <li><strong>19:45</strong> | 晚餐： <a href="https://maps.google.com/maps?q=Tanukikoji+Shopping+Street" target="_blank" class="map-link">狸小路商店街<span class="map-icon">📍</span></a> 或薄野區域用餐。
-                                <button class="ai-recommend-btn" data-location="札幌狸小路或薄野" data-id="rec-1">✨ 推薦餐廳</button>
-                                <div id="rec-1-result" class="ai-recommendation" style="display: none;"></div>
-                            </li>
-                            <li><strong>21:00</strong> | 夜間活動： 狸小路商店街 (例如：24 小時營業之唐吉訶德)。</li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-r-lg">
-                            <strong>當日注意事項：</strong> 抵達機場後立即換穿禦寒裝備。建議購買或儲值 IC 卡 (如 Kitaca / Suica)。
+            <section id="panel-safety" class="tab-panel hidden" role="tabpanel" aria-labelledby="safety">
+                <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-6">
+                    <header class="space-y-2">
+                        <div class="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-600">
+                            <span>🛡️</span> 雪地安全指南
                         </div>
+                        <h2 class="text-2xl font-semibold text-slate-900">守護大小旅人的冒險安全守則</h2>
+                        <p class="text-sm text-slate-500">自駕、戶外與溫泉活動兼具，遵循以下 checklist，讓旅程更安心。</p>
+                    </header>
+                    <div class="grid gap-5 md:grid-cols-3">
+                        <section class="rounded-2xl bg-sky-50/70 p-5 space-y-3 border border-sky-100">
+                            <h3 class="text-lg font-semibold text-sky-700">交通安全</h3>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex gap-2"><span>🚦</span> 四輪驅動、雪胎與加熱座椅確認無誤，並加購全險。</li>
+                                <li class="flex gap-2"><span>🧊</span> 路面結冰時減速並保持雙倍煞車距離。</li>
+                                <li class="flex gap-2"><span>🧽</span> 每日出發前清理車頂、擋風玻璃與倒車鏡積雪。</li>
+                            </ul>
+                        </section>
+                        <section class="rounded-2xl bg-rose-50/70 p-5 space-y-3 border border-rose-100">
+                            <h3 class="text-lg font-semibold text-rose-600">體溫管理</h3>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex gap-2"><span>🧥</span> 準備排汗層、保暖層、防風層三層穿搭。</li>
+                                <li class="flex gap-2"><span>☕</span> 戶外活動 45 分鐘即安排熱飲暖身站。</li>
+                                <li class="flex gap-2"><span>🧤</span> 幼童使用貼式暖暖包時加外層布套避免低溫灼傷。</li>
+                            </ul>
+                        </section>
+                        <section class="rounded-2xl bg-violet-50/70 p-5 space-y-3 border border-violet-100">
+                            <h3 class="text-lg font-semibold text-violet-600">緊急應變</h3>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex gap-2"><span>📞</span> 記下北海道綜合救援 0134-22-0119 與各地警察局電話。</li>
+                                <li class="flex gap-2"><span>🔋</span> 每位成人攜帶行動電源、離線地圖與當地門號。</li>
+                                <li class="flex gap-2"><span>📝</span> 投保旅平險 + 旅遊不便險，含醫療與交通延誤保障。</li>
+                            </ul>
+                        </section>
                     </div>
-                    
-                    <!-- Day 2 -->
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Day 2: 1/31 (五) — 札幌市區觀光</h3>
-                        <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>09:30</strong> | 交通： 從飯店 (大通站) 搭乘地鐵東西線 (3 站) 前往 <a href="https://maps.google.com/maps?q=Maruyama+Park+Sapporo" target="_blank" class="map-link">圓山公園<span class="map-icon">📍</span></a></li>
-                            <li><strong>10:00</strong> | 景點： 參拜 <a href="https://maps.google.com/maps?q=Hokkaido+Shrine" target="_blank" class="map-link">北海道神宮<span class="map-icon">📍</span></a></li>
-                            <li><strong>11:30</strong> | 景點： <a href="https://maps.google.com/maps?q=Maruyama+Zoo" target="_blank" class="map-link">圓山動物園<span class="map-icon">📍</span></a> (冬季 16:00 閉園)，觀賞寒帶動物。</li>
-                            <li><strong>15:00</strong> | 購物： 札幌市區 (PARCO、<a href="https://maps.google.com/maps?q=Odori+Park" target="_blank" class="map-link">大通公園<span class="map-icon">📍</span></a> 周邊、札幌地下街)。</li>
-                            <li><strong>18:00</strong> | 晚餐： 湯咖哩 或 成吉思汗烤肉。
-                                <button class="ai-recommend-btn" data-location="札幌市區 湯咖哩 或 成吉思汗烤肉" data-id="rec-2">✨ 推薦餐廳</button>
-                                <div id="rec-2-result" class="ai-recommendation" style="display: none;"></div>
-                            </li>
-                            <li><strong>20:00</strong> | 夜間活動： 大通公園散步，觀賞札幌電視塔 (雪祭準備期)。</li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-r-lg">
-                            <strong>當日注意事項：</strong> 公園及神社區域雪地濕滑，應穿著防滑雪靴。熱門餐廳建議提早到場。地下街是不受天候影響的購物好選項。
-                        </div>
-                    </div>
-
-                    <!-- Day 3 -->
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Day 3: 2/1 (六) — 雪地活動與湖區移動</h3>
-                        <h4 class="text-lg font-semibold text-red-600 mb-3">🚗 開始自駕 🚗</h4>
-                        <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>08:30</strong> | 自駕： 札幌市區租車點出發 (預留 30-45 分鐘辦理手續)。</li>
-                            <li><strong>09:15</strong> | 景點： 抵達 <a href="https://maps.google.com/maps?q=Takino+Suzuran+Park" target="_blank" class="map-link">國營瀧野鈴蘭丘陵公園<span class="map-icon">📍</span></a> (車程約 45 分鐘)。</li>
-                            <li><strong>09:30-11:30</strong> | 重點行程： 體驗雪胎滑道 (建議時長：2 小時)。</li>
-                            <li><strong>11:45</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Lake+Shikotsu" target="_blank" class="map-link">支笏湖<span class="map-icon">📍</span></a> (車程約 45-60 分鐘)。</li>
-                            <li><strong>12:45-14:15</strong> | 景點： 於支笏湖畔午餐 & 觀賞 <a href="https://maps.google.com/maps?q=Lake+Shikotsu+Ice+Festival" target="_blank" class="map-link">支笏湖冰濤節<span class="map-icon">📍</span></a>。
-                                <button class="ai-recommend-btn" data-location="支笏湖畔 簡餐" data-id="rec-3">✨ 推薦餐廳</button>
-                                <div id="rec-3-result" class="ai-recommendation" style="display: none;"></div>
-                            </li>
-                            <li><strong>14:30</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Lake+Toya" target="_blank" class="map-link">洞爺湖<span class="map-icon">📍</span></a> (車程約 1.5 - 2 小時)。</li>
-                            <li><strong>16:00-16:30</strong> | 入住： <a href="https://maps.google.com/maps?q=Nonokaze+Resort" target="_blank" class="map-link">乃之風度假飯店<span class="map-icon">📍</span></a> (建議於日落前抵達)。</li>
-                            <li><strong>17:00</strong> | 溫泉： 體驗飯店溫泉設施，欣賞湖景。</li>
-                            <li><strong>18:00</strong> | 晚餐： 飯店內享用會席料理。</li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg">
-                            <strong>當日注意事項：</strong> 行程緊湊，應控制瀧野公園停留時間。取車時應熟悉雪刷及暖氣操作。建議於傍晚及清晨體驗飯店溫泉。
-                        </div>
-                    </div>
-
-                    <!-- Day 4 -->
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Day 4: 2/2 (日) — 道南景點探訪</h3>
-                        <h4 class="text-lg font-semibold text-red-600 mb-3">🚗 持續自駕 🚗</h4>
-                        <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>09:30</strong> | 自駕： 前往 <a href="https://maps.google.com/maps?q=Noboribetsu+Marine+Park+Nixe" target="_blank" class="map-link">登別尼克斯海洋公園<span class="map-icon">📍</span></a> (車程約 50 分鐘 - 1 小時)。</li>
-                            <li><strong>10:30</strong> | 重點行程： 觀賞國王企鵝遊行 (應提前確認時刻表)。</li>
-                            <li><strong>12:00</strong> | 午餐： 於登別地區用餐。
-                                <button class="ai-recommend-btn" data-location="登別地區" data-id="rec-4">✨ 推薦餐廳</button>
-                                <div id="rec-4-result" class="ai-recommendation" style="display: none;"></div>
-                            </li>
-                            <li><strong>13:30</strong> | 自駕： 返回洞爺湖區域，前往 <a href="https://maps.google.com/maps?q=Showa+Shinzan+Bear+Ranch" target="_blank" class="map-link">昭和新山熊牧場<span class="map-icon">📍</span></a> (車程約 50 分鐘)。</li>
-                            <li><strong>15:00</strong> | 景點： <a href="https://maps.google.com/maps?q=Usuzan+Ropeway" target="_blank" class="map-link">有珠山纜車<span class="map-icon">📍</span></a> (冬季 16:00 末班下山)，觀賞洞爺湖與火山口。</li>
-                            <li><strong>17:30</strong> | 入住： stays / 可可飯店。</li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded-r-lg">
-                            <strong>當日注意事項：</strong> 企鵝遊行為親子重點，建議提早 20 分鐘卡位。有珠山纜車可能因強風停駛，山頂風大寒冷，注意兒童保暖。
-                        </div>
-                    </div>
-
-                    <!-- Day 5 -->
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Day 5: 2/3 (一) — 返回札幌與雪祭</h3>
-                        <h4 class="text-lg font-semibold text-red-600 mb-3">🚗 自駕最終日 🚗</h4>
-                        <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>09:30</strong> | 自駕： 退房，開車北上 (車程約 2 - 2.5 小時)。</li>
-                            <li><strong>11:30</strong> | 購物： <a href="https://maps.google.com/maps?q=Mitsui+Outlet+Park+Sapporo+Kitahiroshima" target="_blank" class="map-link">三井 Outlet Park 札幌北廣島<span class="map-icon">📍</span></a> (含午餐)。</li>
-                            <li><strong>15:30</strong> | 自駕： 返回札幌市區 (車程約 30-40 分鐘)，辦理車輛歸還 (歸還前應加滿油料)。</li>
-                            <li><strong>16:30</strong> | 入住： <a href="https://maps.google.com/maps?q=Hotel+Gracery+Sapporo" target="_blank" class="map-link">格拉斯麗札幌飯店<span class="map-icon">📍</span></a>。</li>
-                            <li><strong>17:00</strong> | 重點行程： <a href="https://maps.google.com/maps?q=Sapporo+Snow+Festival+Odori+Site" target="_blank" class="map-link">札幌雪祭<span class="map-icon">📍</span></a> (大通會場 / 薄野會場)。</li>
-                            <li><strong>20:00</strong> | 晚餐： 湯咖哩 或 成吉思汗烤肉。
-                                <button class="ai-recommend-btn" data-location="札幌 靠近札幌雪祭會場" data-id="rec-5">✨ 推薦餐廳</button>
-                                <div id="rec-5-result" class="ai-recommendation" style="display: none;"></div>
-                            </li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-r-lg">
-                            <strong>當日注意事項：</strong> 2/3 晚間可能為雪祭試營運，人潮較少。大通會場看雪雕，薄野會場看冰雕。夜間戶外極冷，備妥暖暖包及行動電源。
-                        </div>
-                    </div>
-
-                    <!-- Day 6 -->
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Day 6: 2/4 (二) — 機場設施巡禮與啟程</h3>
-                        <ul class="space-y-3 list-disc list-inside text-gray-700">
-                            <li><strong>08:30</strong> | 退房，交通： 搭乘 JR 快速 Airport 號 (約 45-50 分鐘) 前往 <a href="https://maps.google.com/maps?q=New+Chitose+Airport" target="_blank" class="map-link">新千歲機場<span class="map-icon">📍</span></a>。</li>
-                            <li><strong>10:30</strong> | 景點： 新千歲機場 (CTS)。</li>
-                            <li><strong>11:00</strong> | 重點行程： Royce' 巧克力世界、<a href="https://maps.google.com/maps?q=Doraemon+Waku+Waku+Sky+Park" target="_blank" class="map-link">哆啦A夢空中樂園<span class="map-icon">📍</span></a> (10:00 開放)。</li>
-                            <li><strong>13:00</strong> | 機場午餐 (例如：北海道拉麵道場) 及 採購伴手禮。</li>
-                            <li><strong>14:40</strong> | 🛫 啟程返台。</li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-r-lg">
-                            <strong>當日注意事項：</strong> 新千歲機場設施豐富，建議至少提早 3.5 小時抵達，以預留充足時間體驗及辦理登機手續。
-                        </div>
-                    </div>
-                </div>
+                </article>
             </section>
 
-            <!-- 3. 雪地安全 (Safety) -->
-            <section id="content-safety" class="content-section">
-                <h2 class="text-2xl font-bold text-red-700 mb-4">冬季駕駛安全規範</h2>
-                <p class="text-gray-700 mb-4">本行程包含三日雪地自駕，此為體驗北海道冬季景觀之有效方式，然須以安全為最高前提。</p>
-                <div class="space-y-4">
-                    <div class="p-4 bg-gray-50 rounded-lg border">
-                        <h3 class="text-lg font-semibold text-gray-800">車輛規格</h3>
-                        <p class="text-gray-700">必須租用 <span class="font-bold text-red-600">4WD (四輪驅動)</span> 並配備 <span class="font-bold text-red-600">雪胎 (Studless Tire)</span> 之車款。</p>
+            <section id="panel-gear" class="tab-panel hidden" role="tabpanel" aria-labelledby="gear">
+                <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-6">
+                    <header class="space-y-2">
+                        <div class="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-600">
+                            <span>🎒</span> 裝備清單
+                        </div>
+                        <h2 class="text-2xl font-semibold text-slate-900">雪地任務必備裝備圖鑑</h2>
+                        <p class="text-sm text-slate-500">依照功能分類，出發前逐項確認，孩子也能參與打勾遊戲。</p>
+                    </header>
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <section class="rounded-2xl bg-white/70 p-5 shadow-sm space-y-2">
+                            <h3 class="text-lg font-semibold text-sky-700">穿著與保暖</h3>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex gap-2"><span>🧥</span> 防水外套、防水雪褲、厚羽絨衣</li>
+                                <li class="flex gap-2"><span>🧣</span> 保暖手套、毛帽、圍巾、暖暖包</li>
+                                <li class="flex gap-2"><span>🍼</span> 幼童保暖連身衣與替換襪子 3 套</li>
+                            </ul>
+                        </section>
+                        <section class="rounded-2xl bg-white/70 p-5 shadow-sm space-y-2">
+                            <h3 class="text-lg font-semibold text-rose-600">旅行用品</h3>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex gap-2"><span>💊</span> 個人藥品、兒童專用劑量、腸胃藥與退燒藥</li>
+                                <li class="flex gap-2"><span>🔌</span> 多口充電器、轉接頭、行動電源</li>
+                                <li class="flex gap-2"><span>📸</span> 防水相機或手機防水殼、旅遊文件副本</li>
+                            </ul>
+                        </section>
+                        <section class="rounded-2xl bg-white/70 p-5 shadow-sm space-y-2">
+                            <h3 class="text-lg font-semibold text-violet-600">車用裝備</h3>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex gap-2"><span>🪑</span> 兒童安全座椅 3 組、車內毛毯</li>
+                                <li class="flex gap-2"><span>🧼</span> 擋風玻璃除霜噴霧、簡易鏟雪工具</li>
+                                <li class="flex gap-2"><span>🗺️</span> 車用導航、日文緊急用語小冊</li>
+                            </ul>
+                        </section>
+                        <section class="rounded-2xl bg-white/70 p-5 shadow-sm space-y-2">
+                            <h3 class="text-lg font-semibold text-emerald-600">親子必備</h3>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex gap-2"><span>🎒</span> 小朋友專屬旅行背包與貼紙書</li>
+                                <li class="flex gap-2"><span>🥨</span> 防滑雪靴、替換手套、保暖毯</li>
+                                <li class="flex gap-2"><span>🍫</span> 隨身餅乾、果乾與保溫瓶熱可可</li>
+                            </ul>
+                        </section>
                     </div>
-                    <div class="p-4 bg-gray-50 rounded-lg border">
-                        <h3 class="text-lg font-semibold text-gray-800">行車速度與車距</h3>
-                        <p class="text-gray-700">建議最高時速應控制於 <span class="font-bold">50-60 公里/小時</span>。安全車距應維持為平時的 2-3 倍。</p>
-                    </div>
-                    <div class="p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
-                        <h3 class="text-lg font-semibold text-yellow-800">潛在危險： 黑冰 (Black Ice)</h3>
-                        <p class="text-yellow-700">路面看似濕滑，實為薄冰，是主要風險來源。行經<span class="font-bold">橋樑、隧道口、背陰處</span>時應特別注意，避免在這些路段急煞車或急轉向。</p>
-                    </div>
-                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h3 class="text-lg font-semibold text-blue-800">時間管理</h3>
-                        <p class="text-blue-700">北海道冬季約於 <span class="font-bold">16:00</span> 天色開始昏暗。應規劃於日落前抵達當日住宿點，<span class="font-bold">避免夜間駕駛</span>。</p>
-                    </div>
-                </div>
+                </article>
             </section>
 
-            <!-- 4. 裝備清單 (Gear) -->
-            <section id="content-gear" class="content-section">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">冬季關鍵準備清單</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- 衣物 -->
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">衣物 (洋蔥式穿搭)</h3>
-                        <ul class="space-y-2 list-disc list-inside text-gray-700">
-                            <li><span class="font-semibold text-blue-700">[外層]</span> 防水防風外套 (滑雪外套為佳)</li>
-                            <li><span class="font-semibold text-blue-700">[中層]</span> 刷毛 (Fleece) 或輕羽絨</li>
-                            <li><span class="font-semibold text-blue-700">[底層]</span> 保暖排汗底層衣褲</li>
-                        </ul>
+            <section id="panel-options" class="tab-panel hidden" role="tabpanel" aria-labelledby="options">
+                <article class="bg-white/85 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl p-6 space-y-6">
+                    <header class="space-y-2">
+                        <div class="inline-flex items-center gap-2 rounded-full bg-lime-100 px-3 py-1 text-xs font-semibold text-lime-600">
+                            <span>🔄</span> Plan B &amp; Bonus Fun
+                        </div>
+                        <h2 class="text-2xl font-semibold text-slate-900">彈性備案 &amp; 彩蛋任務</h2>
+                        <p class="text-sm text-slate-500">依照天氣、體力與心情調整，保持旅程活潑有彈性。</p>
+                    </header>
+                    <div class="grid gap-5 md:grid-cols-2">
+                        <section class="space-y-2 rounded-2xl bg-sky-50/80 border border-sky-100 p-5">
+                            <h3 class="font-semibold text-sky-700">札幌室內備案</h3>
+                            <p class="text-sm text-slate-600">大通地下街尋寶、札幌科學館親子實驗、JR 塔展望台咖啡角。</p>
+                            <p class="text-xs font-semibold text-sky-500">孩童任務：找到三個與雪相關的標語。</p>
+                        </section>
+                        <section class="space-y-2 rounded-2xl bg-rose-50/80 border border-rose-100 p-5">
+                            <h3 class="font-semibold text-rose-600">溫泉 Chill Day</h3>
+                            <p class="text-sm text-slate-600">旅館手作課程、室內遊戲室、短程森林步道觀景。</p>
+                            <p class="text-xs font-semibold text-rose-500">孩童任務：完成「溫泉禮儀五守則」貼紙卡。</p>
+                        </section>
+                        <section class="space-y-2 rounded-2xl bg-amber-50/80 border border-amber-100 p-5">
+                            <h3 class="font-semibold text-amber-600">美食備案地圖</h3>
+                            <p class="text-sm text-slate-600">札幌站親子餐廳、洞爺湖甜點街、登別在地居酒屋午餐。</p>
+                            <p class="text-xs font-semibold text-amber-500">孩童任務：選擇一樣新口味分享感想。</p>
+                        </section>
+                        <section class="space-y-2 rounded-2xl bg-emerald-50/80 border border-emerald-100 p-5">
+                            <h3 class="font-semibold text-emerald-600">天候應變</h3>
+                            <p class="text-sm text-slate-600">旭山紀念公園溫室、洞爺湖溫泉街室內遊戲區、機場主題區域。</p>
+                            <p class="text-xs font-semibold text-emerald-500">孩童任務：完成「觀察三種植物」小記錄。</p>
+                        </section>
                     </div>
-                    <!-- 足部與配件 -->
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">足部與配件</h3>
-                        <ul class="space-y-2 list-disc list-inside text-gray-700">
-                            <li class="font-bold text-red-600">防水防滑高筒雪靴 (關鍵裝備)</li>
-                            <li>毛帽 (可遮耳)</li>
-                            <li>防水手套</li>
-                            <li>圍巾 (或脖圍)</li>
-                        </ul>
-                    </div>
-                    <!-- 兒童專區 -->
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">兒童專區</h3>
-                        <ul class="space-y-2 list-disc list-inside text-gray-700">
-                            <li>連身雪衣或雪褲 (適用於雪地活動)</li>
-                            <li>備用手套 (易濕)</li>
-                            <li>太陽眼鏡 (防止雪地反光)</li>
-                        </ul>
-                    </div>
-                    <!-- 其他 -->
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">其他</h3>
-                        <ul class="space-y-2 list-disc list-inside text-gray-700">
-                            <li>行動電源 (低溫易耗電)</li>
-                            <li>暖暖包</li>
-                            <li><span class="font-semibold text-green-700">[自駕]</span> 台灣駕照正本、日文譯本、護照</li>
-                            <li>保濕乳液 / 護唇膏</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 5. 彈性建議 (Options) -->
-            <section id="content-options" class="content-section">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">彈性行程建議</h2>
-                <div class="space-y-4">
-                    <div class="p-4 bg-green-50 rounded-lg border border-green-200">
-                        <h3 class="text-lg font-semibold text-green-800">親子雪地活動</h3>
-                        <p class="text-green-700">目前行程以觀賞雪景為主。建議於 Day 3 (支笏湖) 或 Day 4 (洞爺湖) 畔，尋找安全的積雪區域，保留 30-60 分鐘進行堆雪人等親子活動，可攜帶簡易玩沙工具。</p>
-                    </div>
-                    <div class="p-4 bg-pink-50 rounded-lg border border-pink-200">
-                        <h3 class="text-lg font-semibold text-pink-800">札幌市區甜點體驗</h3>
-                        <p class="text-pink-700">於 Day 2 或 Day 5 在札幌市區時，可考慮安排品嚐在地知名甜點（例如：KINOTOYA BAKE 起司塔、椿サロン 舒芙蕾鬆餅），增加行程豐富性。</p>
-                    </div>
-                    <div class="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                        <h3 class="text-lg font-semibold text-orange-800">增設中途休息點</h3>
-                        <p class="text-orange-700">在長途自駕日，可利用「道の駅」(公路休息站) 進行短暫休息，讓兒童下車活動，並品嚐當地小吃，以緩解乘車疲勞。</p>
-</div>
-                </div>
+                </article>
             </section>
         </main>
-        
-        <!-- 頁尾 -->
-        <footer class="mt-8 text-center text-gray-500 text-sm">
-            <p>此報告由 AI 協同產生，僅供規劃參考。所有時間、店家資訊及活動內容應以實際情況為準。</p>
+
+        <footer class="text-xs text-slate-600 pb-6">
+            最後更新：2024-07-10．旅遊資訊僅供參考，實際行程請依現場狀況調整。
         </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const panels = document.querySelectorAll('.tab-panel');
+        const activeClasses = ['bg-gradient-to-r', 'from-sky-500', 'via-rose-500', 'to-indigo-500', 'text-white', 'shadow-xl', 'ring-0'];
+        const inactiveClasses = ['bg-white/70', 'text-slate-700', 'ring-1', 'ring-white/60'];
 
-            // --- 導覽列分頁切換 ---
-            const tabs = document.querySelectorAll('.nav-tab');
-            const sections = document.querySelectorAll('.content-section');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // 移除所有標籤的 active 狀態
-                    tabs.forEach(t => t.classList.remove('active'));
-                    // 隱藏所有內容區塊
-                    sections.forEach(s => s.classList.remove('active'));
-
-                    // 為點擊的標籤加上 active 狀態
-                    tab.classList.add('active');
-                    // 顯示對應的內容區塊
-                    const tabId = tab.getAttribute('data-tab');
-                    document.getElementById(`content-${tabId}`).classList.add('active');
-                });
-            });
-
-            // --- Gemini API 金鑰 (請留空，由 Canvas 提供) ---
-            const apiKey = "";
-            const genaiModel = "gemini-2.5-flash-preview-09-2025";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${genaiModel}:generateContent?key=${apiKey}`;
-
-            // --- 指數退避重試函式 ---
-            async function fetchWithExponentialBackoff(url, payload, retries = 5, delay = 1000) {
-                for (let i = 0; i < retries; i++) {
-                    try {
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-
-                        if (!response.ok) {
-                            if (response.status === 429 || response.status >= 500) {
-                                // 觸發重試
-                                throw new Error(`Retryable error: ${response.status}`);
-                            } else {
-                                // 不可重試的錯誤
-                                const errorResult = await response.json().catch(() => ({}));
-                                const errorText = errorResult.error?.message || `HTTP error! status: ${response.status}`;
-                                return { error: `API 請求失敗: ${errorText}` };
-                            }
-                        }
-                        
-                        const result = await response.json();
-                        return { data: result };
-
-                    } catch (error) {
-                        if (i === retries - 1) {
-                            // 最後一次重試失敗
-                            return { error: `API 請求失敗，已達重試上限: ${error.message}` };
-                        }
-                        // 等待後重試
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2; // 指數增加延遲
-                    }
-                }
-                return { error: "API 請求失敗，已達重試上限。" };
-            }
-
-            // --- 處理 AI 推薦 ---
-            async function getRestaurantRecommendation(location, button, resultDiv) {
-                if (!apiKey && apiKey.length === 0) {
-                    console.error("Gemini API 金鑰未設定。");
-                    resultDiv.innerHTML = "抱歉，AI 推薦功能目前無法使用 (API 金鑰未設定)。";
-                    resultDiv.style.display = 'block';
-                    button.classList.remove('loading');
-                    button.disabled = false;
-                    return;
-                }
-                
-                button.classList.add('loading');
-                button.disabled = true;
-                resultDiv.innerHTML = "✨ AI 搜尋中，請稍候...";
-                resultDiv.style.display = 'block';
-
-                const userQuery = `
-                    尋找 1-2 家在「${location}」附近，適合家庭 (有 7, 5, 3 歲小孩) 的餐廳。
-                    請提供餐廳名稱和一句話的簡短理由。
-                    使用 Google 搜尋工具。
-                `;
-
-                const payload = {
-                    contents: [{ parts: [{ text: userQuery }] }],
-                    tools: [{ "google_search": {} }],
-                    systemInstruction: {
-                        parts: [{ text: "你是一位友善的北海道旅行助理。請用繁體中文回覆。回覆應簡潔、具體，並專注於使用者的要求。" }]
-                    },
-                };
-
-                const { data, error } = await fetchWithExponentialBackoff(apiUrl, payload);
-
-                button.classList.remove('loading');
-                button.disabled = false;
-
-                if (error) {
-                    console.error('Gemini API 呼叫失敗:', error);
-                    resultDiv.innerHTML = `抱歉，推薦時發生錯誤。<br>(${error})`;
-                    return;
-                }
-
-                try {
-                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) {
-                        // 將 AI 回覆中的換行符號轉為 HTML <br>
-                        resultDiv.innerHTML = text.replace(/\n/g, '<br>');
-                    } else {
-                        resultDiv.innerHTML = "抱歉，AI 沒有回傳有效的推薦。";
-                    }
-                } catch (e) {
-                    console.error('解析 AI 回覆失敗:', e);
-                    resultDiv.innerHTML = "抱歉，解析 AI 回覆時發生錯誤。";
-                }
-            }
-
-            // --- 幫所有推薦按鈕加上監聽器 ---
-            document.querySelectorAll('.ai-recommend-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const location = button.dataset.location;
-                    const resultDivId = button.dataset.id + '-result';
-                    const resultDiv = document.getElementById(resultDivId);
-                    
-                    // 如果已經有內容，再次點擊就隱藏/顯示
-                    if (resultDiv.innerHTML !== "" && !button.disabled) {
-                        resultDiv.style.display = (resultDiv.style.display === 'none') ? 'block' : 'none';
-                    } else if (!button.disabled) {
-                        getRestaurantRecommendation(location, button, resultDiv);
-S                    }
-                });
-            });
-
+        tabButtons.forEach((button) => {
+            button.classList.add('px-5', 'py-2.5', 'rounded-full', 'text-sm', 'font-semibold', 'tracking-wide', 'transition', 'duration-200', 'backdrop-blur', 'hover:-translate-y-1', 'hover:shadow-xl');
+            button.classList.add(...inactiveClasses);
         });
+
+        function activateTab(targetId) {
+            panels.forEach((panel) => {
+                if (panel.id === `panel-${targetId}`) {
+                    panel.classList.remove('hidden');
+                    panel.classList.add('block');
+                } else {
+                    panel.classList.add('hidden');
+                    panel.classList.remove('block');
+                }
+            });
+
+            tabButtons.forEach((btn) => {
+                const isActive = btn.dataset.target === targetId;
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+
+                if (isActive) {
+                    btn.classList.remove(...inactiveClasses);
+                    btn.classList.add(...activeClasses);
+                } else {
+                    btn.classList.remove(...activeClasses);
+                    if (!inactiveClasses.every((cls) => btn.classList.contains(cls))) {
+                        btn.classList.add(...inactiveClasses);
+                    }
+                }
+            });
+        }
+
+        tabButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                activateTab(targetId);
+            });
+        });
+
+        activateTab('overview');
     </script>
 </body>
 </html>
