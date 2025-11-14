@@ -55,6 +55,33 @@
             }
         }
 
+        .preview-toggle-button {
+            align-self: flex-start;
+            padding: 0.5rem 1.25rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            color: #ffffff;
+            box-shadow: 0 8px 16px -6px rgba(37, 99, 235, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .preview-toggle-button:hover,
+        .preview-toggle-button:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 20px -6px rgba(37, 99, 235, 0.45);
+            outline: none;
+        }
+
+        .preview-toggle-button:focus-visible {
+            outline: 2px solid rgba(37, 99, 235, 0.6);
+            outline-offset: 2px;
+        }
+
         .content-section {
             display: none;
             padding: 1rem;
@@ -71,6 +98,23 @@
 
         .content-section.active {
             display: block;
+        }
+
+        #preview-banner {
+            display: none;
+        }
+
+        body.preview-mode #preview-banner {
+            display: block;
+        }
+
+        body.preview-mode .content-section {
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+
+        body.preview-mode .content-section:last-of-type {
+            margin-bottom: 0;
         }
 
         .map-link {
@@ -141,26 +185,74 @@
             <p class="text-lg sm:text-xl text-gray-600 mt-1">札幌雪祭、溫泉及道南地區六日行程規劃</p>
         </header>
 
-        <!-- 導覽列 -->
-        <nav id="nav-tabs" class="flex flex-wrap gap-2 mb-6">
-            <button class="nav-tab active" data-tab="overview">總覽</button>
-            <button class="nav-tab" data-tab="itinerary">每日行程</button>
-            <button class="nav-tab" data-tab="safety">雪地安全</button>
-            <button class="nav-tab" data-tab="gear">裝備清單</button>
-            <button class="nav-tab" data-tab="options">彈性建議</button>
-        </nav>
+        <!-- 導覽列與預覽切換 -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <nav id="nav-tabs" class="flex flex-wrap gap-2">
+                <button class="nav-tab active" data-tab="overview">總覽</button>
+                <button class="nav-tab" data-tab="itinerary">每日行程</button>
+                <button class="nav-tab" data-tab="safety">雪地安全</button>
+                <button class="nav-tab" data-tab="gear">裝備清單</button>
+                <button class="nav-tab" data-tab="options">彈性建議</button>
+            </nav>
+            <button id="preview-toggle" type="button" class="preview-toggle-button" aria-pressed="false">預覽模式</button>
+        </div>
 
         <!-- 內容區塊 -->
         <main>
+            <div id="preview-banner" hidden class="mb-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                已啟用預覽模式：所有章節將一次顯示，方便列印或整體瀏覽。
+            </div>
             <!-- 1. 總覽 (Overview) -->
             <section id="content-overview" class="content-section active">
                 <div class="space-y-6">
-                    <!-- 天氣預報 Card -->
+                    <!-- 北海道一週天氣 Card -->
                     <div class="bg-white p-5 rounded-lg shadow-sm border">
-                        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
-                            <div>
-                                <h3 class="text-xl font-semibold text-gray-800">北海道一週天氣預報</h3>
-                                <p class="text-sm text-gray-500">資料來源：日本氣象廳 (更新：2026/01/25 09:00 JST)</p>
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800">北海道一週天氣預報</h3>
+                            <span class="text-sm text-gray-500">資料來源：JMA 札幌區域 (概估)</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="border rounded-lg p-4 bg-sky-50">
+                                <p class="text-sm text-gray-500">1/29 (三)</p>
+                                <p class="text-lg font-semibold text-gray-800 flex items-center gap-2">陰有雪 <span>❄️</span></p>
+                                <p class="text-sm text-gray-600">高 -3°C / 低 -9°C</p>
+                                <p class="text-sm text-blue-700 mt-2">降雪機率 60% · 清晨道路易結冰，出門前預熱車輛。</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-sky-50">
+                                <p class="text-sm text-gray-500">1/30 (四)</p>
+                                <p class="text-lg font-semibold text-gray-800 flex items-center gap-2">多雲後雪 <span>🌨️</span></p>
+                                <p class="text-sm text-gray-600">高 -4°C / 低 -10°C</p>
+                                <p class="text-sm text-blue-700 mt-2">降雪機率 70% · 建議班機抵達後立即換穿防水雪靴。</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-sky-50">
+                                <p class="text-sm text-gray-500">1/31 (五)</p>
+                                <p class="text-lg font-semibold text-gray-800 flex items-center gap-2">短暫放晴 <span>🌤️</span></p>
+                                <p class="text-sm text-gray-600">高 -2°C / 低 -8°C</p>
+                                <p class="text-sm text-blue-700 mt-2">降雪機率 30% · 白天適合市區步行，夜晚仍偏冷需加圍巾。</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-sky-50">
+                                <p class="text-sm text-gray-500">2/1 (六)</p>
+                                <p class="text-lg font-semibold text-gray-800 flex items-center gap-2">陣雪 <span>🌨️</span></p>
+                                <p class="text-sm text-gray-600">高 -5°C / 低 -11°C</p>
+                                <p class="text-sm text-blue-700 mt-2">降雪機率 65% · 自駕日請預留除雪時間並放慢車速。</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-sky-50">
+                                <p class="text-sm text-gray-500">2/2 (日)</p>
+                                <p class="text-lg font-semibold text-gray-800 flex items-center gap-2">持續飄雪 <span>❄️</span></p>
+                                <p class="text-sm text-gray-600">高 -6°C / 低 -12°C</p>
+                                <p class="text-sm text-blue-700 mt-2">降雪機率 70% · 洞爺湖與登別區域能見度可能降低。</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-sky-50">
+                                <p class="text-sm text-gray-500">2/3 (一)</p>
+                                <p class="text-lg font-semibold text-gray-800 flex items-center gap-2">雪後多雲 <span>☁️</span></p>
+                                <p class="text-sm text-gray-600">高 -3°C / 低 -9°C</p>
+                                <p class="text-sm text-blue-700 mt-2">降雪機率 40% · 雪祭會場地面濕滑，請穿著防滑鞋。</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-sky-50">
+                                <p class="text-sm text-gray-500">2/4 (二)</p>
+                                <p class="text-lg font-semibold text-gray-800 flex items-center gap-2">陰天 <span>☁️</span></p>
+                                <p class="text-sm text-gray-600">高 -1°C / 低 -7°C</p>
+                                <p class="text-sm text-blue-700 mt-2">降雪機率 20% · 回程請注意航班是否因除冰作業延誤。</p>
                             </div>
                             <span class="inline-flex items-center gap-2 text-sm font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded-full">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -234,89 +326,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <p class="mt-3 text-xs text-gray-500">※ 實際天氣以出發前最新預報為準，建議於每日早晨再次確認。</p>
-                    </div>
-
-                    <!-- 天氣預報 Card -->
-                    <div class="bg-white p-5 rounded-lg shadow-sm border">
-                        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
-                            <div>
-                                <h3 class="text-xl font-semibold text-gray-800">北海道一週天氣預報</h3>
-                                <p class="text-sm text-gray-500">資料來源：日本氣象廳 (更新：2026/01/25 09:00 JST)</p>
-                            </div>
-                            <span class="inline-flex items-center gap-2 text-sm font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded-full">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                    <path fill-rule="evenodd" d="M12 2.25a5.25 5.25 0 00-5.25 5.25c0 .76.173 1.48.48 2.12l.02.04 4.285 8.41a.75.75 0 001.33 0l4.285-8.41.02-.04A5.22 5.22 0 0017.25 7.5 5.25 5.25 0 0012 2.25zm0 8.25a3 3 0 110-6 3 3 0 010 6z" clip-rule="evenodd" />
-                                    <path d="M5.636 21.75a.75.75 0 01-.67-1.07L7.53 16.5h2.068l-2.193 4.23a.75.75 0 01-.67.42zm12.728 0a.75.75 0 00.67-1.07L16.47 16.5h-2.068l2.193 4.23a.75.75 0 00.67.42z" />
-                                </svg>
-                                札幌市中心
-                            </span>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full min-w-max text-left">
-                                <thead class="border-b bg-gray-50">
-                                    <tr>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">日期</th>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">天氣</th>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">預測溫度</th>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">降雪機率</th>
-                                        <th class="p-3 text-sm font-semibold text-gray-600">旅遊提醒</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">1/30 (五)</td>
-                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>濕雪</td>
-                                        <td class="p-3">-4°C / -9°C</td>
-                                        <td class="p-3">70%</td>
-                                        <td class="p-3 text-sm text-gray-600">抵達日建議預留機場交通緩衝。</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">1/31 (六)</td>
-                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌤️</span>晴時多雲</td>
-                                        <td class="p-3">-3°C / -10°C</td>
-                                        <td class="p-3">30%</td>
-                                        <td class="p-3 text-sm text-gray-600">適合戶外活動，注意日夜溫差。</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">2/1 (日)</td>
-                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">❄️</span>陣雪</td>
-                                        <td class="p-3">-5°C / -11°C</td>
-                                        <td class="p-3">60%</td>
-                                        <td class="p-3 text-sm text-gray-600">支笏湖活動務必著防水靴。</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">2/2 (一)</td>
-                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>大雪</td>
-                                        <td class="p-3">-6°C / -12°C</td>
-                                        <td class="p-3">80%</td>
-                                        <td class="p-3 text-sm text-gray-600">自駕日請預留更多移動時間。</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">2/3 (二)</td>
-                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>濕雪</td>
-                                        <td class="p-3">-2°C / -8°C</td>
-                                        <td class="p-3">65%</td>
-                                        <td class="p-3 text-sm text-gray-600">札幌雪祭需穿著防滑裝備。</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">2/4 (三)</td>
-                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">☁️</span>陰</td>
-                                        <td class="p-3">-1°C / -7°C</td>
-                                        <td class="p-3">40%</td>
-                                        <td class="p-3 text-sm text-gray-600">離境日注意道路結冰，提前出門。</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="p-3">2/5 (四)</td>
-                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>陣雪</td>
-                                        <td class="p-3">-4°C / -10°C</td>
-                                        <td class="p-3">55%</td>
-                                        <td class="p-3 text-sm text-gray-600">延伸停留者留意道路除雪狀況。</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p class="mt-3 text-xs text-gray-500">※ 實際天氣以出發前最新預報為準，建議於每日早晨再次確認。</p>
+                        <p class="mt-4 text-sm text-gray-600">旅遊提醒：日夜溫差大，務必分層穿搭並隨身攜帶暖暖包與保濕用品。</p>
                     </div>
 
                     <!-- 簡易行程表 Card -->
@@ -600,21 +610,61 @@
             // --- 導覽列分頁切換 ---
             const tabs = document.querySelectorAll('.nav-tab');
             const sections = document.querySelectorAll('.content-section');
+            const previewToggleButton = document.getElementById('preview-toggle');
+            const previewBanner = document.getElementById('preview-banner');
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
-                    // 移除所有標籤的 active 狀態
-                    tabs.forEach(t => t.classList.remove('active'));
-                    // 隱藏所有內容區塊
-                    sections.forEach(s => s.classList.remove('active'));
-
-                    // 為點擊的標籤加上 active 狀態
-                    tab.classList.add('active');
-                    // 顯示對應的內容區塊
                     const tabId = tab.getAttribute('data-tab');
+                    const isPreviewMode = document.body.classList.contains('preview-mode');
+
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    if (isPreviewMode) {
+                        const targetSection = document.getElementById(`content-${tabId}`);
+                        targetSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        return;
+                    }
+
+                    sections.forEach(section => section.classList.remove('active'));
                     document.getElementById(`content-${tabId}`).classList.add('active');
                 });
             });
+
+            if (previewToggleButton) {
+                const updatePreviewButtonLabel = (isPreviewMode) => {
+                    previewToggleButton.textContent = isPreviewMode ? '返回分頁模式' : '預覽模式';
+                    previewToggleButton.setAttribute('aria-pressed', String(isPreviewMode));
+                };
+
+                updatePreviewButtonLabel(false);
+                if (previewBanner) {
+                    previewBanner.hidden = true;
+                }
+
+                previewToggleButton.addEventListener('click', () => {
+                    const isPreviewMode = document.body.classList.toggle('preview-mode');
+                    updatePreviewButtonLabel(isPreviewMode);
+                    if (previewBanner) {
+                        previewBanner.hidden = !isPreviewMode;
+                    }
+
+                    if (!isPreviewMode) {
+                        // 當離開預覽模式時，確保當前選取的分頁內容顯示
+                        const activeTab = document.querySelector('.nav-tab.active');
+                        const activeTabId = activeTab?.getAttribute('data-tab') || 'overview';
+
+                        sections.forEach(section => {
+                            if (section.id === `content-${activeTabId}`) {
+                                section.classList.add('active');
+                            } else {
+                                section.classList.remove('active');
+                            }
+                        });
+                    }
+                });
+            }
 
             // --- Gemini API 金鑰 (請留空，由 Canvas 提供) ---
             const apiKey = "";
