@@ -211,65 +211,11 @@
             color: #0f172a;
         }
 
-        .weather-board {
-            margin-top: 1.25rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(148, 163, 184, 0.2);
-        }
-
-        .weather-list {
-            display: grid;
-            gap: 0.75rem;
-        }
-
-        @media (min-width: 640px) {
-            .weather-list {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .weather-list {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
-
-        .weather-list-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            border-radius: 0.85rem;
-            padding: 0.85rem 1rem;
-            background: rgba(248, 250, 252, 0.9);
-            border: 1px solid rgba(203, 213, 225, 0.7);
-        }
-
-        .weather-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .weather-day {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .weather-condition {
-            font-size: 0.95rem;
-            color: #334155;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .weather-temp {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #475569;
+        .weather-cell {
+            border-radius: 1rem;
+            padding: 1.1rem;
+            background: linear-gradient(145deg, rgba(219, 234, 254, 0.85), rgba(191, 219, 254, 0.65));
+            border: 1px solid rgba(148, 163, 184, 0.25);
         }
 
         .map-link {
@@ -412,65 +358,56 @@
                         <article class="info-card">
                             <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                                 <div>
-                                    <h3 class="text-xl font-semibold text-slate-900">北海道一週天氣預報</h3>
-                                    <p class="text-xs text-slate-500">資料來源：JMA 札幌區域（概估）</p>
+                                    <h3 class="text-2xl">北海道一週天氣預報</h3>
+                                    <p class="text-sm text-slate-500">資料來源：JMA 札幌區域（概估）</p>
                                 </div>
-                                <span class="rounded-full bg-blue-100 px-3 py-1 text-[0.65rem] font-semibold text-blue-700">1/29 - 2/4</span>
+                                <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">1/29 - 2/4</span>
                             </div>
-                            <div class="weather-board">
-                                <div class="weather-list">
-                                    <div class="weather-list-item">
-                                        <div class="weather-info">
-                                            <p class="weather-day">1/29 (三)</p>
-                                            <p class="weather-condition">陰有雪 <span aria-hidden="true">❄️</span></p>
-                                        </div>
-                                        <p class="weather-temp">高 -3°C / 低 -9°C</p>
-                                    </div>
-                                    <div class="weather-list-item">
-                                        <div class="weather-info">
-                                            <p class="weather-day">1/30 (四)</p>
-                                            <p class="weather-condition">多雲後雪 <span aria-hidden="true">🌨️</span></p>
-                                        </div>
-                                        <p class="weather-temp">高 -4°C / 低 -10°C</p>
-                                    </div>
-                                    <div class="weather-list-item">
-                                        <div class="weather-info">
-                                            <p class="weather-day">1/31 (五)</p>
-                                            <p class="weather-condition">短暫放晴 <span aria-hidden="true">🌤️</span></p>
-                                        </div>
-                                        <p class="weather-temp">高 -2°C / 低 -8°C</p>
-                                    </div>
-                                    <div class="weather-list-item">
-                                        <div class="weather-info">
-                                            <p class="weather-day">2/1 (六)</p>
-                                            <p class="weather-condition">陣雪 <span aria-hidden="true">🌨️</span></p>
-                                        </div>
-                                        <p class="weather-temp">高 -5°C / 低 -11°C</p>
-                                    </div>
-                                    <div class="weather-list-item">
-                                        <div class="weather-info">
-                                            <p class="weather-day">2/2 (日)</p>
-                                            <p class="weather-condition">持續飄雪 <span aria-hidden="true">❄️</span></p>
-                                        </div>
-                                        <p class="weather-temp">高 -6°C / 低 -12°C</p>
-                                    </div>
-                                    <div class="weather-list-item">
-                                        <div class="weather-info">
-                                            <p class="weather-day">2/3 (一)</p>
-                                            <p class="weather-condition">雪後多雲 <span aria-hidden="true">☁️</span></p>
-                                        </div>
-                                        <p class="weather-temp">高 -3°C / 低 -9°C</p>
-                                    </div>
-                                    <div class="weather-list-item">
-                                        <div class="weather-info">
-                                            <p class="weather-day">2/4 (二)</p>
-                                            <p class="weather-condition">陰天 <span aria-hidden="true">☁️</span></p>
-                                        </div>
-                                        <p class="weather-temp">高 -1°C / 低 -7°C</p>
-                                    </div>
+                            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                <div class="weather-cell">
+                                    <p class="text-xs text-slate-600">1/29 (三)</p>
+                                    <p class="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-800">陰有雪 <span>❄️</span></p>
+                                    <p class="text-sm text-slate-600">高 -3°C / 低 -9°C</p>
+                                    <p class="mt-2 text-xs text-blue-900">降雪 60% · 清晨道路易結冰，出門前預熱車輛。</p>
                                 </div>
-                                <p class="mt-3 text-xs text-slate-500">提醒：分層穿搭並備妥暖暖包，可提升戶外活動舒適度。</p>
+                                <div class="weather-cell">
+                                    <p class="text-xs text-slate-600">1/30 (四)</p>
+                                    <p class="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-800">多雲後雪 <span>🌨️</span></p>
+                                    <p class="text-sm text-slate-600">高 -4°C / 低 -10°C</p>
+                                    <p class="mt-2 text-xs text-blue-900">降雪 70% · 抵達後先換上防水雪靴。</p>
+                                </div>
+                                <div class="weather-cell">
+                                    <p class="text-xs text-slate-600">1/31 (五)</p>
+                                    <p class="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-800">短暫放晴 <span>🌤️</span></p>
+                                    <p class="text-sm text-slate-600">高 -2°C / 低 -8°C</p>
+                                    <p class="mt-2 text-xs text-blue-900">降雪 30% · 日間適合市區步行，夜晚需保暖。</p>
+                                </div>
+                                <div class="weather-cell">
+                                    <p class="text-xs text-slate-600">2/1 (六)</p>
+                                    <p class="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-800">陣雪 <span>🌨️</span></p>
+                                    <p class="text-sm text-slate-600">高 -5°C / 低 -11°C</p>
+                                    <p class="mt-2 text-xs text-blue-900">降雪 65% · 自駕日請預留除雪時間並放慢車速。</p>
+                                </div>
+                                <div class="weather-cell">
+                                    <p class="text-xs text-slate-600">2/2 (日)</p>
+                                    <p class="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-800">持續飄雪 <span>❄️</span></p>
+                                    <p class="text-sm text-slate-600">高 -6°C / 低 -12°C</p>
+                                    <p class="mt-2 text-xs text-blue-900">降雪 70% · 洞爺湖與登別區能見度偏低。</p>
+                                </div>
+                                <div class="weather-cell">
+                                    <p class="text-xs text-slate-600">2/3 (一)</p>
+                                    <p class="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-800">雪後多雲 <span>☁️</span></p>
+                                    <p class="text-sm text-slate-600">高 -3°C / 低 -9°C</p>
+                                    <p class="mt-2 text-xs text-blue-900">降雪 40% · 雪祭會場地面濕滑，穿著防滑鞋。</p>
+                                </div>
+                                <div class="weather-cell">
+                                    <p class="text-xs text-slate-600">2/4 (二)</p>
+                                    <p class="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-800">陰天 <span>☁️</span></p>
+                                    <p class="text-sm text-slate-600">高 -1°C / 低 -7°C</p>
+                                    <p class="mt-2 text-xs text-blue-900">降雪 20% · 留意航班除冰作業所需時間。</p>
+                                </div>
                             </div>
+                            <p class="mt-4 text-sm text-slate-600">分層穿搭、攜帶暖暖包與行動加濕用品，可降低乾冷氣候造成的不適。</p>
                         </article>
 
                         <aside class="info-card space-y-5">
