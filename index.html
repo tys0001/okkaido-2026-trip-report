@@ -155,22 +155,86 @@
             <!-- 1. 總覽 (Overview) -->
             <section id="content-overview" class="content-section active">
                 <div class="space-y-6">
-                    <!-- 報告概要 Card -->
-                    <div class="bg-blue-50 border border-blue-200 p-5 rounded-lg shadow-sm">
-                        <h3 class="text-xl font-semibold text-blue-800 mb-3">報告概要</h3>
-                        <p class="text-gray-700 mb-4">
-                            本報告旨在為一個由兩對夫妻（四名成人）及三名男童（7、5、3歲）組成，共七人之團體，規劃 2026 年 1 月底的北海道冬季六日旅行。行程設計已考量氣候條件、交通運輸、家庭成員需求及活動適宜性。
-                        </p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- 天氣預報 Card -->
+                    <div class="bg-white p-5 rounded-lg shadow-sm border">
+                        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
                             <div>
-                                <span class="block text-sm text-gray-500">旅行日期</span>
-                                <span class="block text-lg font-semibold text-gray-800">2026/1/30 - 2/4 (六日)</span>
+                                <h3 class="text-xl font-semibold text-gray-800">北海道一週天氣預報</h3>
+                                <p class="text-sm text-gray-500">資料來源：日本氣象廳 (更新：2026/01/25 09:00 JST)</p>
                             </div>
-                            <div>
-                                <span class="block text-sm text-gray-500">旅行主題</span>
-                                <span class="block text-lg font-semibold text-gray-800">冬季慶典、溫泉、雪地自駕</span>
-                            </div>
+                            <span class="inline-flex items-center gap-2 text-sm font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                    <path fill-rule="evenodd" d="M12 2.25a5.25 5.25 0 00-5.25 5.25c0 .76.173 1.48.48 2.12l.02.04 4.285 8.41a.75.75 0 001.33 0l4.285-8.41.02-.04A5.22 5.22 0 0017.25 7.5 5.25 5.25 0 0012 2.25zm0 8.25a3 3 0 110-6 3 3 0 010 6z" clip-rule="evenodd" />
+                                    <path d="M5.636 21.75a.75.75 0 01-.67-1.07L7.53 16.5h2.068l-2.193 4.23a.75.75 0 01-.67.42zm12.728 0a.75.75 0 00.67-1.07L16.47 16.5h-2.068l2.193 4.23a.75.75 0 00.67.42z" />
+                                </svg>
+                                札幌市中心
+                            </span>
                         </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full min-w-max text-left">
+                                <thead class="border-b bg-gray-50">
+                                    <tr>
+                                        <th class="p-3 text-sm font-semibold text-gray-600">日期</th>
+                                        <th class="p-3 text-sm font-semibold text-gray-600">天氣</th>
+                                        <th class="p-3 text-sm font-semibold text-gray-600">預測溫度</th>
+                                        <th class="p-3 text-sm font-semibold text-gray-600">降雪機率</th>
+                                        <th class="p-3 text-sm font-semibold text-gray-600">旅遊提醒</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3">1/30 (五)</td>
+                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>濕雪</td>
+                                        <td class="p-3">-4°C / -9°C</td>
+                                        <td class="p-3">70%</td>
+                                        <td class="p-3 text-sm text-gray-600">抵達日建議預留機場交通緩衝。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3">1/31 (六)</td>
+                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌤️</span>晴時多雲</td>
+                                        <td class="p-3">-3°C / -10°C</td>
+                                        <td class="p-3">30%</td>
+                                        <td class="p-3 text-sm text-gray-600">適合戶外活動，注意日夜溫差。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3">2/1 (日)</td>
+                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">❄️</span>陣雪</td>
+                                        <td class="p-3">-5°C / -11°C</td>
+                                        <td class="p-3">60%</td>
+                                        <td class="p-3 text-sm text-gray-600">支笏湖活動務必著防水靴。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3">2/2 (一)</td>
+                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>大雪</td>
+                                        <td class="p-3">-6°C / -12°C</td>
+                                        <td class="p-3">80%</td>
+                                        <td class="p-3 text-sm text-gray-600">自駕日請預留更多移動時間。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3">2/3 (二)</td>
+                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>濕雪</td>
+                                        <td class="p-3">-2°C / -8°C</td>
+                                        <td class="p-3">65%</td>
+                                        <td class="p-3 text-sm text-gray-600">札幌雪祭需穿著防滑裝備。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3">2/4 (三)</td>
+                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">☁️</span>陰</td>
+                                        <td class="p-3">-1°C / -7°C</td>
+                                        <td class="p-3">40%</td>
+                                        <td class="p-3 text-sm text-gray-600">離境日注意道路結冰，提前出門。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3">2/5 (四)</td>
+                                        <td class="p-3 flex items-center gap-2"><span class="text-2xl" aria-hidden="true">🌨️</span>陣雪</td>
+                                        <td class="p-3">-4°C / -10°C</td>
+                                        <td class="p-3">55%</td>
+                                        <td class="p-3 text-sm text-gray-600">延伸停留者留意道路除雪狀況。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500">※ 實際天氣以出發前最新預報為準，建議於每日早晨再次確認。</p>
                     </div>
 
                     <!-- 天氣預報 Card -->
