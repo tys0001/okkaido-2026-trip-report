@@ -1,613 +1,483 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>北海道冬之親子大縱走｜旅遊手冊</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Print-friendly */
-    @media print {
-      .no-print { display: none !important; }
-      .print-block { break-inside: avoid; }
-      body { background: white !important; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 北海道冬之親子大縱走</title>
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 React 和 ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 引入 Babel 用來解析 JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* 自定義動畫與樣式 */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        .animate-fade-in-up { animation: fadeInUp 0.5s ease-out; }
+        .animate-spin-slow { animation: spinSlow 8s linear infinite; }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body { -webkit-tap-highlight-color: transparent; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-  <header class="no-print sticky top-0 z-20 border-b bg-white/90 backdrop-blur">
-    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
-      <div class="flex-1">
-        <div class="text-lg font-semibold">北海道冬之親子大縱走｜旅遊手冊</div>
-        <div class="text-sm text-slate-600">2026/01/30（五）– 2026/02/04（三）</div>
-      </div>
-      <button id="btnPrint" class="rounded-xl border px-3 py-2 text-sm hover:bg-slate-50">列印</button>
-      <button id="btnReset" class="rounded-xl border px-3 py-2 text-sm hover:bg-slate-50">重置勾選</button>
-    </div>
-  </header>
+<body class="bg-slate-100 text-gray-800 font-sans">
+    <div id="root"></div>
 
-  <main class="mx-auto max-w-6xl px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Sidebar -->
-    <aside class="no-print lg:col-span-4">
-      <div class="rounded-2xl border bg-white shadow-sm p-4">
-        <div class="text-sm font-semibold">快速搜尋</div>
-        <div class="mt-2 flex gap-2">
-          <input id="q" type="search" placeholder="搜尋：地點、餐廳、關鍵字…" class="w-full rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-200" />
-        </div>
-        <div class="mt-3 flex flex-wrap gap-2">
-          <button class="chip" data-chip="札幌">札幌</button>
-          <button class="chip" data-chip="支笏湖">支笏湖</button>
-          <button class="chip" data-chip="洞爺湖">洞爺湖</button>
-          <button class="chip" data-chip="Outlet">Outlet</button>
-          <button class="chip" data-chip="雪祭">雪祭</button>
-        </div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-        <div class="mt-6">
-          <div class="text-sm font-semibold">導覽</div>
-          <div id="nav" class="mt-2 grid gap-2"></div>
-        </div>
-      </div>
+        // --- 圖標組件 (Inline SVGs) ---
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const icons = {
+                MapPin: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>,
+                MapPinDot: <><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></>,
+                Calendar: <><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></>,
+                Clock: <circle cx="12" cy="12" r="10"></circle>,
+                Navigation: <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>,
+                Utensils: <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>,
+                BedDouble: <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"></path>,
+                AlertTriangle: <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>,
+                Snowflake: <><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line><path d="M20 16l-4-4 4-4"></path><path d="M4 8l4 4-4 4"></path><path d="M16 4l-4 4-4-4"></path><path d="M8 20l4-4 4 4"></path></>,
+                Camera: <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>,
+                Car: <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>,
+                ShoppingBag: <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>,
+                Copy: <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>,
+                X: <><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></>,
+                Languages: <path d="M5 8l6 6"></path>, // Simplified for demo
+                Circle: <circle cx="12" cy="12" r="10"></circle>
+            };
 
-      <div class="mt-6 rounded-2xl border bg-white shadow-sm p-4">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <div class="text-sm font-semibold">關鍵時間點（Cheat Sheet）</div>
-            <div class="text-xs text-slate-600 mt-1">冬季營業時間可能變動，到場以公告為準</div>
-          </div>
-          <button id="btnCopyCheat" class="rounded-xl border px-3 py-2 text-xs hover:bg-slate-50">複製</button>
-        </div>
-        <div class="mt-3 overflow-auto">
-          <table class="w-full text-sm">
-            <thead class="text-slate-600">
-              <tr>
-                <th class="text-left font-medium py-2">地點</th>
-                <th class="text-left font-medium py-2">時間</th>
-                <th class="text-left font-medium py-2">備註</th>
-              </tr>
-            </thead>
-            <tbody id="cheat"></tbody>
-          </table>
-        </div>
-      </div>
+            const content = icons[name] || icons.Circle;
 
-      <div class="mt-6 rounded-2xl border bg-white shadow-sm p-4">
-        <div class="text-sm font-semibold">旅行小抄</div>
-        <ul class="mt-2 text-sm text-slate-700 list-disc pl-5 space-y-1">
-          <li>建議抵達機場後先處理：入境、領行李、JR/交通卡、現金與補給。</li>
-          <li>多數景點冬季閉園早：動物園、雪上活動、熊牧場都要抓時間。</li>
-          <li>自駕日請預留：加油、停車、雪地行車速度、兒童上廁所時間。</li>
-          <li>偏僻住宿（Hotel Cocoa）周邊餐廳少：務必先在溫泉街用餐與補給。</li>
-          <li>勾選會自動保存到本機（離線也可用）。</li>
-        </ul>
-      </div>
-    </aside>
+            return (
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width={size} 
+                    height={size} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className={className}
+                >
+                    {content}
+                </svg>
+            );
+        };
 
-    <!-- Content -->
-    <section class="lg:col-span-8">
-      <div class="rounded-2xl border bg-white shadow-sm p-5 print-block">
-        <div class="text-base font-semibold">行程概覽</div>
-        <div class="mt-2 text-sm text-slate-700">主題：雪地放電、動物互動、溫泉療癒、美食購物｜成員：4大3小</div>
+        // --- Data ---
+        const tripData = {
+            meta: {
+                title: "2026 北海道冬之親子大縱走",
+                dateRange: "JAN 30 - FEB 04",
+                members: "4 大人 3 小孩"
+            },
+            days: [
+                {
+                    id: 1,
+                    date: "01/30 (五)",
+                    title: "初抵北國",
+                    highlight: "抵達札幌 ➜ 湯咖哩",
+                    weather: "❄️ -5°C",
+                    schedule: [
+                        { time: "18:30", title: "抵達新千歲機場 (CTS)", type: "flight", note: "入境領行李約 1 小時" },
+                        { time: "19:30", title: "JR 快速機場線", type: "transport", note: "往札幌站 (37分鐘)，再轉地鐵至大通站" },
+                        { time: "20:30", title: "札幌三位神大飯店 Check-in", type: "hotel", mapCode: "9 522 473*22", address: "札幌市中央區大通西 5-3" },
+                        { time: "21:00", title: "晚餐：Suage+ 湯咖哩", type: "food", note: "或吃拉麵橫丁 (營業至深夜)" },
+                        { time: "22:00", title: "便利商店補給", type: "shop", note: "Seicomart 買炸雞、明天早餐" }
+                    ]
+                },
+                {
+                    id: 2,
+                    date: "01/31 (六)",
+                    title: "神宮與北極熊",
+                    highlight: "圓山動物園 ➜ 預定晚餐",
+                    weather: "🌤️ -4°C",
+                    schedule: [
+                        { time: "09:00", title: "北海道神宮", type: "spot", mapCode: "9 487 312*22", note: "必吃：六花亭神宮茶屋「判官餅」" },
+                        { time: "11:30", title: "午餐：圓山周邊", type: "food", note: "推薦 The Village Store (漢堡) 或 Toriton 壽司" },
+                        { time: "13:00", title: "圓山動物園", type: "activity", note: "⚠️ 15:30 最後入園！必看北極熊館、室內溜滑梯" },
+                        { time: "18:00", title: "晚餐 [已預定]", type: "food", important: true, note: "請準時抵達餐廳" }
+                    ]
+                },
+                {
+                    id: 3,
+                    date: "02/01 (日)",
+                    title: "自駕啟程",
+                    highlight: "鈴蘭公園雪胎 ➜ 森之空庭",
+                    weather: "❄️ -6°C",
+                    schedule: [
+                        { time: "09:00", title: "租車取車", type: "transport", important: true, note: "檢查雪胎、ETC卡。導航設 MapCode" },
+                        { time: "10:30", title: "瀧野鈴蘭丘陵公園", type: "activity", mapCode: "9 016 083*14", note: "免費雪胎玩到爽！午餐在園內吃" },
+                        { time: "15:30", title: "支笏湖冰濤祭", type: "spot", mapCode: "867 063 446*44", note: "先看白天藍色 ➜ 16:30 等點燈。極冷注意保暖" },
+                        { time: "18:30", title: "入住：森之空庭", type: "hotel", mapCode: "421 829 095*44", address: "伊達市大滝區北湯澤溫泉町300-7", note: "拿出泳衣！玩室內溫泉海灘 Tokotoko" }
+                    ]
+                },
+                {
+                    id: 4,
+                    date: "02/02 (一)",
+                    title: "熊與企鵝",
+                    highlight: "尼克斯 ➜ 洞爺湖補給",
+                    weather: "☁️ -3°C",
+                    schedule: [
+                        { time: "09:30", title: "登別尼克斯海洋公園", type: "activity", mapCode: "603 142 355*52", note: "企鵝遊行：11:00 / 14:15" },
+                        { time: "13:30", title: "昭和新山熊牧場", type: "spot", mapCode: "321 433 346*33", note: "買蘋果餅乾餵熊，比登別近且互動多" },
+                        { time: "15:30", title: "洞爺湖溫泉街 (生存補給)", type: "warning", important: true, note: "⚠️ 飯店附近無商店！請在此吃晚餐+買明天早餐" },
+                        { time: "18:00", title: "入住：可可飯店", type: "hotel", mapCode: "321 519 556*74", address: "洞爺湖町月浦 102-18", note: "位於湖西側高地，無早餐，安靜賞景" }
+                    ]
+                },
+                {
+                    id: 5,
+                    date: "02/03 (二)",
+                    title: "雪祭前夜",
+                    highlight: "F Village ➜ 札幌雪祭試燈",
+                    weather: "🌤️ -2°C",
+                    schedule: [
+                        { time: "11:30", title: "F Village 棒球園區", type: "spot", note: "搜尋 'Es Con Field'。超大娛樂城、兒童遊戲區" },
+                        { time: "14:00", title: "三井 Outlet 北廣島", type: "shop", mapCode: "9 050 376*55", note: "室內購物好去處，Nike/Mont-bell" },
+                        { time: "17:30", title: "札幌還車", type: "transport", note: "建議在札幌站附近還車，省停車費" },
+                        { time: "18:30", title: "入住：格拉斯麗札幌", type: "hotel", address: "札幌市中央區北4條西4丁目1", note: "札幌站南口對面，有地下連通道" },
+                        { time: "19:30", title: "雪祭前夜祭 (大通公園)", type: "camera", note: "通常今晚會試燈，人少好拍照！" }
+                    ]
+                },
+                {
+                    id: 6,
+                    date: "02/04 (三)",
+                    title: "滿載而歸",
+                    highlight: "機場採買 ➜ 回家",
+                    weather: "✈️ 返程",
+                    schedule: [
+                        { time: "Morning", title: "前往新千歲機場", type: "transport", note: "搭 JR 快速機場線 (免塞車)" },
+                        { time: "10:00", title: "機場最後衝刺", type: "shop", note: "⚠️ 哆啦A夢已歇業。改去 Royce' World / Hello Kitty" },
+                        { time: "Lunch", title: "北海道拉麵道場", type: "food", note: "推薦「一幻」蝦味拉麵" },
+                        { time: "Flight", title: "搭機返家", type: "flight", note: "TPE 溫暖的家" }
+                    ]
+                }
+            ],
+            hotels: [
+                { name: "札幌三位神大飯店", days: "1/30 - 2/01", tags: ["大通公園", "大浴場"], address: "札幌市中央區大通西5-3", mapCode: "9 522 473*22" },
+                { name: "北湯澤 森之空庭", days: "2/01 - 2/02", tags: ["親子必住", "溫泉海灘"], address: "伊達市大滝區北湯澤溫泉町300-7", mapCode: "421 829 095*44" },
+                { name: "可可飯店 (Hotel Cocoa)", days: "2/02 - 2/03", tags: ["⚠️無早餐", "湖景"], address: "洞爺湖町月浦 102-18", mapCode: "321 519 556*74" },
+                { name: "格拉斯麗札幌酒店", days: "2/03 - 2/04", tags: ["車站直結", "交通神"], address: "札幌市中央區北4條西4丁目1", mapCode: "9 522 660*88" }
+            ],
+            translations: [
+                { jap: "予約があります", chi: "我有預約" },
+                { jap: "満タンでお願いします", chi: "請加滿油 (Regular)" },
+                { jap: "子供用の椅子はありますか", chi: "有兒童椅嗎？" },
+                { jap: "お会計をお願いします", chi: "麻煩結帳" },
+                { jap: "領収書をください", chi: "請給我收據" }
+            ]
+        };
 
-        <div class="mt-4 grid md:grid-cols-2 gap-4">
-          <div class="rounded-2xl border p-4">
-            <div class="text-sm font-semibold">航班資訊</div>
-            <div class="mt-2 text-sm text-slate-700 space-y-1">
-              <div><span class="font-medium">去程（1/30）：</span>TPE 桃園 → CTS 新千歲（預計 17:00–18:30 抵達，札幌市區約 20:00）</div>
-              <div><span class="font-medium">回程（2/4）：</span>CTS 新千歲 → TPE（建議起飛前 3 小時到機場）</div>
+        // --- Components ---
+
+        const GlassCard = ({ children, className = "", onClick }) => (
+            <div 
+                onClick={onClick}
+                className={`backdrop-blur-md bg-white/80 border border-white/40 shadow-lg rounded-2xl p-5 transition-all duration-300 ${onClick ? 'active:scale-95 active:bg-white/90' : ''} ${className}`}
+            >
+                {children}
             </div>
-          </div>
-          <div class="rounded-2xl border p-4">
-            <div class="text-sm font-semibold">住宿清單</div>
-            <div class="mt-2 text-sm text-slate-700 space-y-2" id="hotels"></div>
-          </div>
-        </div>
-      </div>
+        );
 
-      <div class="mt-6" id="results"></div>
+        const copyToClipboard = (text) => {
+            navigator.clipboard.writeText(text);
+            alert(`已複製 MapCode: ${text}`);
+        };
 
-      <div class="mt-6 no-print text-xs text-slate-500">
-        小提醒：此頁面是你專用的「可查詢旅遊手冊」。你可以把它存成書籤，或在手機瀏覽器加入主畫面。
-      </div>
-    </section>
-  </main>
+        const openMap = (query) => {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, '_blank');
+        };
 
-  <template id="dayCardTpl">
-    <article class="rounded-2xl border bg-white shadow-sm p-5 print-block">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <div class="text-sm text-slate-600" data-subtitle></div>
-          <h2 class="text-lg font-semibold" data-title></h2>
-        </div>
-        <div class="flex items-center gap-2 no-print">
-          <button class="btnJump rounded-xl border px-3 py-2 text-xs hover:bg-slate-50" data-jump>跳到這天</button>
-        </div>
-      </div>
+        const getIconName = (type) => {
+            switch (type) {
+                case 'flight': return 'Car'; 
+                case 'transport': return 'Car';
+                case 'hotel': return 'BedDouble';
+                case 'food': return 'Utensils';
+                case 'spot': return 'Camera';
+                case 'activity': return 'Snowflake';
+                case 'shop': return 'ShoppingBag';
+                case 'warning': return 'AlertTriangle';
+                default: return 'MapPin';
+            }
+        };
 
-      <div class="mt-4 grid gap-3" data-items></div>
-    </article>
-  </template>
+        function App() {
+            const [activeTab, setActiveTab] = useState('itinerary');
+            const [selectedDay, setSelectedDay] = useState(1);
+            const [showModal, setShowModal] = useState(false);
+            const [modalContent, setModalContent] = useState(null);
 
-  <template id="itemTpl">
-    <div class="rounded-2xl border p-4">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <div class="text-sm text-slate-600" data-time></div>
-          <div class="font-semibold" data-name></div>
-          <div class="mt-1 text-sm text-slate-700" data-desc></div>
-          <div class="mt-2 flex flex-wrap gap-2" data-tags></div>
-        </div>
-        <div class="flex flex-col items-end gap-2 no-print">
-          <label class="inline-flex items-center gap-2 text-xs text-slate-700 select-none">
-            <input type="checkbox" class="h-4 w-4" data-done />
-            完成
-          </label>
-          <button class="rounded-xl border px-3 py-2 text-xs hover:bg-slate-50" data-map>地圖</button>
-          <button class="rounded-xl border px-3 py-2 text-xs hover:bg-slate-50" data-copy>複製</button>
-        </div>
-      </div>
-      <div class="mt-3 text-xs text-slate-500" data-extra></div>
-    </div>
-  </template>
+            const currentDay = tripData.days.find(d => d.id === selectedDay);
 
-  <script>
-    const data = {
-      meta: {
-        title: "北海道冬之親子大縱走",
-        dateRange: "2026/01/30（五）– 2026/02/04（三）",
-      },
-      hotels: [
-        {
-          date: "1/30–1/31",
-          place: "札幌",
-          name: "Hotel Resol Trinity Sapporo（札幌三位神大飯店）",
-          note: "大通公園旁，位置絕佳",
-          address: "北海道札幌市中央區大通西5-3",
-        },
-        {
-          date: "2/01",
-          place: "北湯澤",
-          name: "Mori no Soraniwa（森之空庭）",
-          note: "含早晚餐，親子設施豐富（記得帶泳衣）",
-          address: "伊達市大滝區北湯澤溫泉町300-7",
-        },
-        {
-          date: "2/02",
-          place: "洞爺湖（月浦）",
-          name: "Hotel Cocoa（可可飯店）",
-          note: "湖西側偏僻；先在洞爺湖溫泉街吃飯與補給",
-          address: "102-18 Tsukiura, Toyako（洞爺湖町月浦 102-18）",
-        },
-        {
-          date: "2/03",
-          place: "札幌",
-          name: "Hotel Gracery Sapporo（格拉斯麗札幌酒店）",
-          note: "札幌車站正對面，交通便利",
-          address: "札幌市中央區北4條西4丁目1",
-        },
-      ],
-      cheat: [
-        { place: "北海道神宮", time: "07:00–16:00", note: "茶屋建議 15:00 前到" },
-        { place: "圓山動物園", time: "09:30–16:00", note: "最後入園 15:30；真的很早關" },
-        { place: "瀧野鈴蘭丘陵公園", time: "09:00–16:00", note: "雪胎/雪上活動 16:00 準時結束" },
-        { place: "支笏湖冰濤祭", time: "10:00–20:00", note: "16:30 點燈（建議 15:30 抵達）" },
-        { place: "登別尼克斯海洋公園", time: "09:00–17:00", note: "最後入園 16:30；企鵝遊行常見 11:00 / 14:15" },
-        { place: "昭和新山熊牧場", time: "08:30–16:30", note: "買蘋果餵熊，小孩很買單" },
-        { place: "三井 Outlet 札幌北廣島", time: "10:00–20:00", note: "美食街 10:30–21:00" },
-      ],
-      days: [
-        {
-          id: "day1",
-          date: "Day 1｜1/30（五）",
-          title: "抵達札幌：宵夜與休息",
-          items: [
-            {
-              time: "18:30",
-              name: "抵達新千歲機場（CTS）",
-              desc: "入境、領取行李約 1 小時。",
-              tags: ["交通"],
-              mapQuery: "New Chitose Airport",
-              extra: "若有小孩易累，可先買水與小點心。",
-            },
-            {
-              time: "19:30",
-              name: "JR 快速機場線前往札幌站",
-              desc: "車程約 40 分鐘。札幌站可轉地下鐵南北線/東豐線至大通站，飯店在大通站旁。",
-              tags: ["交通", "轉乘"],
-              mapQuery: "Sapporo Station",
-            },
-            {
-              time: "20:30",
-              name: "Check-in：Hotel Resol Trinity Sapporo",
-              desc: "大通公園旁。",
-              tags: ["住宿", "札幌"],
-              mapQuery: "Hotel Resol Trinity Sapporo",
-              extra: "晚餐建議附近簡單吃；也可逛狸小路補給（唐吉訶德 24H）。",
-            },
-          ],
-        },
-        {
-          id: "day2",
-          date: "Day 2｜1/31（六）",
-          title: "神社祈福與北極熊相遇（札幌市區）",
-          items: [
-            {
-              time: "09:00",
-              name: "北海道神宮",
-              desc: "冬季開放 07:00–16:00。記得 15:00 前到六花亭茶屋（以免賣完）。",
-              tags: ["札幌", "景點"],
-              mapQuery: "Hokkaido Shrine",
-            },
-            {
-              time: "12:00",
-              name: "午餐：圓山公園附近",
-              desc: "可依現場狀況選擇。",
-              tags: ["用餐"],
-              mapQuery: "Maruyama Park Sapporo",
-            },
-            {
-              time: "13:30",
-              name: "圓山動物園",
-              desc: "冬季 09:30–16:00（最後入園 15:30）。建議午飯後盡快入園，至少留 2.5 小時。",
-              tags: ["札幌", "親子", "動物"],
-              mapQuery: "Maruyama Zoo",
-            },
-            {
-              time: "18:00",
-              name: "晚餐：已預定餐廳",
-              desc: "請確認餐廳名稱與預約時間，準時抵達。",
-              tags: ["用餐"],
-              mapQuery: "Sapporo",
-              extra: "你可以把餐廳名稱貼到這一行（之後搜尋更方便）。",
-            },
-          ],
-        },
-        {
-          id: "day3",
-          date: "Day 3｜2/01（日）",
-          title: "自駕啟程：雪地狂歡與冰濤祭",
-          items: [
-            {
-              time: "09:00",
-              name: "取車（租車公司）",
-              desc: "自駕日建議先確認雪胎、兒童座椅、ETC、保險與加油規則。",
-              tags: ["自駕"],
-              mapQuery: "Sapporo",
-            },
-            {
-              time: "10:30–13:30",
-              name: "瀧野鈴蘭丘陵公園：雪上活動",
-              desc: "冬季 09:00–16:00。雪胎與滑雪道 16:00 準時關閉。",
-              tags: ["親子", "雪"],
-              mapQuery: "Takino Suzuran Hillside Park",
-            },
-            {
-              time: "15:30–17:30",
-              name: "支笏湖冰濤祭",
-              desc: "活動 10:00–20:00；16:30 點燈。建議 15:30 抵達看白天與點燈後景色。",
-              tags: ["祭典", "夜景"],
-              mapQuery: "Lake Shikotsu Ice Festival",
-            },
-            {
-              time: "18:30",
-              name: "Check-in：Mori no Soraniwa（森之空庭）",
-              desc: "含早晚餐（Buffet）。室內/室外溫泉海灘親子設施豐富。",
-              tags: ["溫泉", "住宿", "親子"],
-              mapQuery: "Mori no Soraniwa",
-              extra: "務必攜帶泳衣。",
-            },
-          ],
-        },
-        {
-          id: "day4",
-          date: "Day 4｜2/02（一）",
-          title: "海洋生物與熊的冒險（登別/洞爺）",
-          items: [
-            {
-              time: "09:30",
-              name: "登別尼克斯海洋公園",
-              desc: "09:00–17:00（最後入園 16:30）。企鵝遊行常見 11:00 與 14:15（入園時確認）。",
-              tags: ["親子", "動物"],
-              mapQuery: "Noboribetsu Marine Park Nixe",
-            },
-            {
-              time: "13:30",
-              name: "昭和新山熊牧場",
-              desc: "冬季 08:30–16:30。建議停留 1 小時，買蘋果餵熊很有趣。",
-              tags: ["親子", "動物"],
-              mapQuery: "Showa Shinzan Bear Park",
-            },
-            {
-              time: "16:00",
-              name: "洞爺湖溫泉街：晚餐與補給",
-              desc: "重要：今晚入住飯店附近偏僻，沒有餐廳。請先在溫泉街用餐並到便利商店補給。",
-              tags: ["用餐", "補給"],
-              mapQuery: "Toyako Onsen",
-            },
-            {
-              time: "19:00",
-              name: "Check-in：Hotel Cocoa（可可飯店）",
-              desc: "洞爺湖西岸，距離溫泉街約 15 分鐘車程。湖景房早晨風景佳，不含早餐。",
-              tags: ["住宿", "洞爺湖"],
-              mapQuery: "Hotel Cocoa Toyako",
-            },
-          ],
-        },
-        {
-          id: "day5",
-          date: "Day 5｜2/03（二）",
-          title: "購物與雪祭前夜（返回札幌）",
-          items: [
-            {
-              time: "10:00",
-              name: "離開 Hotel Cocoa 北上",
-              desc: "預留加油與休息站時間。",
-              tags: ["自駕"],
-              mapQuery: "Toyako",
-            },
-            {
-              time: "11:30",
-              name: "F Village（Es Con Field HOKKAIDO）",
-              desc: "09:30–21:00（各店不同）。前往 Outlet 路上的中停點。",
-              tags: ["球場", "逛街"],
-              mapQuery: "ES CON FIELD HOKKAIDO",
-            },
-            {
-              time: "14:00",
-              name: "三井 Outlet Park 札幌北廣島",
-              desc: "商店 10:00–20:00；美食街 10:30–21:00。室內暖和適合小孩休息。",
-              tags: ["購物", "親子"],
-              mapQuery: "Mitsui Outlet Park Sapporo-Kitahiroshima",
-            },
-            {
-              time: "17:30",
-              name: "回札幌市區／還車（建議）",
-              desc: "若隔天不需要用車，可考慮今晚先還車，減少隔日壓力。",
-              tags: ["自駕", "交通"],
-              mapQuery: "Sapporo",
-            },
-            {
-              time: "入住",
-              name: "Hotel Gracery Sapporo",
-              desc: "札幌車站南口正對面；可走地下街吃晚餐，不用吹風淋雪。",
-              tags: ["住宿", "札幌"],
-              mapQuery: "Hotel Gracery Sapporo",
-            },
-            {
-              time: "18:30",
-              name: "大通公園：雪祭試燈（前夜景）",
-              desc: "步行約 10–15 分鐘。晚餐可在車站周邊或 Stellar Place（例如根室花丸）。",
-              tags: ["雪祭", "夜景", "用餐"],
-              mapQuery: "Odori Park",
-            },
-          ],
-        },
-        {
-          id: "day6",
-          date: "Day 6｜2/04（三）",
-          title: "賦歸：機場採買",
-          items: [
-            {
-              time: "早上",
-              name: "整理行李 → 札幌站搭 JR 快速機場線",
-              desc: "飯店在車站旁，移動方便。",
-              tags: ["交通"],
-              mapQuery: "Sapporo Station",
-            },
-            {
-              time: "10:00",
-              name: "新千歲機場最後採買",
-              desc: "原訂『哆啦A夢空中樂園』已永久歇業（資料註記）。可改逛 Royce' Chocolate World、Hello Kitty Happy Flight、北海道拉麵道場。",
-              tags: ["購物", "機場"],
-              mapQuery: "New Chitose Airport",
-              extra: "建議預留起飛前 3 小時到機場。",
-            },
-          ],
-        },
-      ],
-    };
+            const handleOpenInfo = (item) => {
+                if (item.mapCode || item.address || item.note) {
+                    setModalContent(item);
+                    setShowModal(true);
+                }
+            };
 
-    // --- helpers ---
-    const $ = (sel, el=document) => el.querySelector(sel);
-    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+            const NavButton = ({ iconName, label, active, onClick }) => (
+                <button 
+                    onClick={onClick}
+                    className={`flex flex-col items-center justify-center w-16 h-16 transition-all duration-300 ${active ? '-translate-y-2' : 'text-gray-400'}`}
+                >
+                    <div className={`p-2 rounded-full transition-all ${active ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'bg-transparent'}`}>
+                        <Icon name={iconName} size={20} />
+                    </div>
+                    {active && (
+                        <span className="text-[10px] font-bold text-blue-600 mt-1 animate-fade-in">{label}</span>
+                    )}
+                </button>
+            );
 
-    const storageKey = "hokkaido_trip_manual_v1";
+            return (
+                <div className="min-h-screen bg-slate-100 pb-24 relative overflow-hidden text-gray-800">
+                    
+                    {/* Background */}
+                    <div className="fixed top-0 left-0 w-full h-80 bg-gradient-to-b from-blue-400 to-blue-100 rounded-b-[3rem] shadow-xl z-0"></div>
+                    <div className="fixed -top-10 -right-10 text-white/20 animate-pulse">
+                        <Icon name="Snowflake" size={200} />
+                    </div>
 
-    function loadState() {
-      try { return JSON.parse(localStorage.getItem(storageKey) || "{}") } catch { return {}; }
-    }
-    function saveState(state) {
-      localStorage.setItem(storageKey, JSON.stringify(state));
-    }
+                    {/* Header */}
+                    <div className="relative z-10 px-6 pt-12 pb-4 text-white">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h3 className="text-sm font-medium opacity-90 tracking-widest mb-1">{tripData.meta.dateRange}</h3>
+                                <h1 className="text-2xl font-extrabold leading-tight drop-shadow-md">
+                                    北海道<br />冬之親子大縱走
+                                </h1>
+                            </div>
+                            <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg border border-white/30">
+                                <Icon name="Snowflake" size={24} className="animate-spin-slow" />
+                            </div>
+                        </div>
+                        <div className="mt-4 flex space-x-2 overflow-x-auto hide-scrollbar pb-2">
+                            {tripData.days.map((day) => (
+                                <button
+                                    key={day.id}
+                                    onClick={() => setSelectedDay(day.id)}
+                                    className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all shadow-md ${
+                                        selectedDay === day.id 
+                                        ? 'bg-white text-blue-600 scale-105 ring-2 ring-blue-300' 
+                                        : 'bg-blue-500/50 text-white hover:bg-blue-500/70'
+                                    }`}
+                                >
+                                    {day.date.split(' ')[0]}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-    function toMapsUrl(q) {
-      const query = encodeURIComponent(q);
-      return `https://www.google.com/maps/search/?api=1&query=${query}`;
-    }
+                    {/* Content */}
+                    <div className="relative z-10 px-4 mt-2 space-y-4 animate-fade-in-up">
+                        
+                        {/* 行程 View */}
+                        {activeTab === 'itinerary' && currentDay && (
+                            <>
+                                <GlassCard className="mb-4 !bg-blue-600/5 !border-blue-200">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h2 className="text-xl font-bold text-gray-800">{currentDay.title}</h2>
+                                        <span className="text-blue-600 font-bold bg-blue-100 px-2 py-1 rounded text-xs">
+                                            {currentDay.weather}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 font-medium mb-3">
+                                        今日亮點：{currentDay.highlight}
+                                    </p>
+                                </GlassCard>
 
-    function renderHotels() {
-      const root = $("#hotels");
-      root.innerHTML = "";
-      data.hotels.forEach(h => {
-        const div = document.createElement("div");
-        div.className = "rounded-xl border p-3";
-        div.innerHTML = `
-          <div class="text-xs text-slate-600">${h.date}｜${h.place}</div>
-          <div class="font-semibold mt-0.5">${h.name}</div>
-          <div class="text-sm text-slate-700 mt-1">${h.note}</div>
-          <div class="mt-2 flex flex-wrap gap-2 no-print">
-            <a class="rounded-xl border px-3 py-2 text-xs hover:bg-slate-50" target="_blank" rel="noreferrer" href="${toMapsUrl(h.address || h.name)}">地圖</a>
-            <button class="btnCopyHotel rounded-xl border px-3 py-2 text-xs hover:bg-slate-50" data-copy="${(h.address || h.name).replaceAll('"','')}">複製地址</button>
-          </div>
-        `;
-        root.appendChild(div);
-      });
+                                <div className="space-y-3">
+                                    {currentDay.schedule.map((item, idx) => (
+                                        <div key={idx} onClick={() => handleOpenInfo(item)} className="flex group">
+                                            <div className="flex flex-col items-center mr-3 pt-1">
+                                                <div className={`w-3 h-3 rounded-full ${item.important ? 'bg-red-500 animate-pulse' : 'bg-blue-400'} ring-4 ring-white shadow-sm`}></div>
+                                                <div className="w-0.5 h-full bg-blue-100 my-1 rounded-full group-last:bg-transparent"></div>
+                                            </div>
+                                            <GlassCard className={`flex-1 !p-4 mb-2 flex justify-between items-start ${item.important ? '!bg-red-50 !border-red-200' : ''}`}>
+                                                <div>
+                                                    <div className="flex items-center mb-1">
+                                                        <span className="text-xs font-bold text-gray-400 w-10">{item.time}</span>
+                                                        <h4 className={`font-bold text-sm ${item.important ? 'text-red-700' : 'text-gray-800'}`}>
+                                                            {item.title}
+                                                        </h4>
+                                                    </div>
+                                                    {item.note && (
+                                                        <p className="text-xs text-gray-500 mt-1 pl-10 leading-relaxed">
+                                                            {item.note}
+                                                        </p>
+                                                    )}
+                                                    {(item.mapCode || item.address) && (
+                                                        <div className="mt-2 pl-10 flex gap-2">
+                                                            <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded flex items-center">
+                                                                <Icon name="Navigation" size={10} className="mr-1" /> 點擊導航
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="text-gray-300">
+                                                    <Icon name={getIconName(item.type)} />
+                                                </div>
+                                            </GlassCard>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
 
-      $$(".btnCopyHotel").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const text = btn.getAttribute("data-copy") || "";
-          await navigator.clipboard.writeText(text);
-          btn.textContent = "已複製";
-          setTimeout(() => btn.textContent = "複製地址", 900);
-        });
-      });
-    }
+                        {/* 住宿 View */}
+                        {activeTab === 'hotels' && (
+                            <div className="space-y-4 pb-4">
+                                <h2 className="text-lg font-bold text-gray-800 px-2">住宿總覽</h2>
+                                {tripData.hotels.map((hotel, idx) => (
+                                    <GlassCard key={idx}>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <span className="text-xs font-bold text-blue-500 tracking-wider mb-1 block">{hotel.days}</span>
+                                                <h3 className="text-lg font-bold text-gray-800 mb-1">{hotel.name}</h3>
+                                                <div className="flex flex-wrap gap-1 mb-3">
+                                                    {hotel.tags.map(tag => (
+                                                        <span key={tag} className={`text-[10px] px-2 py-0.5 rounded ${tag.includes('⚠️') ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <p className="text-xs text-gray-500 flex items-center mb-3">
+                                                    <Icon name="MapPin" size={12} className="mr-1" /> {hotel.address}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3 mt-2">
+                                            <button 
+                                                onClick={() => openMap(hotel.address)}
+                                                className="bg-blue-600 text-white text-xs font-bold py-2 rounded-lg shadow-lg active:scale-95 transition-transform flex items-center justify-center"
+                                            >
+                                                <Icon name="Navigation" size={14} className="mr-1" /> 導航
+                                            </button>
+                                            <button 
+                                                onClick={() => copyToClipboard(hotel.mapCode)}
+                                                className="bg-white border border-gray-200 text-gray-700 text-xs font-bold py-2 rounded-lg shadow-sm active:scale-95 transition-transform flex items-center justify-center"
+                                            >
+                                                <Icon name="Copy" size={14} className="mr-1" /> 複製 MapCode
+                                            </button>
+                                        </div>
+                                    </GlassCard>
+                                ))}
+                            </div>
+                        )}
 
-    function renderCheat() {
-      const tbody = $("#cheat");
-      tbody.innerHTML = "";
-      data.cheat.forEach(r => {
-        const tr = document.createElement("tr");
-        tr.className = "border-t";
-        tr.innerHTML = `
-          <td class="py-2 pr-2 font-medium">${r.place}</td>
-          <td class="py-2 pr-2">${r.time}</td>
-          <td class="py-2">${r.note}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+                        {/* 攻略 View */}
+                        {activeTab === 'tools' && (
+                            <div className="space-y-4">
+                                <h2 className="text-lg font-bold text-gray-800 px-2">實用工具</h2>
+                                
+                                <GlassCard>
+                                    <h3 className="font-bold text-gray-800 mb-3 flex items-center">
+                                        <Icon name="Languages" size={18} className="mr-2 text-blue-600" /> 
+                                        求生手指日語
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {tripData.translations.map((t, idx) => (
+                                            <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg active:bg-blue-50">
+                                                <div>
+                                                    <div className="text-lg font-bold text-gray-800">{t.jap}</div>
+                                                    <div className="text-xs text-gray-500">{t.chi}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </GlassCard>
 
-      $("#btnCopyCheat").addEventListener("click", async () => {
-        const lines = data.cheat.map(r => `${r.place}｜${r.time}｜${r.note}`).join("\n");
-        await navigator.clipboard.writeText(lines);
-        const btn = $("#btnCopyCheat");
-        btn.textContent = "已複製";
-        setTimeout(() => btn.textContent = "複製", 900);
-      });
-    }
+                                <GlassCard className="!bg-red-50 !border-red-100">
+                                    <h3 className="font-bold text-red-800 mb-2 flex items-center">
+                                        <Icon name="AlertTriangle" size={18} className="mr-2" /> 
+                                        重要提醒
+                                    </h3>
+                                    <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
+                                        <li><strong>2/2 洞爺湖住宿：</strong>附近沒早餐、沒超商。務必先買好糧食！</li>
+                                        <li><strong>租車加油：</strong>還車前請找「Regular (レギュラー)」紅色的油槍加滿。</li>
+                                        <li><strong>雪地駕駛：</strong>看到「停止」標誌一定要完全停下。</li>
+                                    </ul>
+                                </GlassCard>
+                            </div>
+                        )}
+                    </div>
 
-    function buildNav() {
-      const nav = $("#nav");
-      nav.innerHTML = "";
-      data.days.forEach(d => {
-        const a = document.createElement("button");
-        a.className = "w-full text-left rounded-xl border px-3 py-2 hover:bg-slate-50";
-        a.innerHTML = `
-          <div class="text-xs text-slate-600">${d.date}</div>
-          <div class="text-sm font-semibold truncate">${d.title}</div>
-        `;
-        a.addEventListener("click", () => {
-          document.getElementById(d.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-        nav.appendChild(a);
-      });
-    }
+                    {/* Modal */}
+                    {showModal && modalContent && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
+                            <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6 relative">
+                                <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-400 p-2">
+                                    <Icon name="X" size={24} />
+                                </button>
+                                
+                                <div className="flex flex-col items-center mb-6">
+                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-3">
+                                        <Icon name={getIconName(modalContent.type)} size={24} />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-center text-gray-800">{modalContent.title}</h3>
+                                    {modalContent.time && (
+                                        <span className="text-sm font-bold text-gray-500 mt-1">{modalContent.time}</span>
+                                    )}
+                                </div>
 
-    function renderDays(filterText = "") {
-      const state = loadState();
-      const root = $("#results");
-      root.innerHTML = "";
+                                {modalContent.note && (
+                                    <div className="bg-gray-50 p-4 rounded-xl text-sm text-gray-600 mb-6 leading-relaxed">
+                                        {modalContent.note}
+                                    </div>
+                                )}
 
-      const q = (filterText || "").trim().toLowerCase();
+                                <div className="space-y-3">
+                                    {modalContent.mapCode && (
+                                        <button 
+                                            onClick={() => copyToClipboard(modalContent.mapCode)}
+                                            className="w-full bg-gray-800 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center"
+                                        >
+                                            <Icon name="Copy" size={16} className="mr-2" /> 
+                                            MapCode: {modalContent.mapCode}
+                                        </button>
+                                    )}
+                                    {(modalContent.address || modalContent.mapCode) && (
+                                        <button 
+                                            onClick={() => openMap(modalContent.address || `MapCode ${modalContent.mapCode}`)}
+                                            className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-transform flex items-center justify-center"
+                                        >
+                                            <Icon name="Navigation" size={16} className="mr-2" /> 
+                                            開啟 Google Maps
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-      const matches = (day, item) => {
-        if (!q) return true;
-        const hay = [
-          day.date, day.title,
-          item.time, item.name, item.desc,
-          ...(item.tags || []),
-          item.extra || "",
-        ].join(" ").toLowerCase();
-        return hay.includes(q);
-      };
+                    {/* Bottom Nav */}
+                    <div className="fixed bottom-6 left-6 right-6 h-16 bg-white/90 backdrop-blur-lg rounded-full shadow-2xl border border-white/50 flex items-center justify-around z-40">
+                        <NavButton iconName="Calendar" label="行程" active={activeTab === 'itinerary'} onClick={() => setActiveTab('itinerary')} />
+                        <NavButton iconName="BedDouble" label="住宿" active={activeTab === 'hotels'} onClick={() => setActiveTab('hotels')} />
+                        <NavButton iconName="AlertTriangle" label="攻略" active={activeTab === 'tools'} onClick={() => setActiveTab('tools')} />
+                    </div>
+                </div>
+            );
+        }
 
-      data.days.forEach(day => {
-        const matchedItems = day.items.filter(it => matches(day, it));
-        if (q && matchedItems.length === 0) return;
-
-        const card = $("#dayCardTpl").content.cloneNode(true);
-        const article = card.querySelector("article");
-        article.id = day.id;
-        card.querySelector("[data-subtitle]").textContent = day.date;
-        card.querySelector("[data-title]").textContent = day.title;
-
-        const itemsRoot = card.querySelector("[data-items]");
-        matchedItems.forEach((it, idx) => {
-          const itEl = $("#itemTpl").content.cloneNode(true);
-          itEl.querySelector("[data-time]").textContent = it.time;
-          itEl.querySelector("[data-name]").textContent = it.name;
-          itEl.querySelector("[data-desc]").textContent = it.desc;
-          itEl.querySelector("[data-extra]").textContent = it.extra || "";
-
-          const tags = itEl.querySelector("[data-tags]");
-          (it.tags || []).forEach(t => {
-            const s = document.createElement("span");
-            s.className = "inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-700";
-            s.textContent = t;
-            tags.appendChild(s);
-          });
-
-          const key = `${day.id}__${idx}`;
-          const cb = itEl.querySelector("[data-done]");
-          cb.checked = !!state[key];
-          cb.addEventListener("change", () => {
-            const next = loadState();
-            next[key] = cb.checked;
-            saveState(next);
-          });
-
-          const btnMap = itEl.querySelector("[data-map]");
-          btnMap.addEventListener("click", () => {
-            const q = it.mapQuery || it.name;
-            window.open(toMapsUrl(q), "_blank", "noreferrer");
-          });
-
-          const btnCopy = itEl.querySelector("[data-copy]");
-          btnCopy.addEventListener("click", async () => {
-            const text = `${it.name}\n${it.desc}`;
-            await navigator.clipboard.writeText(text);
-            btnCopy.textContent = "已複製";
-            setTimeout(() => btnCopy.textContent = "複製", 900);
-          });
-
-          itemsRoot.appendChild(itEl);
-        });
-
-        card.querySelector("[data-jump]").addEventListener("click", () => {
-          article.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-
-        root.appendChild(card);
-      });
-
-      if (!root.children.length) {
-        const empty = document.createElement("div");
-        empty.className = "rounded-2xl border bg-white shadow-sm p-6 text-sm text-slate-700";
-        empty.textContent = "找不到符合的內容。試試看換個關鍵字（例如：札幌、支笏湖、Outlet）。";
-        root.appendChild(empty);
-      }
-    }
-
-    function wireUI() {
-      // chips
-      $$(".chip").forEach(btn => {
-        btn.className = "chip rounded-full border px-3 py-1.5 text-xs hover:bg-slate-50";
-        btn.addEventListener("click", () => {
-          $("#q").value = btn.getAttribute("data-chip") || "";
-          renderDays($("#q").value);
-        });
-      });
-
-      // search
-      $("#q").addEventListener("input", (e) => {
-        renderDays(e.target.value);
-      });
-
-      // print
-      $("#btnPrint").addEventListener("click", () => window.print());
-
-      // reset
-      $("#btnReset").addEventListener("click", () => {
-        localStorage.removeItem(storageKey);
-        renderDays($("#q").value);
-      });
-    }
-
-    // init
-    renderHotels();
-    renderCheat();
-    buildNav();
-    wireUI();
-    renderDays("");
-  </script>
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
