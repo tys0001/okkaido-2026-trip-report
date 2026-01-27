@@ -1,549 +1,404 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2026 北海道冬之親子大縱走</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 北海道冬之親子大縱走</title>
+  <meta name="description" content="北海道親子冬季自駕行程：每日重點、行前清單、快速查閱。" />
+  <meta name="theme-color" content="#0369a1" />
 
-    <!-- Tailwind (CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Preconnect for faster CDN loading -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
 
-    <!-- React 18 (UMD) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Babel for JSX (dev-only; for production build, bundle with Vite/Webpack) -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- React 18 (production UMD) -->
+  <script defer src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script defer src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 
-    <!-- Lucide Icons (web) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Babel (kept for single-file JSX; if you later want fastest loading, migrate to Vite build) -->
+  <script defer src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <style>
-      /* Improve checkbox tap targets on mobile */
-      input[type="checkbox"] { touch-action: manipulation; }
-    </style>
-  </head>
+  <!-- Lucide Icons -->
+  <script defer src="https://unpkg.com/lucide@latest"></script>
 
-  <body class="bg-slate-50">
-    <div id="root"></div>
+  <style>
+    /* Better tap targets */
+    input[type="checkbox"] { width: 18px; height: 18px; }
+    /* Reduce layout shift for icon placeholders */
+    i[data-lucide] { display: inline-block; vertical-align: -0.15em; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <noscript>
+    <div class="max-w-3xl mx-auto p-4">
+      <div class="rounded-xl border border-slate-200 bg-white p-4">
+        這個頁面需要啟用 JavaScript 才能正常顯示。
+      </div>
+    </div>
+  </noscript>
 
-    <script type="text/babel">
-      const { useEffect, useMemo, useState } = React;
+  <div id="root"></div>
 
-      function Icon({ name, className = '', size = 16 }) {
-        // Render a Lucide placeholder node; we convert to SVG via lucide.createIcons()
-        const style = { width: size + 'px', height: size + 'px' };
-        return <i data-lucide={name} className={className} style={style} aria-hidden="true"></i>;
+  <script type="text/babel">
+    const { useEffect, useMemo, useRef, useState } = React;
+
+    // --- Utilities ---
+    const STORAGE_KEY = 'hokkaido-checklist-v1';
+
+    function safeParse(json, fallback) {
+      try {
+        const v = JSON.parse(json);
+        return v && typeof v === 'object' ? v : fallback;
+      } catch (_) {
+        return fallback;
       }
+    }
 
-      const flightsData = [
-        {
-          type: '去程 (Outbound)',
-          date: '1/30 (五)',
-          airline: '酷航 TR892',
-          depart: '12:25 TPE 桃園 T1',
-          arrive: '17:20 CTS 新千歲 Intl',
-          duration: '3h 55m',
-          planeTilt: 'rotate-45',
-        },
-        {
-          type: '回程 (Inbound)',
-          date: '2/4 (三)',
-          airline: '華航 CI131',
-          depart: '14:40 CTS 新千歲 Intl',
-          arrive: '18:15 TPE 桃園 T2',
-          duration: '4h 35m',
-          planeTilt: '-rotate-45',
-        }
-      ];
+    function saveChecklist(value) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(value)); } catch (_) {}
+    }
 
-      const itineraryData = [
-        {
-          day: 'Day 1',
-          date: '1/30 (五)',
-          title: '初抵北國 & 湯咖哩',
-          weather: '-1°C / -8°C',
-          highlights: [
-            { time: '17:20', text: '抵達新千歲機場，入境手續', icon: 'plane' },
-            { time: '18:30', text: '搭乘 JR 快速機場線 (Rapid Airport) 往札幌', icon: 'car' },
-            { time: '19:30', text: '飯店 Check-in (札幌三位神)', icon: 'hotel' },
-            { time: '21:00', text: '晚餐：Suage+ 湯咖哩', icon: 'utensils', highlight: true },
-          ],
-          food: {
-            dinner: {
-              name: 'Suage+ 本店 (湯咖哩)',
-              desc: '札幌湯咖哩名店，串燒式方便食用。營業時間較晚，適合當宵夜。',
-              link: 'https://maps.app.goo.gl/EYCcgCmuJbHxuxa6A'
-            },
-            note: '補給任務：請在狸小路 Seicomart 或麵包店買好明天的早餐！'
-          }
-        },
-        {
-          day: 'Day 2',
-          date: '1/31 (六)',
-          title: '神宮參拜 & 燒肉之夜',
-          weather: '-2°C / -9°C',
-          highlights: [
-            { time: '09:00', text: '北海道神宮 (吃判官餅)', icon: 'map-pin' },
-            { time: '10:55', text: '抵達炸豬排 Ichimatsu 排隊 (目標第一輪)', icon: 'clock', highlight: true },
-            { time: '13:30', text: '圓山動物園 (北極熊館)', icon: 'star' },
-            { time: '17:30', text: '晚餐：燒肉圓山 JIN', icon: 'utensils', highlight: true },
-          ],
-          food: {
-            lunch: {
-              name: '炸豬排 Ichimatsu (いちまつ)',
-              desc: '⚠️ 戰略：11:30開店，請10:55就去排隊！推薦加點「蛋」拌飯。',
-              link: 'https://maps.app.goo.gl/QP4LL58DokukoeRx8'
-            },
-            dinner: {
-              name: '燒肉圓山 JIN',
-              desc: '預約號碼: A3M4KAVGA2。精緻燒肉配紅酒。',
-              link: 'https://maps.app.goo.gl/mv7KbqTFQm7Z14pWA'
-            },
-            breakfast_spot: {
-              name: 'Sandria 三明治 (備案)',
-              link: 'https://maps.app.goo.gl/gCc4EhmYfqwDF89Y6'
-            }
-          }
-        },
-        {
-          day: 'Day 3',
-          date: '2/1 (日)',
-          title: '自駕啟程 & 雪地狂歡',
-          weather: '-3°C / -12°C',
-          highlights: [
-            { time: '09:00', text: '退房，前往租車', icon: 'car' },
-            { time: '10:00', text: '🚗 行李特攻：寄放大行李至格拉斯麗飯店', icon: 'shopping-bag', highlight: true },
-            { time: '11:20', text: '瀧野鈴蘭公園 (玩雪胎)', icon: 'snowflake' },
-            { time: '15:30', text: '支笏湖冰濤祭', icon: 'star' },
-            { time: '18:30', text: '入住森之空庭 (記得帶泳衣)', icon: 'hotel' },
-          ],
-          food: {
-            lunch: {
-              name: '自駕途中隨選',
-              desc: '建議在路途中的休息站或拉麵店解決。',
-              options: [
-                { name: '蕎麥麵', link: 'https://maps.app.goo.gl/15gbsb9DPxS4Jiba7' },
-                { name: '拉麵', link: 'https://maps.app.goo.gl/SEEdFNWL4KVcgt6PA' }
-              ]
-            },
-            dinner: {
-              name: '森之空庭飯店自助餐',
-              desc: '飯店內享用，種類豐富，適合小孩。'
-            }
-          }
-        },
-        {
-          day: 'Day 4',
-          date: '2/2 (一)',
-          title: '企鵝遊行 & 洞爺補給',
-          weather: '-2°C / -10°C',
-          highlights: [
-            { time: '10:30', text: '尼克斯海洋公園 (企鵝遊行)', icon: 'star' },
-            { time: '14:00', text: '昭和新山熊牧場 (餵熊)', icon: 'map-pin' },
-            { time: '16:00', text: '洞爺湖溫泉街 (晚餐/補給)', icon: 'utensils' },
-            { time: '18:30', text: '入住可可飯店 (湖景第一排)', icon: 'hotel' },
-          ],
-          food: {
-            lunch: {
-              name: 'Maruhira 或 Lake Hill Farm',
-              desc: '視車程決定吃海鮮丼或漢堡冰淇淋。',
-              link: 'https://ctgirlblog.com/maruhira/#google_vignette'
-            },
-            dinner: {
-              name: '洞爺湖溫泉街',
-              desc: '推薦：Sendoan(和食) 或 Hydune(漢堡排)。',
-              alert: '⚠️ 重要：晚餐後務必在 Seicomart 買好宵夜與明早早餐！可可飯店無早餐。',
-              link: 'https://maps.app.goo.gl/sNQy1JKWZ9FcLfDK7'
-            }
-          }
-        },
-        {
-          day: 'Day 5',
-          date: '2/3 (二)',
-          title: 'F Village & 購物',
-          weather: '-1°C / -8°C',
-          highlights: [
-            { time: '10:00', text: '離開洞爺湖，長途駕駛 (100min)', icon: 'car' },
-            { time: '11:40', text: 'F Village (Es Con Field) 參觀午餐', icon: 'star' },
-            { time: '14:30', text: '三井 Outlet Park 購物', icon: 'shopping-bag' },
-            { time: '17:00', text: '返回札幌格拉斯麗 (不需還車)', icon: 'hotel' },
-            { time: '18:30', text: '雪祭前夜 (大通公園)', icon: 'snowflake' },
-          ],
-          food: {
-            lunch: {
-              name: 'F Village 美食街 (Tower 11)',
-              desc: '推薦 Sora to Shiba 精釀啤酒披薩 或 Truffle Bakery。',
-              link: 'https://maps.app.goo.gl/umYR8YU9KYwGj6oB6'
-            },
-            dinner: {
-              name: '十勝豚丼 / 根室花丸',
-              desc: '⚠️ 建議在 Outlet 或北廣島吃完再回市區，避開市區排隊人潮。',
-              link: 'https://maps.app.goo.gl/sample_ippin'
-            }
-          }
-        },
-        {
-          day: 'Day 6',
-          date: '2/4 (三)',
-          title: '機場衝刺 & 返家',
-          weather: '0°C / -6°C',
-          highlights: [
-            { time: '09:00', text: '飯店早餐 (海鮮丼吃到飽)', icon: 'utensils' },
-            { time: '10:00', text: '搭乘 JR 前往機場', icon: 'car' },
-            { time: '11:00', text: '機場午餐 (拉麵道場)', icon: 'utensils' },
-            { time: '14:40', text: 'CI131 起飛返台', icon: 'plane' },
-          ],
-          food: {
-            breakfast: {
-              name: '格拉斯麗飯店',
-              desc: '著名的勝手丼(海鮮丼)吃到飽，請盡情享用。'
-            },
-            lunch: {
-              name: '一幻拉麵 (機場店)',
-              desc: '把握最後機會吃蝦味拉麵！',
-              link: 'https://maps.app.goo.gl/sample_ichigen'
-            }
-          }
-        }
-      ];
+    function loadChecklist(fallback) {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? safeParse(saved, fallback) : fallback;
+      } catch (_) {
+        return fallback;
+      }
+    }
 
-      const defaultChecklist = {
-        docs: [
-          { id: 1, text: '護照 (有效期6個月以上)', checked: false },
-          { id: 2, text: '駕照正本 + 日文譯本', checked: false },
-          { id: 3, text: 'VJW 入境與海關 QR Code', checked: false },
-          { id: 4, text: '電子機票 (TR892 / CI131)', checked: false },
-          { id: 5, text: '飯店訂房憑證 (尤其是 Day 5 寄行李用)', checked: false },
-        ],
-        gear: [
-          { id: 6, text: '雪靴 (防水防滑)', checked: false },
-          { id: 7, text: '防水手套 (玩雪必備)', checked: false },
-          { id: 8, text: '泳衣 (森之空庭用)', checked: false },
-          { id: 9, text: '墨鏡 (防雪盲)', checked: false },
-          { id: 10, text: '保濕乳液/護唇膏', checked: false },
+    function downloadJson(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Lucide Icon wrapper (single-file friendly)
+    function Icon({ name, className = 'w-4 h-4' }) {
+      return <i data-lucide={name} className={className} aria-hidden="true"></i>;
+    }
+
+    const DEFAULT_CHECKLIST = {
+      docs: [
+        { id: 1, text: '護照 (有效期6個月以上)', checked: false },
+        { id: 2, text: '駕照正本 + 日文譯本', checked: false },
+        { id: 3, text: 'VJW 入境與海關 QR Code', checked: false },
+        { id: 4, text: '電子機票 (TR892 / CI131)', checked: false },
+        { id: 5, text: '飯店訂房憑證 (尤其是 Day 5 寄行李用)', checked: false },
+      ],
+      gear: [
+        { id: 6, text: '雪靴 (防水防滑)', checked: false },
+        { id: 7, text: '防水手套 (玩雪必備)', checked: false },
+        { id: 8, text: '泳衣 (森之空庭用)', checked: false },
+        { id: 9, text: '墨鏡 (防雪盲)', checked: false },
+        { id: 10, text: '保濕乳液/護唇膏', checked: false },
+      ]
+    };
+
+    // You can expand these later; kept concise for fast scan on mobile.
+    const ITINERARY = [
+      {
+        day: 'Day 1',
+        date: '1/30',
+        title: '初抵北國 & 湯咖哩',
+        weather: '-1 / -8°C',
+        items: [
+          { time: '17:20', text: '抵達新千歲機場', icon: 'plane' },
+          { time: '18:30', text: 'JR 前往札幌', icon: 'train' },
+          { time: '21:00', text: 'Suage+ 湯咖哩', icon: 'utensils', highlight: true },
         ]
+      },
+      {
+        day: 'Day 2',
+        date: '1/31',
+        title: '神宮 & 燒肉',
+        weather: '-2 / -9°C',
+        items: [
+          { time: '09:00', text: '北海道神宮', icon: 'map-pin' },
+          { time: '10:55', text: '炸豬排 Ichimatsu 排隊', icon: 'clock', highlight: true },
+          { time: '17:30', text: '燒肉圓山 JIN', icon: 'utensils', highlight: true },
+        ]
+      },
+      {
+        day: 'Day 3',
+        date: '2/1',
+        title: '自駕 & 玩雪',
+        weather: '-3 / -12°C',
+        items: [
+          { time: '10:00', text: '寄放大行李', icon: 'shopping-bag', highlight: true },
+          { time: '11:20', text: '瀧野鈴蘭公園 玩雪', icon: 'snowflake' },
+          { time: '18:30', text: '入住森之空庭', icon: 'hotel' },
+        ]
+      },
+      {
+        day: 'Day 4',
+        date: '2/2',
+        title: '企鵝 & 洞爺湖',
+        weather: '-2 / -10°C',
+        items: [
+          { time: '10:30', text: '尼克斯海洋公園', icon: 'star' },
+          { time: '14:00', text: '昭和新山 熊牧場', icon: 'paw-print' },
+          { time: '18:30', text: '洞爺湖飯店入住', icon: 'hotel' },
+        ]
+      },
+      {
+        day: 'Day 5',
+        date: '2/3',
+        title: 'F Village & 購物',
+        weather: '-1 / -8°C',
+        items: [
+          { time: '11:40', text: 'F Village (ES CON FIELD)', icon: 'star', highlight: true },
+          { time: '14:30', text: '三井 Outlet', icon: 'shopping-bag' },
+          { time: '18:30', text: '雪祭前夜', icon: 'snowflake' },
+        ]
+      },
+      {
+        day: 'Day 6',
+        date: '2/4',
+        title: '返家',
+        weather: '0 / -6°C',
+        items: [
+          { time: '09:00', text: '海鮮丼早餐', icon: 'utensils', highlight: true },
+          { time: '11:00', text: '機場午餐', icon: 'utensils' },
+          { time: '14:40', text: '起飛返台', icon: 'plane' },
+        ]
+      },
+    ];
+
+    function HokkaidoTripApp() {
+      const tabsRef = useRef(null);
+      const [activeTab, setActiveTab] = useState(0);
+      const [toast, setToast] = useState('');
+      const [checklist, setChecklist] = useState(() => loadChecklist(DEFAULT_CHECKLIST));
+
+      // Persist
+      useEffect(() => saveChecklist(checklist), [checklist]);
+
+      // Render lucide icons after each paint
+      useEffect(() => {
+        if (window.lucide && window.lucide.createIcons) {
+          window.lucide.createIcons();
+        }
+      });
+
+      // Keep active tab button visible
+      useEffect(() => {
+        const el = tabsRef.current;
+        if (!el) return;
+        const btn = el.querySelector(`[data-tab="${activeTab}"]`);
+        if (btn && btn.scrollIntoView) btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }, [activeTab]);
+
+      const stats = useMemo(() => {
+        const all = [...checklist.docs, ...checklist.gear];
+        const done = all.filter(x => x.checked).length;
+        return { done, total: all.length };
+      }, [checklist]);
+
+      const toggleCheck = (category, id) => {
+        setChecklist(prev => ({
+          ...prev,
+          [category]: prev[category].map(item => item.id === id ? { ...item, checked: !item.checked } : item)
+        }));
       };
 
-      function HokkaidoTripApp() {
-        const [activeTab, setActiveTab] = useState(0);
-        const [checklist, setChecklist] = useState(defaultChecklist);
+      const setAll = (checked) => {
+        setChecklist(prev => ({
+          docs: prev.docs.map(i => ({ ...i, checked })),
+          gear: prev.gear.map(i => ({ ...i, checked })),
+        }));
+        setToast(checked ? '已全勾選' : '已全清除');
+        window.setTimeout(() => setToast(''), 1600);
+      };
 
-        const flights = useMemo(() => flightsData, []);
-        const itinerary = useMemo(() => itineraryData, []);
+      const exportChecklist = () => {
+        downloadJson('hokkaido-checklist.json', checklist);
+        setToast('已匯出 JSON');
+        window.setTimeout(() => setToast(''), 1600);
+      };
 
-        const toggleCheck = (category, id) => {
-          setChecklist(prev => ({
-            ...prev,
-            [category]: prev[category].map(item =>
-              item.id === id ? { ...item, checked: !item.checked } : item
-            )
-          }));
-        };
+      const importChecklist = async (file) => {
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const parsed = safeParse(text, null);
+          if (!parsed || !parsed.docs || !parsed.gear) throw new Error('Bad format');
+          setChecklist(parsed);
+          setToast('已匯入 JSON');
+        } catch (_) {
+          setToast('匯入失敗：格式不正確');
+        }
+        window.setTimeout(() => setToast(''), 1800);
+      };
 
-        useEffect(() => {
-          // Turn <i data-lucide="..."></i> into SVGs
-          if (window.lucide && window.lucide.createIcons) {
-            window.lucide.createIcons();
-          }
-        });
+      const day = ITINERARY[activeTab];
 
-        return (
-          <div className="min-h-screen bg-slate-50 font-sans pb-20">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-sky-600 to-blue-800 text-white p-6 shadow-lg sticky top-0 z-50">
-              <div className="max-w-3xl mx-auto">
-                <h1 className="text-2xl font-bold mb-1">2026 北海道冬之親子大縱走</h1>
-                <div className="flex items-center text-sky-100 text-sm gap-4">
-                  <span className="flex items-center gap-1">
-                    <Icon name="calendar" size={14} /> 1/30 - 2/4
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Icon name="car" size={14} /> 自駕探險
-                  </span>
+      return (
+        <div className="min-h-screen pb-20">
+          <header className="bg-gradient-to-r from-sky-600 to-blue-800 text-white sticky top-0 z-50 shadow">
+            <div className="max-w-3xl mx-auto p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight">2026 北海道冬之親子大縱走</h1>
+                  <div className="mt-1 text-sky-100 text-sm flex flex-wrap gap-x-4 gap-y-1">
+                    <span className="inline-flex items-center gap-1"><Icon name="calendar" className="w-4 h-4" />1/30 – 2/4</span>
+                    <span className="inline-flex items-center gap-1"><Icon name="car" className="w-4 h-4" />自駕親子行</span>
+                    <span className="inline-flex items-center gap-1"><Icon name="check-square" className="w-4 h-4" />清單 {stats.done}/{stats.total}</span>
+                  </div>
+                </div>
+                <div className="hidden sm:flex items-center gap-2">
+                  <a className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-semibold" href="#checklist">行前清單</a>
+                  <a className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-semibold" href="#itinerary">每日行程</a>
                 </div>
               </div>
             </div>
+          </header>
 
-            <div className="max-w-3xl mx-auto p-4 space-y-6">
-              {/* Hero Section */}
-              <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-video">
-                <img
-                  src="https://images.unsplash.com/photo-1548184967-16013a7c364e?q=80&w=2070&auto=format&fit=crop"
-                  alt="Hokkaido Winter"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
-                  <p className="text-white font-bold text-lg">4大3小・男孩團的雪國冒險</p>
-                  <p className="text-gray-200 text-sm">雪地放電 x 動物互動 x 溫泉療癒</p>
+          <main className="max-w-3xl mx-auto p-4 space-y-6">
+            {/* Itinerary */}
+            <section id="itinerary" className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-bold">每日行程</h2>
+                <div className="text-sm text-slate-500 inline-flex items-center gap-2">
+                  <Icon name="snowflake" className="w-4 h-4 text-sky-500" />
+                  <span>{day.weather}</span>
                 </div>
               </div>
 
-              {/* Flight Info */}
-              <div className="bg-white rounded-xl shadow-sm p-4 border border-slate-100">
-                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                  <span className="text-sky-600"><Icon name="plane" size={18} /></span> 航班資訊
-                </h2>
-                <div className="grid gap-3">
-                  {flights.map((flight, idx) => (
-                    <div key={idx} className="flex flex-col bg-slate-50 p-3 rounded-lg border border-slate-200">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className={`text-xs font-bold px-2 py-1 rounded text-white ${idx === 0 ? 'bg-sky-500' : 'bg-orange-500'}`}>
-                          {flight.type}
+              <div ref={tabsRef} className="mt-3 flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+                {ITINERARY.map((d, i) => (
+                  <button
+                    key={i}
+                    data-tab={i}
+                    onClick={() => setActiveTab(i)}
+                    className={`shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition ${
+                      activeTab === i
+                        ? 'bg-sky-600 text-white shadow'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                    aria-current={activeTab === i ? 'page' : undefined}
+                  >
+                    <div className="text-xs opacity-80">{d.date}</div>
+                    <div>{d.day}</div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-3">
+                <h3 className="text-xl font-bold tracking-tight">{day.title}</h3>
+
+                <div className="mt-3 space-y-3">
+                  {day.items.map((it, idx) => (
+                    <div key={idx} className={`flex items-start gap-3 rounded-xl p-3 ${it.highlight ? 'bg-orange-50 border border-orange-100' : 'bg-slate-50'}`}>
+                      <div className="w-14 shrink-0 font-mono text-sm font-bold text-slate-500">{it.time}</div>
+                      <div className="flex-1 flex items-start gap-2">
+                        <span className={`${it.highlight ? 'text-orange-600' : 'text-slate-500'} mt-0.5`}>
+                          <Icon name={it.icon} className="w-4 h-4" />
                         </span>
-                        <span className="text-xs font-mono text-slate-500">{flight.date}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-slate-800">
-                        <div className="text-center">
-                          <p className="text-xl font-bold">{flight.depart.split(' ')[0]}</p>
-                          <p className="text-xs text-slate-500">{flight.depart.split(' ')[1]}</p>
-                        </div>
-                        <div className="flex flex-col items-center px-4 flex-1">
-                          <p className="text-xs text-slate-500 mb-1">{flight.duration}</p>
-                          <div className="w-full h-px bg-slate-300 relative">
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-50 px-1">
-                              <span className={flight.planeTilt}>
-                                <Icon name="plane" size={22} className="text-slate-700" />
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-xs font-bold text-slate-600 mt-1">{flight.airline}</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xl font-bold">{flight.arrive.split(' ')[0]}</p>
-                          <p className="text-xs text-slate-500">{flight.arrive.split(' ')[1]}</p>
+                        <div className="text-slate-800">
+                          <div className={`${it.highlight ? 'font-bold' : 'font-medium'}`}>{it.text}</div>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+            </section>
 
-              {/* Daily Itinerary Tabs */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <div className="flex whitespace-nowrap border-b border-slate-100 bg-slate-50">
-                    {itinerary.map((item, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveTab(idx)}
-                        className={`px-5 py-4 text-sm font-bold transition-colors ${
-                          activeTab === idx
-                            ? 'text-sky-600 border-b-2 border-sky-600 bg-white'
-                            : 'text-slate-500 hover:text-slate-700'
-                        }`}
-                      >
-                        <div className="text-xs opacity-70 mb-1">{item.date}</div>
-                        {item.day}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h2 className="text-2xl font-bold text-slate-800">{itinerary[activeTab].title}</h2>
-                      <div className="flex items-center gap-2 mt-1 text-sm text-slate-500">
-                        <span className="text-sky-400"><Icon name="snowflake" size={14} /></span>
-                        預測氣溫: {itinerary[activeTab].weather}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Timeline */}
-                  <div className="space-y-6 relative pl-4 border-l-2 border-slate-100 ml-2">
-                    {itinerary[activeTab].highlights.map((event, idx) => (
-                      <div key={idx} className="relative">
-                        <div className={`absolute -left-[21px] top-1 w-4 h-4 rounded-full border-2 border-white ${event.highlight ? 'bg-orange-500' : 'bg-slate-300'}`}></div>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                          <span className="font-mono text-sm font-bold text-slate-500 w-12">{event.time}</span>
-                          <div className={`flex-1 p-3 rounded-lg ${event.highlight ? 'bg-orange-50 border border-orange-100' : 'bg-slate-50'}`}>
-                            <div className="flex items-start gap-2">
-                              <span className={`mt-0.5 ${event.highlight ? 'text-orange-500' : 'text-slate-400'}`}>
-                                <Icon name={event.icon} size={16} />
-                              </span>
-                              <span className={`text-sm ${event.highlight ? 'font-bold text-slate-800' : 'text-slate-700'}`}>
-                                {event.text}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Dining Card */}
-                  {itinerary[activeTab].food && (
-                    <div className="mt-8 bg-white border-2 border-dashed border-amber-200 rounded-xl p-4 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 bg-amber-200 text-amber-800 text-xs font-bold px-2 py-1 rounded-bl-lg">
-                        Foodie Guide
-                      </div>
-                      <h3 className="font-bold text-amber-800 mb-4 flex items-center gap-2">
-                        <Icon name="utensils" size={18} /> 今日美食戰略
-                      </h3>
-
-                      <div className="space-y-4">
-                        {itinerary[activeTab].food.lunch && (
-                          <div className="flex gap-3">
-                            <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 text-xs font-bold">午</div>
-                            <div>
-                              <div className="font-bold text-slate-800 flex items-center gap-2">
-                                {itinerary[activeTab].food.lunch.name}
-                                {itinerary[activeTab].food.lunch.link && (
-                                  <a href={itinerary[activeTab].food.lunch.link} target="_blank" rel="noreferrer" className="text-sky-500 hover:text-sky-600">
-                                    <Icon name="map" size={14} />
-                                  </a>
-                                )}
-                              </div>
-                              <p className="text-sm text-slate-600 mt-1">{itinerary[activeTab].food.lunch.desc}</p>
-                              {itinerary[activeTab].food.lunch.options && (
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                  {itinerary[activeTab].food.lunch.options.map((opt, i) => (
-                                    <a key={i} href={opt.link} target="_blank" rel="noreferrer" className="text-xs bg-slate-100 px-2 py-1 rounded text-slate-600 hover:bg-slate-200">
-                                      {opt.name}
-                                    </a>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {itinerary[activeTab].food.dinner && (
-                          <div className="flex gap-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 text-xs font-bold">晚</div>
-                            <div>
-                              <div className="font-bold text-slate-800 flex items-center gap-2">
-                                {itinerary[activeTab].food.dinner.name}
-                                {itinerary[activeTab].food.dinner.link && (
-                                  <a href={itinerary[activeTab].food.dinner.link} target="_blank" rel="noreferrer" className="text-sky-500 hover:text-sky-600">
-                                    <Icon name="map" size={14} />
-                                  </a>
-                                )}
-                              </div>
-                              <p className="text-sm text-slate-600 mt-1">{itinerary[activeTab].food.dinner.desc}</p>
-                              {itinerary[activeTab].food.dinner.alert && (
-                                <div className="mt-2 text-xs bg-red-50 text-red-600 p-2 rounded border border-red-100 flex items-start gap-1">
-                                  <span className="mt-0.5 shrink-0"><Icon name="alert-triangle" size={12} /></span>
-                                  {itinerary[activeTab].food.dinner.alert}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {itinerary[activeTab].food.note && (
-                          <div className="mt-2 p-2 bg-green-50 text-green-700 text-sm rounded flex items-center gap-2">
-                            <Icon name="check-square" size={14} /> {itinerary[activeTab].food.note}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Quick Links / Map Pack */}
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-4 text-white shadow-md flex items-center justify-between">
+            {/* Checklist */}
+            <section id="checklist" className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <h3 className="font-bold text-lg">Google Maps 懶人包</h3>
-                  <p className="text-emerald-100 text-sm">一鍵儲存所有景點與餐廳</p>
+                  <h2 className="text-lg font-bold">行前檢查清單</h2>
+                  <div className="mt-1 text-sm text-slate-500">會自動記住勾選狀態（同一台裝置/瀏覽器）</div>
                 </div>
-                <a href="https://maps.app.goo.gl/sample_all" target="_blank" rel="noreferrer" className="bg-white text-emerald-600 px-4 py-2 rounded-lg font-bold text-sm shadow hover:bg-emerald-50 transition-colors">
-                  開啟地圖
-                </a>
-              </div>
 
-              {/* Hotels Grid */}
-              <div>
-                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                  <span className="text-purple-600"><Icon name="hotel" size={18} /></span> 住宿安排
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-slate-800">札幌三位神飯店</h3>
-                      <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Day 1-2</span>
-                    </div>
-                    <p className="text-sm text-slate-500 mt-1">大通公園旁，頂樓大浴場</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm border-l-4 border-l-yellow-400">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-slate-800">森之空庭</h3>
-                      <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Day 3</span>
-                    </div>
-                    <p className="text-sm text-slate-500 mt-1">親子必住！溫泉海灘 (帶泳衣)</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-slate-800">可可飯店</h3>
-                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">Day 4</span>
-                    </div>
-                    <p className="text-sm text-slate-500 mt-1">洞爺湖第一排，無早餐</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-slate-800">格拉斯麗札幌</h3>
-                      <span className="text-xs bg-sky-100 text-sky-700 px-2 py-1 rounded">Day 5</span>
-                    </div>
-                    <p className="text-sm text-slate-500 mt-1">車站直結，海鮮丼早餐</p>
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => setAll(true)} className="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800">全勾</button>
+                  <button onClick={() => setAll(false)} className="px-3 py-2 rounded-xl bg-slate-100 text-slate-800 text-sm font-semibold hover:bg-slate-200">全清</button>
+                  <button onClick={exportChecklist} className="px-3 py-2 rounded-xl bg-slate-100 text-slate-800 text-sm font-semibold hover:bg-slate-200">匯出</button>
+                  <label className="px-3 py-2 rounded-xl bg-slate-100 text-slate-800 text-sm font-semibold hover:bg-slate-200 cursor-pointer">
+                    匯入
+                    <input type="file" accept="application/json" className="hidden" onChange={(e) => importChecklist(e.target.files?.[0])} />
+                  </label>
                 </div>
               </div>
 
-              {/* Checklist */}
-              <div className="bg-white rounded-xl shadow-sm p-5 border border-slate-100">
-                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                  <span className="text-green-600"><Icon name="check-square" size={18} /></span> 行前檢查清單
-                </h2>
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">重要文件</h4>
-                    <div className="space-y-2">
-                      {checklist.docs.map(item => (
-                        <label key={item.id} className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={item.checked}
-                            onChange={() => toggleCheck('docs', item.id)}
-                            className="w-5 h-5 rounded border-slate-300 text-green-600 focus:ring-green-500"
-                          />
-                          <span className={item.checked ? 'text-slate-400 line-through decoration-slate-400' : 'text-slate-700'}>
-                            {item.text}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">衣物與裝備</h4>
-                    <div className="space-y-2">
-                      {checklist.gear.map(item => (
-                        <label key={item.id} className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={item.checked}
-                            onChange={() => toggleCheck('gear', item.id)}
-                            className="w-5 h-5 rounded border-slate-300 text-green-600 focus:ring-green-500"
-                          />
-                          <span className={item.checked ? 'text-slate-400 line-through decoration-slate-400' : 'text-slate-700'}>
-                            {item.text}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+              <div className="mt-4">
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden" aria-hidden="true">
+                  <div className="h-full bg-emerald-500" style={{ width: `${Math.round((stats.done / Math.max(stats.total, 1)) * 100)}%` }} />
                 </div>
+                <div className="mt-2 text-sm text-slate-500">完成度：{stats.done}/{stats.total}</div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 gap-5">
+                <ChecklistGroup
+                  title="重要文件"
+                  items={checklist.docs}
+                  onToggle={(id) => toggleCheck('docs', id)}
+                />
+                <ChecklistGroup
+                  title="衣物與裝備"
+                  items={checklist.gear}
+                  onToggle={(id) => toggleCheck('gear', id)}
+                />
+              </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="text-center text-xs text-slate-400 py-4">
+              單檔版本（GitHub Pages 友善）・如果你想要更快載入，我可以再幫你改成 Vite build 版本。
+            </footer>
+          </main>
+
+          {/* Toast */}
+          {toast && (
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+              <div className="rounded-full bg-slate-900 text-white px-4 py-2 text-sm shadow-lg">
+                {toast}
               </div>
             </div>
-          </div>
-        );
-      }
+          )}
+        </div>
+      );
+    }
 
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<HokkaidoTripApp />);
-    </script>
-  </body>
+    function ChecklistGroup({ title, items, onToggle }) {
+      const done = items.filter(x => x.checked).length;
+      return (
+        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-slate-700">{title}</h3>
+            <div className="text-xs text-slate-500">{done}/{items.length}</div>
+          </div>
+          <div className="mt-3 space-y-2">
+            {items.map((item) => (
+              <label key={item.id} className="flex items-start gap-3 p-2 rounded-xl hover:bg-white cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!item.checked}
+                  onChange={() => onToggle(item.id)}
+                  className="mt-0.5"
+                />
+                <span className={item.checked ? 'text-slate-400 line-through decoration-slate-400' : 'text-slate-800'}>
+                  {item.text}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Mount
+    ReactDOM.createRoot(document.getElementById('root')).render(<HokkaidoTripApp />);
+  </script>
+</body>
 </html>
