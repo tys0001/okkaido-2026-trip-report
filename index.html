@@ -298,23 +298,7 @@
     .itemBody{padding:12px 14px 14px}
     .itemBody ul{margin:0; padding-left:18px}
     .itemBody li{margin:7px 0; color:var(--text); font-size:13px; line-height:1.55}
-    .itemBody .sub{color:var(--muted); font-size:12px}
     .hr{height:1px; background:var(--line); margin:16px 0}
-    .checklist{
-      display:grid; gap:10px;
-      padding:4px 0;
-    }
-    .ck{
-      display:flex; gap:10px; align-items:flex-start;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      padding:10px 12px;
-      border-radius: 14px;
-    }
-    [data-theme="light"] .ck{background: rgba(15,20,35,.02)}
-    .ck input{margin-top:3px; transform: scale(1.15)}
-    .ck label{cursor:pointer; font-size:13px; line-height:1.5}
-    .ck small{display:block; color:var(--muted2); margin-top:4px}
     .footer{
       margin-top: 22px;
       color: var(--muted2);
@@ -363,6 +347,48 @@
       margin-left:8px;
       vertical-align:middle;
     }
+    .mealBox{
+      margin-top:12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.02);
+      border-radius: 14px;
+      padding:12px;
+    }
+    [data-theme="light"] .mealBox{background: rgba(15,20,35,.02)}
+    .mealTitle{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin:0 0 10px;
+      font-size:13px;
+      color: var(--text);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .mealGrid{display:grid; gap:10px}
+    .mealRow{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding:10px 12px;
+    }
+    [data-theme="light"] .mealRow{background: rgba(15,20,35,.02)}
+    .mealRow .head{
+      display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px;
+      margin-bottom:6px;
+    }
+    .mealRow .what{font-size:13px; font-weight:700}
+    .mealRow .when{font-size:12px; color:var(--muted2)}
+    .mealRow .desc{font-size:12px; color:var(--muted); line-height:1.55; margin-top:6px}
+    .mealLinks{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+    .mealLinks a{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      padding:8px 10px;
+      border-radius: 12px;
+      text-decoration:none;
+      font-size:12px;
+    }
+    [data-theme="light"] .mealLinks a{background: rgba(15,20,35,.02)}
+    .mealLinks a:hover{background: rgba(255,255,255,.07)}
   </style>
 </head>
 
@@ -382,8 +408,8 @@
         <a class="chip" href="#flights">航班</a>
         <a class="chip" href="#stays">住宿</a>
         <a class="chip" href="#itinerary">每日行程</a>
+        <a class="chip" href="#food">飲食規劃</a>
         <a class="chip" href="#hours">冬季營業時間</a>
-        <a class="chip" href="#checklist">行前檢核</a>
       </nav>
 
       <div class="actions">
@@ -422,7 +448,7 @@
                   開啟 Google Maps 行程清單
                 </a>
                 <p class="mini" style="margin-top:8px;">
-                  替換方式：在此檔案搜尋 <span class="kbd">PASTE_YOUR_GOOGLE_MAPS_LINK_HERE</span>，換成你企劃書裡的連結。
+                  替換方式：在此檔案搜尋 <span class="kbd">PASTE_YOUR_GOOGLE_MAPS_LINK_HERE</span>，換成你的 Google Maps 連結。
                 </p>
               </div>
               <div>
@@ -585,7 +611,7 @@
             </div>
 
             <div class="search" aria-label="行程搜尋">
-              <input id="q" type="search" placeholder="搜尋：企鵝、熊牧場、Outlet、雪祭、鈴蘭公園、支笏湖..." autocomplete="off" />
+              <input id="q" type="search" placeholder="搜尋：企鵝、熊牧場、Outlet、雪祭、鈴蘭公園、支笏湖、豬排..." autocomplete="off" />
               <button class="btn" type="button" id="clearBtn">清除</button>
             </div>
           </div>
@@ -593,7 +619,19 @@
           <div class="timeline" id="timeline" aria-live="polite"></div>
 
           <div class="footer">
-            小提醒：日程卡片右上角的標籤中，<span class="badge">重點日</span> 表示強烈建議準時出發、避免晚到造成體驗下降。
+            小提醒：日程卡片右上角的標籤中，<span class="badge">重點日</span> 表示建議準時出發，避免晚到造成體驗下降。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="food">
+      <h2>飲食規劃</h2>
+      <div class="card">
+        <div class="pad">
+          <div class="timeline" id="foodBox" aria-live="polite"></div>
+          <div class="footer">
+            提醒：若遇到臨時排隊或孩子狀態不佳，優先保留「晚餐」與「隔天早餐補給」，中餐可改成就近解決。
           </div>
         </div>
       </div>
@@ -624,7 +662,7 @@
                   <td>圓山動物園</td>
                   <td>09:30–16:00</td>
                   <td>15:30</td>
-                  <td>真的非常早關門</td>
+                  <td>非常早關門</td>
                 </tr>
                 <tr>
                   <td>瀧野鈴蘭丘陵公園</td>
@@ -658,24 +696,8 @@
             </ul>
             <div class="hr"></div>
             <p class="mini" style="margin:0;">
-              若你要我把每個景點補上「Google Maps 按鈕（可一鍵導航）」：把你那份景點清單/連結貼我，我可以直接幫你把連結寫進每一個行程卡。
+              若你想把「每家餐廳名稱」也顯示在卡片上：把餐廳名稱貼我（或我幫你用連結查名），我就能把按鈕文字從「Google Maps」改成實際店名。
             </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="checklist">
-      <h2>行前準備檢核</h2>
-      <div class="card">
-        <div class="pad">
-          <div class="checklist" id="checklistBox" aria-label="行前檢核清單"></div>
-          <div class="hr"></div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
-            <div class="mini">
-              已勾選項目會自動儲存在瀏覽器，下次打開仍會保留。
-            </div>
-            <button class="btn" id="resetChecklistBtn" type="button">清空勾選</button>
           </div>
         </div>
       </div>
@@ -692,15 +714,16 @@
         day: 1,
         date: "1/30（五）",
         title: "初抵北國與基礎補給",
-        tags: ["市區", "補給"],
+        tags: ["市區", "補給", "飲食"],
         key: false,
         bullets: [
           "17:20 抵達新千歲機場，入境與領行李預估約 1 小時。",
           "18:30 搭 JR 快速機場線前往札幌站（約 40 分）。",
           "19:30–20:00 飯店 Check-in（大通公園旁）。",
-          "晚餐/宵夜：依指定餐廳或備案（狸小路、唐吉訶德、便利商店熟食）。",
-          "購物重點：狸小路商店街做生存補給。"
+          "晚餐 21:00（見飲食規劃）：抵達後直接去吃，避免太晚沒東西。",
+          "買 1/31 早餐：麵包店與便利商店先補齊。"
         ],
+        mealsRefDay: 1,
         note: "務必確認餐廳最後點餐時間，避免太晚到。",
         noteType: "warn"
       },
@@ -708,14 +731,16 @@
         day: 2,
         date: "1/31（六）",
         title: "神社與動物園、市區巡禮",
-        tags: ["市區", "動物"],
+        tags: ["市區", "動物", "飲食"],
         key: false,
         bullets: [
           "09:00 前往北海道神宮（從大通出發約 15–20 分）。",
           "行程：北海道神宮 → 圓山動物園 → 晚餐。",
+          "午餐（10:50 排隊，11:30 開店）：豬排限量，建議早到。",
           "17:30 晚餐：ワインとヤキニク円山JIN（預約 17:30，用餐 2 小時；預約號碼 A3M4KAVGA2）。",
-          "購物重點：神宮判官餅、御守；動物園北極熊周邊；札幌車站百圓商店。"
+          "買 2/1 早餐：麵包店與便利商店先補齊。"
         ],
+        mealsRefDay: 2,
         note: "圓山動物園很早關門，當天行程建議前段就把動物園完成。",
         noteType: "warn"
       },
@@ -723,7 +748,7 @@
         day: 3,
         date: "2/01（日）",
         title: "自駕啟程與輕裝上路（重點日）",
-        tags: ["自駕", "玩雪", "重點日"],
+        tags: ["自駕", "玩雪", "重點日", "飲食"],
         key: true,
         bullets: [
           "09:00 退房後帶全部行李前往租車公司。",
@@ -731,12 +756,14 @@
           "10:00 到 Hotel Gracery 札幌寄放大行李（出示 2/3 訂房單）。只留兩晚衣物、泳衣、保暖品、車上零食在車上。",
           "10:30 出發瀧野鈴蘭丘陵公園（約 50–60 分）。",
           "11:20 瀧野鈴蘭公園玩雪：雪胎、滑雪盆（超長滑道可反覆玩）。",
+          "午餐：附近備案多選（見飲食規劃）。",
           "14:30 前往支笏湖（約 60 分，注意黑冰）。",
           "15:30 支笏湖冰濤祭（入夜點燈更漂亮）。",
           "17:30 前往北湯澤（約 50 分）。",
-          "18:30 入住森之空庭（記得帶泳衣玩溫泉海灘）。",
-          "購物重點：路途中超市（Ralse / Aeon）補零食與大瓶水。"
+          "18:30 入住森之空庭，晚餐在飯店。",
+          "購物重點：路途中超市補零食與大瓶水。"
         ],
+        mealsRefDay: 3,
         note: "雪地山路請慢行，特別注意黑冰；行李輕裝策略是當天順不順的關鍵。",
         noteType: "good"
       },
@@ -744,18 +771,19 @@
         day: 4,
         date: "2/02（一）",
         title: "企鵝與熊牧場、洞爺湖補給戰",
-        tags: ["自駕", "動物"],
+        tags: ["自駕", "動物", "飲食"],
         key: false,
         bullets: [
           "09:30 出發前往登別（約 60 分）。",
           "10:30 登別尼克斯海洋公園（企鵝遊行）。",
+          "午餐：海產/丼飯/燒肉/漢堡（見飲食規劃，先選好 1–2 家當主力）。",
           "13:00 前往昭和新山（約 50–60 分）。",
           "14:00 昭和新山熊牧場。",
           "15:30 前往洞爺湖溫泉街（約 10 分）。",
           "16:00 洞爺湖溫泉街（晚餐/採買）。",
-          "18:30 前往可可飯店（約 15–20 分，湖西側路燈較少）。",
-          "購物重點：熊牧場馬油、洞爺湖名產、便利商店宵夜補給。"
+          "18:30 前往可可飯店（約 15–20 分，湖西側路燈較少）。"
         ],
+        mealsRefDay: 4,
         note: "可可飯店位置偏僻，建議先在溫泉街把宵夜買好再入住。",
         noteType: "warn"
       },
@@ -763,17 +791,18 @@
         day: 5,
         date: "2/03（二）",
         title: "F Village 與 Outlet 火力全開，札幌輕鬆入住",
-        tags: ["自駕", "購物"],
+        tags: ["自駕", "購物", "飲食"],
         key: false,
         bullets: [
           "10:00 離開飯店北上前往 F Village（約 100 分，建議休息站上廁所）。",
-          "11:40 F Village（Es Con Field）午餐/參觀（雪景球場很壯觀）。",
+          "11:40 F Village 午餐/參觀（雪景球場很壯觀）。",
           "14:00 前往三井 Outlet Park（約 20 分）。",
           "14:30 三井 Outlet Park 購物。",
           "17:00 返回札幌市區入住格拉斯麗札幌酒店（約 45–50 分，可能塞車）。",
-          "18:30 步行到大通公園看札幌雪祭試燈。",
-          "購物重點：F Village 周邊、Outlet（鑄鐵鍋/樂高）、Pokemon Center。"
+          "晚餐：十勝豚丼或根室花丸（不要選市區店，吃完還車加 Check-in）。",
+          "18:30 視狀況步行到大通公園看札幌雪祭試燈。"
         ],
+        mealsRefDay: 5,
         note: "長途駕駛日：中途休息、提早補水與零食，孩子狀態會差很多。",
         noteType: "good"
       },
@@ -790,24 +819,170 @@
           "14:40 搭乘 CI131 返家。",
           "購物重點：起司塔、泡芙、生巧克力等機場伴手禮。"
         ],
+        mealsRefDay: null,
         note: "回程建議 12:40 前完成報到，留足排隊與採買時間。",
         noteType: "warn"
       }
     ];
 
-    const checklist = [
-      { id: "car", title: "租車預約：確認雪地輪胎（Snow Tires）與 ETC 卡", desc: "" },
-      { id: "bags", title: "行李規劃：準備好 Day 3–5 的輕便旅行袋", desc: "" },
-      { id: "voucher", title: "訂房憑證：準備好 2/3 格拉斯麗札幌酒店訂房單（寄放行李用）", desc: "" },
-      { id: "swim", title: "泳衣：Day 3 入住森之空庭必備", desc: "" },
-      { id: "bags2", title: "購物袋：隨身攜帶 1–2 個大購物袋", desc: "" },
-      { id: "tickets", title: "機票確認：去程 TR892（12:25），回程 CI131（14:40）", desc: "" }
+    const mealPlan = [
+      {
+        day: 1,
+        date: "1/30（五）",
+        meals: [
+          {
+            type: "晚餐",
+            time: "21:00",
+            title: "晚餐（Google Maps）",
+            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/EYCcgCmuJbHxuxa6A" }],
+            desc: ""
+          },
+          {
+            type: "補給",
+            time: "晚間",
+            title: "買 1/31 早餐",
+            links: [],
+            desc: "麵包店與便利商店先補齊。"
+          }
+        ]
+      },
+      {
+        day: 2,
+        date: "1/31（六）",
+        meals: [
+          {
+            type: "早餐",
+            time: "",
+            title: "早餐（Google Maps）",
+            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/gCc4EhmYfqwDF89Y6" }],
+            desc: ""
+          },
+          {
+            type: "午餐",
+            time: "10:50 開始排隊 / 11:30 開店",
+            title: "豬排限量，務必早到",
+            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/QP4LL58DokukoeRx8" }],
+            desc: "怕吃不到限量豬排：平常日早上 10:55 來排隊可排到前面。11:30 前約 20 人左右。店內約 14 座位，翻桌率快但餐點需等一下。推薦加點蛋拌飯。"
+          },
+          {
+            type: "晚餐",
+            time: "17:30",
+            title: "晚餐（Google Maps）",
+            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/mv7KbqTFQm7Z14pWA" }],
+            desc: ""
+          },
+          {
+            type: "補給",
+            time: "晚間",
+            title: "買 2/1 早餐",
+            links: [],
+            desc: "麵包店與便利商店先補齊。"
+          }
+        ]
+      },
+      {
+        day: 3,
+        date: "2/01（日）",
+        meals: [
+          {
+            type: "早餐",
+            time: "",
+            title: "早餐（Google Maps）",
+            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/8D23Qfag6uMNQLm37" }],
+            desc: ""
+          },
+          {
+            type: "午餐",
+            time: "",
+            title: "午餐備案（多選）",
+            links: [
+              { label: "備案 1", url: "https://maps.app.goo.gl/15gbsb9DPxS4Jiba7" },
+              { label: "備案 2", url: "https://maps.app.goo.gl/SEEdFNWL4KVcgt6PA" },
+              { label: "備案 3", url: "https://maps.app.goo.gl/iH3DQhGH1nvBxeVx5" },
+              { label: "備案 4", url: "https://maps.app.goo.gl/BncdEiaSA4GTaGsQ9" },
+              { label: "備案 5", url: "https://maps.app.goo.gl/zpCR8tw4JZnyzrxw5" }
+            ],
+            desc: "當天自駕與玩雪，午餐彈性調整，建議出發前先選好 1–2 家為主力。"
+          },
+          {
+            type: "晚餐",
+            time: "",
+            title: "飯店晚餐",
+            links: [],
+            desc: "森之空庭飯店用餐。"
+          }
+        ]
+      },
+      {
+        day: 4,
+        date: "2/02（一）",
+        meals: [
+          {
+            type: "早餐",
+            time: "",
+            title: "飯店早餐",
+            links: [],
+            desc: ""
+          },
+          {
+            type: "午餐",
+            time: "",
+            title: "海產 / 丼飯 / 燒肉 / 漢堡（參考）",
+            links: [
+              { label: "參考 1", url: "https://share.google/PGuvn7XNFd4AWJqKk" },
+              { label: "參考 2", url: "https://ctgirlblog.com/maruhira/#google_vignette" }
+            ],
+            desc: "建議提前挑好主力店家，避免移動中臨時找餐造成延誤。"
+          },
+          {
+            type: "晚餐",
+            time: "",
+            title: "晚餐（兩個選項）",
+            links: [
+              { label: "選項 1", url: "https://maps.app.goo.gl/sNQy1JKWZ9FcLfDK7" },
+              { label: "選項 2", url: "https://maps.app.goo.gl/izauLoZ6buUEAq8k6" }
+            ],
+            desc: "洞爺湖溫泉街用餐後再去飯店，並順便補宵夜。"
+          }
+        ]
+      },
+      {
+        day: 5,
+        date: "2/03（二）",
+        meals: [
+          {
+            type: "早餐",
+            time: "",
+            title: "早餐（Google Maps）",
+            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/62dedBvshGs4rprv7" }],
+            desc: ""
+          },
+          {
+            type: "午餐",
+            time: "",
+            title: "午餐（兩個選項）",
+            links: [
+              { label: "選項 1", url: "https://maps.app.goo.gl/umYR8YU9KYwGj6oB6" },
+              { label: "選項 2", url: "https://maps.app.goo.gl/JvKNCpLSQ2WYJouW9" }
+            ],
+            desc: "配合 F Village / Outlet 動線彈性選擇。"
+          },
+          {
+            type: "晚餐",
+            time: "",
+            title: "十勝豚丼或根室花丸",
+            links: [],
+            desc: "不要選市區店，吃完還車 + Check-in（把移動時間算進去）。"
+          }
+        ]
+      }
     ];
 
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
     const timelineEl = $("#timeline");
+    const foodBox = $("#foodBox");
     const qEl = $("#q");
     const clearBtn = $("#clearBtn");
 
@@ -820,14 +995,48 @@
         .replaceAll("'","&#039;");
     }
 
+    function renderMealBox(day){
+      const plan = mealPlan.find(p => p.day === day);
+      if(!plan) return "";
+
+      const rows = plan.meals.map(m => {
+        const links = (m.links||[]).map(l => `
+          <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>
+        `).join("");
+
+        return `
+          <div class="mealRow">
+            <div class="head">
+              <div class="what">${escapeHtml(m.type)}：${escapeHtml(m.title)}</div>
+              <div class="when">${escapeHtml(m.time || "")}</div>
+            </div>
+            ${m.desc ? `<div class="desc">${escapeHtml(m.desc)}</div>` : ""}
+            ${links ? `<div class="mealLinks">${links}</div>` : ""}
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="mealBox" aria-label="當日飲食摘要">
+          <div class="mealTitle">
+            <div>當日飲食摘要</div>
+            <div style="font-weight:600; color: var(--muted2);">${escapeHtml(plan.date)}</div>
+          </div>
+          <div class="mealGrid">${rows}</div>
+        </div>
+      `;
+    }
+
     function renderTimeline({day="all", q=""}={}){
       const query = q.trim().toLowerCase();
-      const rows = itinerary.filter(item => (day==="all" ? true : item.day === Number(day)))
+      const rows = itinerary
+        .filter(item => (day==="all" ? true : item.day === Number(day)))
         .filter(item => {
           if(!query) return true;
+          const meals = item.mealsRefDay ? JSON.stringify(mealPlan.find(p => p.day === item.mealsRefDay) || {}) : "";
           const hay = [
             item.title, item.date, ...(item.tags||[]),
-            ...(item.bullets||[]), item.note||""
+            ...(item.bullets||[]), item.note||"", meals
           ].join(" ").toLowerCase();
           return hay.includes(query);
         });
@@ -842,6 +1051,7 @@
 
         const badge = item.key ? `<span class="badge">重點日</span>` : "";
         const noteCls = item.noteType === "good" ? "note good" : (item.noteType === "warn" ? "note warn" : "note");
+        const mealHtml = item.mealsRefDay ? renderMealBox(item.mealsRefDay) : "";
 
         return `
           <article class="item" data-day="${item.day}">
@@ -856,6 +1066,7 @@
               <ul>
                 ${(item.bullets||[]).map(b => `<li>${escapeHtml(b)}</li>`).join("")}
               </ul>
+              ${mealHtml}
               ${item.note ? `<div class="${noteCls}" style="margin-top:12px;">${escapeHtml(item.note)}</div>` : ""}
             </div>
           </article>
@@ -869,6 +1080,44 @@
           </div>
         `;
       }
+    }
+
+    function renderFood(){
+      foodBox.innerHTML = mealPlan.map(p => {
+        const rows = p.meals.map(m => {
+          const links = (m.links||[]).map(l => `
+            <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>
+          `).join("");
+
+          return `
+            <div class="mealRow">
+              <div class="head">
+                <div class="what">${escapeHtml(m.type)}：${escapeHtml(m.title)}</div>
+                <div class="when">${escapeHtml(m.time || "")}</div>
+              </div>
+              ${m.desc ? `<div class="desc">${escapeHtml(m.desc)}</div>` : ""}
+              ${links ? `<div class="mealLinks">${links}</div>` : ""}
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <article class="item" data-day="${p.day}">
+            <div class="itemHead">
+              <div>
+                <h3>Day ${p.day} 飲食：${escapeHtml(p.date)}</h3>
+                <div class="date">早餐 / 午餐 / 晚餐 / 補給</div>
+              </div>
+              <div class="tags">
+                <span class="tag">飲食</span>
+              </div>
+            </div>
+            <div class="itemBody">
+              <div class="mealGrid">${rows}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
     }
 
     // Tabs
@@ -889,45 +1138,6 @@
 
     qEl.addEventListener("input", () => renderTimeline({day: currentDay, q: qEl.value}));
     clearBtn.addEventListener("click", () => { qEl.value=""; qEl.focus(); renderTimeline({day: currentDay, q:""}); });
-
-    // Checklist with localStorage
-    const CK_KEY = "hokkaido_2026_checklist_v1";
-    function loadChecklistState(){
-      try{ return JSON.parse(localStorage.getItem(CK_KEY) || "{}"); }catch(e){ return {}; }
-    }
-    function saveChecklistState(state){
-      localStorage.setItem(CK_KEY, JSON.stringify(state));
-    }
-    function renderChecklist(){
-      const state = loadChecklistState();
-      const box = $("#checklistBox");
-      box.innerHTML = checklist.map(item => {
-        const checked = !!state[item.id];
-        const desc = item.desc ? `<small>${escapeHtml(item.desc)}</small>` : "";
-        return `
-          <div class="ck">
-            <input type="checkbox" id="ck_${item.id}" ${checked ? "checked" : ""} />
-            <div>
-              <label for="ck_${item.id}">${escapeHtml(item.title)}</label>
-              ${desc}
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      checklist.forEach(item => {
-        const el = $(`#ck_${item.id}`);
-        el.addEventListener("change", () => {
-          const next = loadChecklistState();
-          next[item.id] = el.checked;
-          saveChecklistState(next);
-        });
-      });
-    }
-    $("#resetChecklistBtn").addEventListener("click", () => {
-      localStorage.removeItem(CK_KEY);
-      renderChecklist();
-    });
 
     // Theme
     const THEME_KEY = "hokkaido_2026_theme";
@@ -955,7 +1165,6 @@
         renderTimeline({day: currentDay, q: ""});
       }
       if((e.key === "p" || e.key === "P") && !e.ctrlKey && !e.metaKey && !e.altKey){
-        // avoid hijacking when typing in input
         if(document.activeElement === qEl) return;
         e.preventDefault();
         window.print();
@@ -970,8 +1179,9 @@
       }else{
         applyTheme("dark");
       }
+
       renderTimeline({day:"all", q:""});
-      renderChecklist();
+      renderFood();
 
       // If maps link is not set, disable it
       const maps = $("#mapsLink");
@@ -979,7 +1189,7 @@
         maps.setAttribute("href", "#");
         maps.addEventListener("click", (e) => {
           e.preventDefault();
-          alert("請先在 index.html 搜尋 PASTE_YOUR_GOOGLE_MAPS_LINK_HERE，替換成你的 Google Maps 景點懶人包連結。");
+          alert("請先在 index.html 搜尋 PASTE_YOUR_GOOGLE_MAPS_LINK_HERE，替換成你的 Google Maps 行程清單連結。");
         });
       }
     })();
