@@ -2,1113 +2,766 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#0b1020" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
   <title>2026 北海道冬之親子大縱走：雪國探險</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
-    :root{
-      --bg:#0b1020;
-      --card:#121a33;
-      --card2:#0f1730;
-      --text:#e9eeff;
-      --muted:#b8c2ff;
-      --muted2:#93a2ff;
-      --line:rgba(255,255,255,.10);
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
-      --radius:18px;
-      --radius2:14px;
-      --max: 1100px;
-      --accent:#7aa2ff;
-      --accent2:#72ffd7;
-      --warn:#ffd36b;
-      --good:#7bff8a;
-      --bad:#ff7b8a;
-      --focus: 0 0 0 3px rgba(122,162,255,.35);
-      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    :root {
+      --bg-grad-start: #0f172a;
+      --bg-grad-end: #1e293b;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(148, 163, 184, 0.15);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.3);
+      --highlight: #f472b6;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      --blur: blur(12px);
+      --font-stack: "Noto Sans TC", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --max-w: 1000px;
     }
-    [data-theme="light"]{
-      --bg:#f6f7ff;
-      --card:#ffffff;
-      --card2:#f3f5ff;
-      --text:#0b1020;
-      --muted:#334;
-      --muted2:#445;
-      --line:rgba(15,20,35,.12);
-      --shadow: 0 10px 26px rgba(15,20,35,.10);
-      --accent:#2a64ff;
-      --accent2:#00b894;
-      --warn:#a86a00;
-      --good:#0a7a2a;
-      --bad:#b00020;
-      --focus: 0 0 0 3px rgba(42,100,255,.18);
+
+    [data-theme="light"] {
+      --bg-grad-start: #f0f9ff;
+      --bg-grad-end: #e0f2fe;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(255, 255, 255, 0.6);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --accent: #0284c7;
+      --accent-glow: rgba(2, 132, 199, 0.15);
+      --shadow-glass: 0 8px 24px rgba(149, 157, 165, 0.1);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--font);
-      background: radial-gradient(1200px 800px at 20% -10%, rgba(122,162,255,.25), transparent 55%),
-                  radial-gradient(900px 600px at 95% 10%, rgba(114,255,215,.14), transparent 60%),
-                  linear-gradient(180deg, var(--bg), var(--bg));
-      color:var(--text);
-    }
-    a{color:inherit}
-    .wrap{max-width:var(--max); margin:0 auto; padding:28px 18px 54px}
-    .topbar{
-      position:sticky; top:0; z-index:50;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(180deg, rgba(11,16,32,.85), rgba(11,16,32,.65));
-      border-bottom: 1px solid var(--line);
-    }
-    [data-theme="light"] .topbar{
-      background: linear-gradient(180deg, rgba(246,247,255,.92), rgba(246,247,255,.75));
-    }
-    .topinner{max-width:var(--max); margin:0 auto; padding:10px 18px; display:flex; gap:10px; align-items:center; justify-content:space-between}
-    .brand{display:flex; gap:10px; align-items:center; min-width:240px}
-    .logo{
-      width:38px; height:38px; border-radius:14px;
-      background: radial-gradient(circle at 30% 25%, rgba(114,255,215,.55), transparent 55%),
-                  radial-gradient(circle at 70% 70%, rgba(122,162,255,.75), transparent 60%),
-                  linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }
-    .brand h1{margin:0; font-size:14px; letter-spacing:.2px}
-    .brand p{margin:2px 0 0; font-size:12px; color:var(--muted2)}
-    nav{display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end}
-    .chip{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color:var(--text);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px;
-      text-decoration:none;
-      transition:.15s transform, .15s background;
-      white-space:nowrap;
-    }
-    [data-theme="light"] .chip{background: rgba(15,20,35,.03)}
-    .chip:hover{transform: translateY(-1px); background: rgba(255,255,255,.07)}
-    .chip:focus{outline:none; box-shadow: var(--focus)}
-    .actions{display:flex; gap:8px; align-items:center}
-    .btn{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.06);
-      color:var(--text);
-      padding:9px 12px;
-      border-radius:12px;
-      font-size:12px;
-      cursor:pointer;
-      transition:.15s transform, .15s background;
-    }
-    [data-theme="light"] .btn{background: rgba(15,20,35,.04)}
-    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.09)}
-    .btn:focus{outline:none; box-shadow: var(--focus)}
-    .hero{padding:24px 0 14px}
-    .heroGrid{
-      display:grid;
-      grid-template-columns: 1.35fr .65fr;
-      gap:14px;
-    }
-    @media (max-width: 960px){
-      .brand{min-width:auto}
-      .heroGrid{grid-template-columns:1fr}
-      nav{display:none}
-      .topinner{gap:12px}
-    }
-    .card{
-      border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    [data-theme="light"] .card{
-      background: linear-gradient(180deg, rgba(15,20,35,.02), rgba(15,20,35,.01));
-    }
-    .card .pad{padding:18px}
-    .kicker{
-      display:inline-flex; gap:8px; align-items:center;
-      font-size:12px; color:var(--muted2);
-      letter-spacing:.4px;
-      text-transform: none;
-    }
-    .title{
-      margin:10px 0 6px;
-      font-size:22px;
-      line-height:1.25;
-      letter-spacing:.2px;
-    }
-    .subtitle{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.55;
-    }
-    .metaRow{
-      display:flex; flex-wrap:wrap;
-      gap:10px; margin-top:14px;
-    }
-    .pill{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      padding:8px 10px;
-      border-radius:999px;
-      font-size:12px;
-      color:var(--text);
-    }
-    [data-theme="light"] .pill{background: rgba(15,20,35,.03)}
-    .sideStack{display:grid; gap:14px}
-    .statGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .stat{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      border-radius: var(--radius2);
-      padding:12px;
-    }
-    [data-theme="light"] .stat{background: rgba(15,20,35,.03)}
-    .stat .big{font-size:16px; font-weight:700; margin:0}
-    .stat .small{font-size:12px; color:var(--muted2); margin:6px 0 0}
-    .section{margin-top:16px}
-    .section h2{
-      margin:18px 0 10px;
-      font-size:15px;
-      letter-spacing:.2px;
-    }
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-    }
-    @media (max-width: 920px){
-      .grid2{grid-template-columns:1fr}
-    }
-    table{
-      width:100%;
-      border-collapse: collapse;
-      overflow:hidden;
-      border-radius: 14px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-    }
-    [data-theme="light"] table{background: rgba(15,20,35,.02)}
-    th,td{
-      padding:10px 10px;
-      border-bottom: 1px solid var(--line);
-      text-align:left;
-      font-size:13px;
-      vertical-align:top;
-    }
-    th{color:var(--muted2); font-weight:600; background: rgba(255,255,255,.04)}
-    [data-theme="light"] th{background: rgba(15,20,35,.03)}
-    tr:last-child td{border-bottom:none}
-    .muted{color:var(--muted); font-size:13px; line-height:1.6}
-    .note{
-      border-left: 3px solid rgba(122,162,255,.75);
-      padding:10px 12px;
-      background: rgba(122,162,255,.10);
-      border-radius: 12px;
-      margin-top:10px;
-      font-size:13px;
-      color:var(--text);
-    }
-    .warn{
-      border-left-color: rgba(255,211,107,.95);
-      background: rgba(255,211,107,.12);
-    }
-    .good{
-      border-left-color: rgba(123,255,138,.95);
-      background: rgba(123,255,138,.10);
-    }
-    .dayControls{
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
-      margin-top:10px;
-    }
-    .seg{
-      display:flex; gap:6px; flex-wrap:wrap;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      border-radius: 14px;
-      padding:6px;
-    }
-    [data-theme="light"] .seg{background: rgba(15,20,35,.02)}
-    .seg button{
-      border:1px solid transparent;
-      background: transparent;
-      color:var(--muted);
-      padding:8px 10px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-size:12px;
-      transition:.12s background, .12s color;
-    }
-    .seg button:hover{background: rgba(255,255,255,.06); color:var(--text)}
-    .seg button.active{
-      background: rgba(122,162,255,.18);
-      border-color: rgba(122,162,255,.35);
-      color: var(--text);
-    }
-    .seg button:focus{outline:none; box-shadow: var(--focus)}
-    .search{
-      display:flex; gap:8px; align-items:center; flex:1; min-width: 260px;
-    }
-    .search input{
-      width:100%;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 14px;
-      font-size:13px;
-    }
-    [data-theme="light"] .search input{background: rgba(15,20,35,.02)}
-    .search input:focus{outline:none; box-shadow: var(--focus)}
-    .timeline{display:grid; gap:12px; margin-top:12px}
-    .item{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      border-radius: var(--radius);
-      overflow:hidden;
-    }
-    [data-theme="light"] .item{background: rgba(15,20,35,.02)}
-    .itemHead{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-      padding:14px 14px 10px;
-      border-bottom:1px solid var(--line);
-      background: rgba(255,255,255,.02);
-    }
-    .item h3{margin:0; font-size:14px}
-    .item .date{font-size:12px; color:var(--muted2); margin-top:4px}
-    .tags{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end}
-    .tag{
-      font-size:11px;
-      padding:6px 9px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      color: var(--muted);
-      background: rgba(255,255,255,.02);
-      white-space:nowrap;
-    }
-    .tag.key{color: var(--text); border-color: rgba(114,255,215,.35); background: rgba(114,255,215,.10)}
-    .tag.drive{border-color: rgba(122,162,255,.35); background: rgba(122,162,255,.10); color: var(--text)}
-    .itemBody{padding:12px 14px 14px}
-    .itemBody ul{margin:0; padding-left:18px}
-    .itemBody li{margin:7px 0; color:var(--text); font-size:13px; line-height:1.55}
-    .hr{height:1px; background:var(--line); margin:16px 0}
-    .footer{
-      margin-top: 22px;
-      color: var(--muted2);
-      font-size: 12px;
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-stack);
+      background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end));
+      color: var(--text-main);
+      min-height: 100vh;
       line-height: 1.6;
+      background-attachment: fixed;
+      transition: background 0.3s ease;
     }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 11px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      padding:2px 7px;
-      border-radius: 8px;
-      color: var(--text);
-      white-space:nowrap;
+
+    .snow-container {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; overflow: hidden;
     }
-    .linkBtn{
-      display:inline-flex; gap:8px; align-items:center;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      padding:10px 12px;
-      border-radius: 14px;
-      text-decoration:none;
-      font-size:13px;
+    .snow {
+      position: absolute; width: 6px; height: 6px; background: white; border-radius: 50%;
+      opacity: 0.3; animation: snowfall linear infinite;
     }
-    [data-theme="light"] .linkBtn{background: rgba(15,20,35,.03)}
-    .linkBtn:hover{background: rgba(255,255,255,.08)}
-    .linkBtn:focus{outline:none; box-shadow: var(--focus)}
-    .twoCol{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap:14px;
+    @keyframes snowfall {
+      0% { transform: translateY(-10vh) translateX(0); opacity: 0; }
+      20% { opacity: 0.5; }
+      100% { transform: translateY(110vh) translateX(20px); opacity: 0; }
     }
-    @media (max-width: 960px){
-      .twoCol{grid-template-columns:1fr}
+
+    a { color: var(--accent); text-decoration: none; transition: 0.2s; }
+    a:hover { text-decoration: underline; text-underline-offset: 4px; }
+    button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: var(--max-w); margin: 0 auto; padding: 20px;
+      /* 確保這裡有 id="overview" */
     }
-    .mini{font-size:12px; color:var(--muted2); line-height:1.55}
-    .badge{
-      display:inline-flex; align-items:center;
-      padding:3px 8px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      font-size:11px;
-      color: var(--muted2);
-      margin-left:8px;
-      vertical-align:middle;
+
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: var(--blur);
+      border-bottom: 1px solid var(--card-border);
+      transition: background 0.3s;
     }
-    .mealBox{
-      margin-top:12px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.02);
-      border-radius: 14px;
-      padding:12px;
+    [data-theme="light"] .topbar { background: rgba(255, 255, 255, 0.85); }
+    
+    .topinner {
+      max-width: var(--max-w); margin: 0 auto; padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
-    [data-theme="light"] .mealBox{background: rgba(15,20,35,.02)}
-    .mealTitle{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      margin:0 0 10px;
-      font-size:13px;
-      color: var(--text);
-      font-weight:700;
-      letter-spacing:.2px;
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, #60a5fa, #38bdf8);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: bold; font-size: 20px;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
     }
-    .mealGrid{display:grid; gap:10px}
-    .mealRow{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      border-radius: 14px;
-      padding:10px 12px;
+    .brand h1 { margin: 0; font-size: 16px; font-weight: 700; }
+    .brand p { margin: 0; font-size: 12px; color: var(--text-muted); opacity: 0.8; }
+
+    .nav-scroll {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+      scrollbar-width: none;
     }
-    [data-theme="light"] .mealRow{background: rgba(15,20,35,.02)}
-    .mealRow .head{
-      display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px;
-      margin-bottom:6px;
+    .nav-scroll::-webkit-scrollbar { display: none; }
+    
+    .chip {
+      padding: 6px 14px; border-radius: 50px;
+      font-size: 13px; font-weight: 500;
+      background: var(--card-border);
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
     }
-    .mealRow .what{font-size:13px; font-weight:700}
-    .mealRow .when{font-size:12px; color:var(--muted2)}
-    .mealRow .desc{font-size:12px; color:var(--muted); line-height:1.55; margin-top:6px}
-    .mealLinks{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
-    .mealLinks a{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      padding:8px 10px;
-      border-radius: 12px;
-      text-decoration:none;
-      font-size:12px;
+    .chip:hover, .chip.active {
+      background: var(--accent); color: white;
+      box-shadow: 0 4px 12px var(--accent-glow);
     }
-    [data-theme="light"] .mealLinks a{background: rgba(15,20,35,.02)}
-    .mealLinks a:hover{background: rgba(255,255,255,.07)}
+
+    .actions { display: flex; gap: 8px; }
+    .icon-btn {
+      padding: 8px; border-radius: 8px;
+      background: var(--card-border); color: var(--text-main);
+      display: flex; align-items: center; justify-content: center;
+      transition: 0.2s;
+    }
+    .icon-btn:hover { background: var(--card-bg); transform: translateY(-2px); }
+
+    .section { margin-bottom: 40px; scroll-margin-top: 80px; }
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 20px; font-weight: 700; margin-bottom: 20px;
+      color: var(--text-main);
+      padding-left: 8px; border-left: 4px solid var(--accent);
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: var(--blur);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      overflow: hidden;
+      margin-bottom: 20px;
+      transition: transform 0.2s;
+    }
+    
+    .card-body { padding: 24px; }
+    @media (max-width: 600px) { .card-body { padding: 16px; } }
+
+    .table-container { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--card-border); }
+    table { width: 100%; border-collapse: collapse; min-width: 500px; }
+    th, td { padding: 14px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--card-border); }
+    th { background: rgba(125, 211, 252, 0.1); color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
+      background: rgba(0,0,0,0.1); padding: 6px; border-radius: 16px;
+    }
+    [data-theme="light"] .controls { background: rgba(0,0,0,0.03); }
+    
+    .day-btn {
+      flex: 1; min-width: 60px;
+      padding: 10px; border-radius: 10px;
+      background: transparent; color: var(--text-muted);
+      font-weight: 600; font-size: 13px;
+      transition: 0.2s; text-align: center;
+    }
+    .day-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+    .day-btn.active {
+      background: var(--card-bg); color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .search-box { width: 100%; position: relative; }
+    .search-input {
+      width: 100%; padding: 12px 16px; padding-left: 42px;
+      border-radius: var(--radius-md); border: 1px solid var(--card-border);
+      background: var(--card-bg); color: var(--text-main);
+      font-size: 14px;
+    }
+    .search-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); pointer-events: none;
+    }
+
+    .timeline { display: flex; flex-direction: column; gap: 20px; }
+    .t-item {
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+    }
+    [data-theme="light"] .t-item { background: rgba(255, 255, 255, 0.5); }
+    
+    .t-item.highlight { border-color: rgba(244, 114, 182, 0.4); box-shadow: 0 0 20px rgba(244, 114, 182, 0.05); }
+    .t-item.highlight::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--highlight);
+    }
+
+    .t-head {
+      padding: 16px; border-bottom: 1px solid var(--card-border);
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .t-title h3 { margin: 0; font-size: 16px; color: var(--text-main); display: flex; align-items: center; gap: 8px;}
+    .t-date { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+    
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .tag {
+      font-size: 11px; padding: 4px 10px; border-radius: 20px;
+      background: rgba(255,255,255,0.05); color: var(--text-muted);
+      border: 1px solid var(--card-border);
+    }
+    .tag.imp { background: rgba(244, 114, 182, 0.15); color: #f472b6; border-color: rgba(244, 114, 182, 0.3); }
+    .tag.drive { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }
+
+    .t-body { padding: 16px; }
+    .t-list { margin: 0; padding-left: 20px; color: var(--text-main); font-size: 14px; }
+    .t-list li { margin-bottom: 8px; position: relative; }
+    .t-list li::marker { color: var(--accent); }
+
+    .note {
+      margin-top: 16px; padding: 12px 16px; border-radius: 8px; font-size: 13px;
+      display: flex; gap: 10px; align-items: flex-start;
+      background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); color: var(--text-main);
+    }
+    .note.warn { background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.25); color: #fbbf24; }
+    [data-theme="light"] .note.warn { color: #d97706; }
+    .note.good { background: rgba(74, 222, 128, 0.1); border-color: rgba(74, 222, 128, 0.25); color: #4ade80; }
+    [data-theme="light"] .note.good { color: #16a34a; }
+
+    .meal-box {
+      margin-top: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px;
+      border: 1px solid var(--card-border);
+    }
+    [data-theme="light"] .meal-box { background: rgba(255,255,255,0.4); }
+    .meal-head { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    
+    .meal-grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .meal-item {
+      padding: 10px; background: var(--card-bg); border-radius: 8px;
+      border: 1px solid var(--card-border);
+      font-size: 13px;
+    }
+    .meal-type { font-size: 11px; color: var(--accent); font-weight: 700; margin-bottom: 2px; }
+    .meal-links { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .link-mini {
+      font-size: 11px; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.1);
+      color: var(--text-muted); border: 1px solid var(--card-border); display: inline-flex; align-items: center; gap: 4px;
+    }
+    .link-mini:hover { background: var(--accent); color: white; border-color: transparent; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .footer { text-align: center; margin-top: 60px; padding-bottom: 40px; color: var(--text-muted); font-size: 12px; }
+    .kbd {
+      background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;
+      font-family: monospace; border: 1px solid var(--card-border);
+      display: inline-block; margin: 0 2px;
+    }
+
+    @media print {
+      body { background: white; color: black; -webkit-print-color-adjust: exact; }
+      .snow-container, .topbar, .controls, .nav-scroll { display: none; }
+      .card { box-shadow: none; border: 1px solid #ccc; background: white; page-break-inside: avoid; }
+      .wrap { max-width: 100%; padding: 0; }
+      a { text-decoration: none; color: black; }
+      .tag { border: 1px solid #999; color: black !important; }
+      .note { border: 1px solid #ccc; color: black !important; background: #eee !important; }
+    }
+    
+    .icon { width: 16px; height: 16px; stroke-width: 2px; }
+    .icon-lg { width: 20px; height: 20px; }
   </style>
 </head>
 
 <body>
+  <!-- 雪花背景 -->
+  <div class="snow-container" id="snowContainer"></div>
+
   <header class="topbar">
     <div class="topinner">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <div class="brand-icon">❄️</div>
         <div>
-          <h1>北海道冬之親子大縱走</h1>
-          <p>2026/01/30 – 2026/02/04 · 6天5夜 · 4大3小</p>
+          <h1>2026 北海道親子縱走</h1>
+          <p>2026/01/30 – 02/04 · 6天5夜 · 4大3小</p>
         </div>
       </div>
 
-      <nav aria-label="頁面導覽">
-        <a class="chip" href="#overview">總覽</a>
-        <a class="chip" href="#flights">航班</a>
-        <a class="chip" href="#stays">住宿</a>
-        <a class="chip" href="#itinerary">每日行程</a>
-        <a class="chip" href="#food">飲食規劃</a>
-        <a class="chip" href="#hours">冬季營業時間</a>
+      <nav class="nav-scroll">
+        <a href="#overview" class="chip">總覽</a>
+        <a href="#flights" class="chip">航班</a>
+        <a href="#stays" class="chip">住宿</a>
+        <a href="#itinerary" class="chip active">每日行程</a>
+        <a href="#food" class="chip">飲食/採買</a>
+        <a href="#hours" class="chip">營業時間</a>
       </nav>
 
       <div class="actions">
-        <button class="btn" id="themeBtn" type="button">切換主題</button>
-        <button class="btn" id="printBtn" type="button">列印</button>
+        <button class="icon-btn" id="themeBtn" title="切換主題">
+          <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <button class="icon-btn" id="printBtn" title="列印">
+          <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        </button>
       </div>
     </div>
   </header>
 
-
-
-    <section class="section" id="flights">
-      <h2>航班資訊</h2>
-      <div class="grid2">
+  <!-- 增加 id="overview" 讓「總覽」按鈕有地方去 -->
+  <main class="wrap" id="overview">
+    
+    <!-- 航班區塊 -->
+    <section id="flights" class="section">
+      <div class="section-title">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        航班資訊
+      </div>
+      <div class="grid-2">
         <div class="card">
-          <div class="pad">
-            <div class="kicker">去程 · 2026/01/30</div>
-            <h3 style="margin:10px 0 6px; font-size:14px;">TPE 桃園 → CTS 新千歲</h3>
-            <table aria-label="去程航班表">
-              <tbody>
-                <tr><th style="width:28%;">航空公司</th><td>酷航（Scoot）TR892</td></tr>
-                <tr><th>時間</th><td>12:25 起飛（第一航廈）→ 17:20 抵達（國際航廈）</td></tr>
-                <tr><th>行李</th><td>已購買託運（請確認公斤數，通常 20kg）</td></tr>
-                <tr><th>到市區</th><td>預估 19:30–20:00 抵達札幌市區（天色已黑）</td></tr>
-              </tbody>
-            </table>
+          <div class="card-body">
+            <div class="meal-type">去程 · 1/30 (五)</div>
+            <h3 style="margin: 4px 0 12px;">TPE 桃園 ➔ CTS 新千歲</h3>
+            <div class="table-container">
+              <table>
+                <tr><th>航班</th><td>酷航 TR892</td></tr>
+                <tr><th>時間</th><td>12:25 (T1) ➔ 17:20</td></tr>
+                <tr><th>接駁</th><td>預計 19:30 抵達市區</td></tr>
+              </table>
+            </div>
           </div>
         </div>
-
         <div class="card">
-          <div class="pad">
-            <div class="kicker">回程 · 2026/02/04</div>
-            <h3 style="margin:10px 0 6px; font-size:14px;">CTS 新千歲 → TPE 桃園</h3>
-            <table aria-label="回程航班表">
-              <tbody>
-                <tr><th style="width:28%;">航空公司</th><td>中華航空（China Airlines）CI131</td></tr>
-                <tr><th>時間</th><td>14:40 起飛（國際航廈）→ 18:15 抵達（第二航廈）</td></tr>
-                <tr><th>行李</th><td>2 件，每件 23kg</td></tr>
-                <tr><th>報到建議</th><td>建議 12:40 前抵達新千歲機場報到</td></tr>
-              </tbody>
-            </table>
+          <div class="card-body">
+            <div class="meal-type">回程 · 2/04 (三)</div>
+            <h3 style="margin: 4px 0 12px;">CTS 新千歲 ➔ TPE 桃園</h3>
+            <div class="table-container">
+              <table>
+                <tr><th>航班</th><td>華航 CI131</td></tr>
+                <tr><th>時間</th><td>14:40 ➔ 18:15 (T2)</td></tr>
+                <tr><th>行李</th><td>2件 / 23kg</td></tr>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="stays">
-      <h2>住宿清單</h2>
+    <!-- 住宿區塊 -->
+    <section id="stays" class="section">
+      <div class="section-title">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18M5 21V7l8-4 8 4v14M8 21v-4h8v4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        住宿清單
+      </div>
       <div class="card">
-        <div class="pad">
-          <table aria-label="住宿列表">
+        <div class="card-body table-container">
+          <table>
             <thead>
               <tr>
-                <th style="width:18%;">日期</th>
-                <th style="width:14%;">地點</th>
-                <th style="width:34%;">飯店</th>
-                <th>備註</th>
+                <th width="15%">日期</th>
+                <th width="15%">地點</th>
+                <th width="35%">飯店</th>
+                <th>特色/備註</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>1/30（五）</td>
-                <td>札幌</td>
-                <td>札幌三位神大飯店（Hotel Resol Trinity Sapporo）</td>
-                <td>大通公園旁，位置佳，頂樓有大浴場</td>
+                <td>1/30 - 2/01</td><td>札幌 (2晚)</td>
+                <td><b>札幌三位神大飯店</b><br><span style="font-size:12px;color:var(--text-muted)">Hotel Resol Trinity</span></td>
+                <td>大通公園旁，頂樓有大浴場</td>
               </tr>
               <tr>
-                <td>1/31（六）</td>
-                <td>札幌</td>
-                <td>札幌三位神大飯店（續住）</td>
-                <td>免去搬運行李之苦</td>
+                <td>2/01 (日)</td><td>北湯澤</td>
+                <td><b>森之空庭</b><br><span style="font-size:12px;color:var(--text-muted)">Mori no Soraniwa</span></td>
+                <td><span style="color:var(--accent)">★親子必住</span> 溫泉海灘、室內遊樂場</td>
               </tr>
               <tr>
-                <td>2/01（日）</td>
-                <td>北湯澤</td>
-                <td>森之空庭（Mori no Soraniwa）</td>
-                <td>親子必住：溫泉海灘、室內遊樂場、兒童自助餐（記得帶泳衣）</td>
+                <td>2/02 (一)</td><td>洞爺湖</td>
+                <td><b>可可飯店</b><br><span style="font-size:12px;color:var(--text-muted)">Hotel Cocoa</span></td>
+                <td>湖景第一排，位置偏僻需買好宵夜</td>
               </tr>
               <tr>
-                <td>2/02（一）</td>
-                <td>洞爺湖</td>
-                <td>可可飯店（Hotel Cocoa）</td>
-                <td>湖景第一排；位置偏僻需開車，建議買好宵夜再入住</td>
-              </tr>
-              <tr>
-                <td>2/03（二）</td>
-                <td>札幌</td>
-                <td>格拉斯麗札幌酒店（Hotel Gracery Sapporo）</td>
-                <td>車站直通；早餐海鮮丼強；交通便利（Day 3 先寄放大行李）</td>
+                <td>2/03 (二)</td><td>札幌</td>
+                <td><b>格拉斯麗札幌酒店</b><br><span style="font-size:12px;color:var(--text-muted)">Hotel Gracery</span></td>
+                <td>車站直通，Day3 可先寄放行李</td>
               </tr>
             </tbody>
           </table>
-
           <div class="note">
-            Day 3「寄放大行李」：先到札幌車站南口的 Hotel Gracery 櫃檯寄放（出示 2/3 訂房單），自駕只留兩晚衣物、泳衣、保暖與車上零食。
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <div>Day 3「寄放大行李」策略：出發自駕前，先把大行李箱寄放到最後一天要住的 Gracery 飯店（需出示訂單），只帶2晚輕便行李上車，空間更寬敞。</div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="section" id="itinerary">
-      <h2>每日行程</h2>
+    <!-- 每日行程 (核心互動區) -->
+    <section id="itinerary" class="section">
+      <div class="section-title">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        每日行程
+      </div>
 
-      <div class="card">
-        <div class="pad">
-          <div class="dayControls">
-            <div class="seg" role="tablist" aria-label="日程切換">
-              <button type="button" class="active" data-day="all" role="tab" aria-selected="true">全部</button>
-              <button type="button" data-day="1" role="tab">Day 1</button>
-              <button type="button" data-day="2" role="tab">Day 2</button>
-              <button type="button" data-day="3" role="tab">Day 3</button>
-              <button type="button" data-day="4" role="tab">Day 4</button>
-              <button type="button" data-day="5" role="tab">Day 5</button>
-              <button type="button" data-day="6" role="tab">Day 6</button>
-            </div>
-
-            <div class="search" aria-label="行程搜尋">
-              <input id="q" type="search" placeholder="搜尋：企鵝、熊牧場、Outlet、雪祭、鈴蘭公園、支笏湖、豬排..." autocomplete="off" />
-              <button class="btn" type="button" id="clearBtn">清除</button>
-            </div>
-          </div>
-
-          <div class="timeline" id="timeline" aria-live="polite"></div>
-
-          <div class="footer">
-            小提醒：日程卡片右上角的標籤中，<span class="badge">重點日</span> 表示建議準時出發，避免晚到造成體驗下降。
-          </div>
+      <div class="controls">
+        <div style="display:flex; width:100%; overflow-x:auto; gap:4px; padding-bottom:4px;">
+          <button class="day-btn active" data-day="all">全部</button>
+          <button class="day-btn" data-day="1">Day 1</button>
+          <button class="day-btn" data-day="2">Day 2</button>
+          <button class="day-btn" data-day="3">Day 3</button>
+          <button class="day-btn" data-day="4">Day 4</button>
+          <button class="day-btn" data-day="5">Day 5</button>
+          <button class="day-btn" data-day="6">Day 6</button>
         </div>
+        <div class="search-box">
+          <svg class="search-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input id="searchInput" type="text" class="search-input" placeholder="搜尋：企鵝、Outlet、燒肉、滑雪...">
+        </div>
+      </div>
+
+      <div id="timelineContainer" class="timeline">
+        <!-- JS 會渲染這裡 -->
       </div>
     </section>
 
-    <section class="section" id="food">
-      <h2>飲食規劃</h2>
-      <div class="card">
-        <div class="pad">
-          <div class="timeline" id="foodBox" aria-live="polite"></div>
-          <div class="footer">
-            提醒：若遇到臨時排隊或孩子狀態不佳，優先保留「晚餐」與「隔天早餐補給」，中餐可改成就近解決。
-          </div>
-        </div>
-      </div>
+    <!-- 飲食與購物 -->
+    <section id="food" class="section">
+       <div class="grid-2">
+         
+         <!-- 購物與飲食攻略 (獨立 id="food" 讓導覽列跳轉) -->
+         <div>
+           <div class="section-title">
+             <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+             購物與飲食攻略
+           </div>
+           <div class="card">
+              <div class="card-body">
+                 <ul class="t-list">
+                    <li><b>Day 1 (狸小路):</b> 唐吉訶德、便利商店 (買水/零食)。</li>
+                    <li><b>Day 2 (圓山):</b> 神宮御守、判官餅、動物園北極熊周邊。</li>
+                    <li><b>Day 4 (洞爺):</b> 熊牧場馬油、溫泉街名產。</li>
+                    <li><b>Day 5 (Outlet):</b> 運動品牌、Pokemon Center。</li>
+                    <li><b>Day 6 (機場):</b> 六花亭、LeTAO、北菓樓 (最後衝刺)。</li>
+                 </ul>
+                 <div class="note warn" style="margin-top:12px;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div>冬季節奏：天黑得早 (16:30)，景點早收，晚餐請務必提早安排，以免向隅。</div>
+                 </div>
+              </div>
+           </div>
+         </div>
+
+         <!-- 營業時間 (id="hours") -->
+         <div id="hours">
+           <div class="section-title">
+             <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+             冬季營業時間
+           </div>
+           <div class="card">
+              <div class="card-body table-container" style="padding:0;">
+                 <table style="min-width:auto;">
+                    <tbody>
+                       <tr><td>北海道神宮</td><td>07:00–16:00</td></tr>
+                       <tr><td>圓山動物園</td><td>09:30–<b>16:00</b> (早關)</td></tr>
+                       <tr><td>瀧野鈴蘭公園</td><td>09:00–16:00</td></tr>
+                       <tr><td>三井 Outlet</td><td>10:00–20:00</td></tr>
+                    </tbody>
+                 </table>
+              </div>
+           </div>
+         </div>
+
+       </div>
     </section>
 
-    <section class="section" id="hours">
-      <h2>冬季營業時間特別提醒</h2>
-      <div class="grid2">
-        <div class="card">
-          <div class="pad">
-            <table aria-label="冬季營業時間表">
-              <thead>
-                <tr>
-                  <th>地點</th>
-                  <th>冬季營業時間</th>
-                  <th>最後入場</th>
-                  <th>備註</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>北海道神宮</td>
-                  <td>07:00–16:00</td>
-                  <td>—</td>
-                  <td>六花亭神宮茶屋建議早點去</td>
-                </tr>
-                <tr>
-                  <td>圓山動物園</td>
-                  <td>09:30–16:00</td>
-                  <td>15:30</td>
-                  <td>非常早關門</td>
-                </tr>
-                <tr>
-                  <td>瀧野鈴蘭丘陵公園</td>
-                  <td>09:00–16:00</td>
-                  <td>16:00</td>
-                  <td>雪胎活動準時結束</td>
-                </tr>
-                <tr>
-                  <td>三井 Outlet Park</td>
-                  <td>10:00–20:00</td>
-                  <td>—</td>
-                  <td>美食街至 21:00</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="note warn">
-              冬季節奏：白天景點早收，晚餐與補給要更「提前規劃」。
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="pad">
-            <h3 style="margin:0 0 8px; font-size:14px;">購物重點濃縮</h3>
-            <ul class="muted" style="margin:0; padding-left:18px;">
-              <li>Day 1：狸小路（唐吉訶德、便利商店）先做生存補給。</li>
-              <li>Day 2：神宮（判官餅、御守）、圓山動物園（北極熊周邊）。</li>
-              <li>Day 4：洞爺湖溫泉街採買宵夜；熊牧場馬油等名產。</li>
-              <li>Day 5：F Village 周邊、Outlet 戰利品、Pokemon Center。</li>
-              <li>Day 6：機場伴手禮（起司塔、泡芙、生巧克力）。</li>
-            </ul>
-            <div class="hr"></div>
-            <p class="mini" style="margin:0;">
-              若你想把「每家餐廳名稱」也顯示在卡片上：把餐廳名稱貼我（或我幫你用連結查名），我就能把按鈕文字從「Google Maps」改成實際店名。
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="footer">
-      <div>快捷鍵：<span class="kbd">/</span> 聚焦搜尋框、<span class="kbd">Esc</span> 清除搜尋、<span class="kbd">P</span> 列印。</div>
-    </div>
+    <footer class="footer">
+       快速鍵：<span class="kbd">/</span> 搜尋，<span class="kbd">O</span> 回總覽，<span class="kbd">F</span> 看飲食，<span class="kbd">P</span> 列印。<br>
+       Have a nice trip! ☃️
+    </footer>
   </main>
 
   <script>
-    const itinerary = [
+    // --- Data Source ---
+    const itineraryData = [
       {
-        day: 1,
-        date: "1/30（五）",
-        title: "初抵北國與基礎補給",
-        tags: ["市區", "補給", "飲食"],
-        key: false,
+        day: 1, date: "1/30 (五)", title: "初抵北國與基礎補給",
+        tags: ["市區", "補給"], highlight: false,
         bullets: [
-          "17:20 抵達新千歲機場，入境與領行李預估約 1 小時。",
-          "18:30 搭 JR 快速機場線前往札幌站（約 40 分）。",
-          "19:30–20:00 飯店 Check-in（大通公園旁）。",
-          "晚餐 21:00（見飲食規劃）：抵達後直接去吃，避免太晚沒東西。",
-          "買 1/31 早餐：麵包店與便利商店先補齊。"
+          "17:20 抵達新千歲機場，入境約 1 小時。",
+          "18:30 搭 JR 快速機場線往札幌 (約40分)。",
+          "19:30 飯店 Check-in (大通公園旁)。",
+          "晚餐：抵達後直接覓食，避免太晚店休。",
+          "★ 任務：買好明天早餐 (麵包/超商)。"
         ],
-        mealsRefDay: 1,
-        note: "務必確認餐廳最後點餐時間，避免太晚到。",
-        noteType: "warn"
+        meals: [
+          { type: "晚餐", title: "市區隨機/拉麵", time: "21:00", link: "https://maps.app.goo.gl/EYCcgCmuJbHxuxa6A" },
+          { type: "補給", title: "便利商店", desc: "買隔日早餐" }
+        ],
+        note: "務必確認餐廳 Last Order 時間。"
       },
       {
-        day: 2,
-        date: "1/31（六）",
-        title: "神社與動物園、市區巡禮",
-        tags: ["市區", "動物", "飲食"],
-        key: false,
+        day: 2, date: "1/31 (六)", title: "神社祈福與動物園",
+        tags: ["市區", "動物"], highlight: false,
         bullets: [
-          "09:00 前往北海道神宮（從大通出發約 15–20 分）。",
-          "行程：北海道神宮 → 圓山動物園 → 晚餐。",
-          "午餐（10:50 排隊，11:30 開店）：豬排限量，建議早到。",
-          "17:30 晚餐：ワインとヤキニク円山JIN（預約 17:30，用餐 2 小時；預約號碼 A3M4KAVGA2）。",
-          "買 2/1 早餐：麵包店與便利商店先補齊。"
+          "09:00 出發前往北海道神宮。",
+          "11:00 限量炸豬排 (10:50排隊, 11:30開店)。",
+          "13:00 圓山動物園 (北極熊、小貓熊)。",
+          "17:30 晚餐：燒肉 (已預約)。"
         ],
-        mealsRefDay: 2,
-        note: "圓山動物園很早關門，當天行程建議前段就把動物園完成。",
-        noteType: "warn"
+        meals: [
+          { type: "午餐", title: "限量炸豬排", time: "11:30", desc: "早點去排隊", link: "https://maps.app.goo.gl/QP4LL58DokukoeRx8" },
+          { type: "晚餐", title: "燒肉 円山JIN", time: "17:30", desc: "預約代號: A3M4", link: "https://maps.app.goo.gl/mv7KbqTFQm7Z14pWA" }
+        ],
+        note: "動物園 16:00 關門，請把握下午時間。"
       },
       {
-        day: 3,
-        date: "2/01（日）",
-        title: "自駕啟程與輕裝上路（重點日）",
-        tags: ["自駕", "玩雪", "重點日", "飲食"],
-        key: true,
+        day: 3, date: "2/01 (日)", title: "自駕啟程：玩雪與冰濤祭",
+        tags: ["自駕", "玩雪", "重點日"], highlight: true,
         bullets: [
-          "09:00 退房後帶全部行李前往租車公司。",
-          "09:30 取車：檢查車況、雪胎，確認 ETC 卡。",
-          "10:00 到 Hotel Gracery 札幌寄放大行李（出示 2/3 訂房單）。只留兩晚衣物、泳衣、保暖品、車上零食在車上。",
-          "10:30 出發瀧野鈴蘭丘陵公園（約 50–60 分）。",
-          "11:20 瀧野鈴蘭公園玩雪：雪胎、滑雪盆（超長滑道可反覆玩）。",
-          "午餐：附近備案多選（見飲食規劃）。",
-          "14:30 前往支笏湖（約 60 分，注意黑冰）。",
-          "15:30 支笏湖冰濤祭（入夜點燈更漂亮）。",
-          "17:30 前往北湯澤（約 50 分）。",
-          "18:30 入住森之空庭，晚餐在飯店。",
-          "購物重點：路途中超市補零食與大瓶水。"
+          "09:00 退房，帶全行李去租車。",
+          "09:30 取車 (檢查雪胎/ETC)。",
+          "10:00 前往 Gracery 飯店寄放大行李 (只帶輕便行李)。",
+          "10:30 出發瀧野鈴蘭公園 (玩雪胎)。",
+          "14:30 前往支笏湖 (注意路面黑冰)。",
+          "15:30 支笏湖冰濤祭。",
+          "18:30 入住北湯澤森之空庭 (飯店晚餐)。"
         ],
-        mealsRefDay: 3,
-        note: "雪地山路請慢行，特別注意黑冰；行李輕裝策略是當天順不順的關鍵。",
+        meals: [
+          { type: "午餐", title: "路途備案", desc: "鈴蘭公園附近或休息站", link: "https://maps.app.goo.gl/15gbsb9DPxS4Jiba7" },
+          { type: "晚餐", title: "森之空庭自助餐", desc: "飯店內" }
+        ],
+        note: "自駕第一天，山路請慢行。輕裝簡行策略是關鍵。",
         noteType: "good"
       },
       {
-        day: 4,
-        date: "2/02（一）",
-        title: "企鵝與熊牧場、洞爺湖補給戰",
-        tags: ["自駕", "動物", "飲食"],
-        key: false,
+        day: 4, date: "2/02 (一)", title: "登別海洋公園與熊牧場",
+        tags: ["自駕", "動物"], highlight: false,
         bullets: [
-          "09:30 出發前往登別（約 60 分）。",
-          "10:30 登別尼克斯海洋公園（企鵝遊行）。",
-          "午餐：海產/丼飯/燒肉/漢堡（見飲食規劃，先選好 1–2 家當主力）。",
-          "13:00 前往昭和新山（約 50–60 分）。",
+          "09:30 出發前往登別 (約60分)。",
+          "10:30 尼克斯海洋公園 (企鵝遊行)。",
           "14:00 昭和新山熊牧場。",
-          "15:30 前往洞爺湖溫泉街（約 10 分）。",
-          "16:00 洞爺湖溫泉街（晚餐/採買）。",
-          "18:30 前往可可飯店（約 15–20 分，湖西側路燈較少）。"
+          "16:00 洞爺湖溫泉街採買宵夜。",
+          "18:30 前往 Hotel Cocoa (路燈少，小心駕駛)。"
         ],
-        mealsRefDay: 4,
-        note: "可可飯店位置偏僻，建議先在溫泉街把宵夜買好再入住。",
+        meals: [
+          { type: "午餐", title: "登別/海鮮丼", link: "https://ctgirlblog.com/maruhira/" },
+          { type: "晚餐", title: "溫泉街餐廳", link: "https://maps.app.goo.gl/sNQy1JKWZ9FcLfDK7" }
+        ],
+        note: "Cocoa 飯店偏僻，一定要先買好宵夜酒水再進去。",
         noteType: "warn"
       },
       {
-        day: 5,
-        date: "2/03（二）",
-        title: "F Village 與 Outlet 火力全開，札幌輕鬆入住",
-        tags: ["自駕", "購物", "飲食"],
-        key: false,
+        day: 5, date: "2/03 (二)", title: "F Village 球場與 Outlet",
+        tags: ["自駕", "購物"], highlight: false,
         bullets: [
-          "10:00 離開飯店北上前往 F Village（約 100 分，建議休息站上廁所）。",
-          "11:40 F Village 午餐/參觀（雪景球場很壯觀）。",
-          "14:00 前往三井 Outlet Park（約 20 分）。",
-          "14:30 三井 Outlet Park 購物。",
-          "17:00 返回札幌市區入住格拉斯麗札幌酒店（約 45–50 分，可能塞車）。",
-          "晚餐：十勝豚丼或根室花丸（不要選市區店，吃完還車加 Check-in）。",
-          "18:30 視狀況步行到大通公園看札幌雪祭試燈。"
+          "10:00 北上前往 F Village (約100分)。",
+          "11:40 參觀球場與午餐。",
+          "14:30 三井 Outlet Park (爸媽血拼時間)。",
+          "17:00 返回札幌還車、入住 Gracery。",
+          "18:30 晚餐：十勝豚丼/根室花丸 (避開尖峰)。"
         ],
-        mealsRefDay: 5,
-        note: "長途駕駛日：中途休息、提早補水與零食，孩子狀態會差很多。",
+        meals: [
+          { type: "午餐", title: "F Village", link: "https://maps.app.goo.gl/umYR8YU9KYwGj6oB6" },
+          { type: "晚餐", title: "根室花丸", desc: "吃完還車", link: "https://maps.app.goo.gl/62dedBvshGs4rprv7" }
+        ],
+        note: "長途駕駛日，建議在休息站多停一次讓孩子放風。",
         noteType: "good"
       },
       {
-        day: 6,
-        date: "2/04（三）",
-        title: "機場最後衝刺",
-        tags: ["返程", "伴手禮"],
-        key: false,
+        day: 6, date: "2/04 (三)", title: "最後衝刺與返家",
+        tags: ["返程", "機場"], highlight: false,
         bullets: [
-          "09:00 飯店 Check-out。",
-          "10:00 搭 JR 快速機場線前往新千歲（約 40 分）。",
-          "11:00 抵達機場（託運、午餐）。",
-          "14:40 搭乘 CI131 返家。",
-          "購物重點：起司塔、泡芙、生巧克力等機場伴手禮。"
+          "09:00 Check-out。",
+          "10:00 JR 機場快線往新千歲。",
+          "11:00 機場最後採買 (哆啦A夢區/伴手禮)。",
+          "14:40 飛機起飛 (CI131)。"
         ],
-        mealsRefDay: null,
-        note: "回程建議 12:40 前完成報到，留足排隊與採買時間。",
-        noteType: "warn"
+        meals: [],
+        note: "建議 12:40 前完成報到掛行李，機場很好逛，留點時間。"
       }
     ];
 
-    const mealPlan = [
-      {
-        day: 1,
-        date: "1/30（五）",
-        meals: [
-          {
-            type: "晚餐",
-            time: "21:00",
-            title: "晚餐（Google Maps）",
-            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/EYCcgCmuJbHxuxa6A" }],
-            desc: ""
-          },
-          {
-            type: "補給",
-            time: "晚間",
-            title: "買 1/31 早餐",
-            links: [],
-            desc: "麵包店與便利商店先補齊。"
-          }
-        ]
-      },
-      {
-        day: 2,
-        date: "1/31（六）",
-        meals: [
-          {
-            type: "早餐",
-            time: "",
-            title: "早餐（Google Maps）",
-            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/gCc4EhmYfqwDF89Y6" }],
-            desc: ""
-          },
-          {
-            type: "午餐",
-            time: "10:50 開始排隊 / 11:30 開店",
-            title: "豬排限量，務必早到",
-            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/QP4LL58DokukoeRx8" }],
-            desc: "怕吃不到限量豬排：平常日早上 10:55 來排隊可排到前面。11:30 前約 20 人左右。店內約 14 座位，翻桌率快但餐點需等一下。推薦加點蛋拌飯。"
-          },
-          {
-            type: "晚餐",
-            time: "17:30",
-            title: "晚餐（Google Maps）",
-            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/mv7KbqTFQm7Z14pWA" }],
-            desc: ""
-          },
-          {
-            type: "補給",
-            time: "晚間",
-            title: "買 2/1 早餐",
-            links: [],
-            desc: "麵包店與便利商店先補齊。"
-          }
-        ]
-      },
-      {
-        day: 3,
-        date: "2/01（日）",
-        meals: [
-          {
-            type: "早餐",
-            time: "",
-            title: "早餐（Google Maps）",
-            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/8D23Qfag6uMNQLm37" }],
-            desc: ""
-          },
-          {
-            type: "午餐",
-            time: "",
-            title: "午餐備案（多選）",
-            links: [
-              { label: "備案 1", url: "https://maps.app.goo.gl/15gbsb9DPxS4Jiba7" },
-              { label: "備案 2", url: "https://maps.app.goo.gl/SEEdFNWL4KVcgt6PA" },
-              { label: "備案 3", url: "https://maps.app.goo.gl/iH3DQhGH1nvBxeVx5" },
-              { label: "備案 4", url: "https://maps.app.goo.gl/BncdEiaSA4GTaGsQ9" },
-              { label: "備案 5", url: "https://maps.app.goo.gl/zpCR8tw4JZnyzrxw5" }
-            ],
-            desc: "當天自駕與玩雪，午餐彈性調整，建議出發前先選好 1–2 家為主力。"
-          },
-          {
-            type: "晚餐",
-            time: "",
-            title: "飯店晚餐",
-            links: [],
-            desc: "森之空庭飯店用餐。"
-          }
-        ]
-      },
-      {
-        day: 4,
-        date: "2/02（一）",
-        meals: [
-          {
-            type: "早餐",
-            time: "",
-            title: "飯店早餐",
-            links: [],
-            desc: ""
-          },
-          {
-            type: "午餐",
-            time: "",
-            title: "海產 / 丼飯 / 燒肉 / 漢堡（參考）",
-            links: [
-              { label: "參考 1", url: "https://share.google/PGuvn7XNFd4AWJqKk" },
-              { label: "參考 2", url: "https://ctgirlblog.com/maruhira/#google_vignette" }
-            ],
-            desc: "建議提前挑好主力店家，避免移動中臨時找餐造成延誤。"
-          },
-          {
-            type: "晚餐",
-            time: "",
-            title: "晚餐（兩個選項）",
-            links: [
-              { label: "選項 1", url: "https://maps.app.goo.gl/sNQy1JKWZ9FcLfDK7" },
-              { label: "選項 2", url: "https://maps.app.goo.gl/izauLoZ6buUEAq8k6" }
-            ],
-            desc: "洞爺湖溫泉街用餐後再去飯店，並順便補宵夜。"
-          }
-        ]
-      },
-      {
-        day: 5,
-        date: "2/03（二）",
-        meals: [
-          {
-            type: "早餐",
-            time: "",
-            title: "早餐（Google Maps）",
-            links: [{ label: "開啟 Google Maps", url: "https://maps.app.goo.gl/62dedBvshGs4rprv7" }],
-            desc: ""
-          },
-          {
-            type: "午餐",
-            time: "",
-            title: "午餐（兩個選項）",
-            links: [
-              { label: "選項 1", url: "https://maps.app.goo.gl/umYR8YU9KYwGj6oB6" },
-              { label: "選項 2", url: "https://maps.app.goo.gl/JvKNCpLSQ2WYJouW9" }
-            ],
-            desc: "配合 F Village / Outlet 動線彈性選擇。"
-          },
-          {
-            type: "晚餐",
-            time: "",
-            title: "十勝豚丼或根室花丸",
-            links: [],
-            desc: "不要選市區店，吃完還車 + Check-in（把移動時間算進去）。"
-          }
-        ]
-      }
-    ];
-
-    const $ = (sel) => document.querySelector(sel);
-    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-
-    const timelineEl = $("#timeline");
-    const foodBox = $("#foodBox");
-    const qEl = $("#q");
-    const clearBtn = $("#clearBtn");
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function renderMealBox(day){
-      const plan = mealPlan.find(p => p.day === day);
-      if(!plan) return "";
-
-      const rows = plan.meals.map(m => {
-        const links = (m.links||[]).map(l => `
-          <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>
-        `).join("");
-
-        return `
-          <div class="mealRow">
-            <div class="head">
-              <div class="what">${escapeHtml(m.type)}：${escapeHtml(m.title)}</div>
-              <div class="when">${escapeHtml(m.time || "")}</div>
-            </div>
-            ${m.desc ? `<div class="desc">${escapeHtml(m.desc)}</div>` : ""}
-            ${links ? `<div class="mealLinks">${links}</div>` : ""}
-          </div>
-        `;
-      }).join("");
-
-      return `
-        <div class="mealBox" aria-label="當日飲食摘要">
-          <div class="mealTitle">
-            <div>當日飲食摘要</div>
-            <div style="font-weight:600; color: var(--muted2);">${escapeHtml(plan.date)}</div>
-          </div>
-          <div class="mealGrid">${rows}</div>
-        </div>
-      `;
-    }
-
-    function renderTimeline({day="all", q=""}={}){
-      const query = q.trim().toLowerCase();
-      const rows = itinerary
-        .filter(item => (day==="all" ? true : item.day === Number(day)))
-        .filter(item => {
-          if(!query) return true;
-          const meals = item.mealsRefDay ? JSON.stringify(mealPlan.find(p => p.day === item.mealsRefDay) || {}) : "";
-          const hay = [
-            item.title, item.date, ...(item.tags||[]),
-            ...(item.bullets||[]), item.note||"", meals
-          ].join(" ").toLowerCase();
-          return hay.includes(query);
-        });
-
-      timelineEl.innerHTML = rows.map(item => {
-        const tags = (item.tags||[]).map(t => {
-          const key = (t === "重點日");
-          const drive = (t === "自駕");
-          const cls = key ? "tag key" : (drive ? "tag drive" : "tag");
-          return `<span class="${cls}">${escapeHtml(t)}</span>`;
-        }).join("");
-
-        const badge = item.key ? `<span class="badge">重點日</span>` : "";
-        const noteCls = item.noteType === "good" ? "note good" : (item.noteType === "warn" ? "note warn" : "note");
-        const mealHtml = item.mealsRefDay ? renderMealBox(item.mealsRefDay) : "";
-
-        return `
-          <article class="item" data-day="${item.day}">
-            <div class="itemHead">
-              <div>
-                <h3>Day ${item.day}：${escapeHtml(item.title)} ${badge}</h3>
-                <div class="date">${escapeHtml(item.date)}</div>
-              </div>
-              <div class="tags">${tags}</div>
-            </div>
-            <div class="itemBody">
-              <ul>
-                ${(item.bullets||[]).map(b => `<li>${escapeHtml(b)}</li>`).join("")}
-              </ul>
-              ${mealHtml}
-              ${item.note ? `<div class="${noteCls}" style="margin-top:12px;">${escapeHtml(item.note)}</div>` : ""}
-            </div>
-          </article>
-        `;
-      }).join("");
-
-      if(rows.length === 0){
-        timelineEl.innerHTML = `
-          <div class="note warn">
-            沒有符合條件的行程。你可以試試清除搜尋或切換到「全部」。
-          </div>
-        `;
+    // --- Logic ---
+    const container = document.getElementById('timelineContainer');
+    const searchInput = document.getElementById('searchInput');
+    const dayBtns = document.querySelectorAll('.day-btn');
+    
+    // 雪花生成
+    function createSnow() {
+      const snowContainer = document.getElementById('snowContainer');
+      const particleCount = 30; // 數量適中避免效能問題
+      for (let i = 0; i < particleCount; i++) {
+        const snow = document.createElement('div');
+        snow.className = 'snow';
+        snow.style.left = Math.random() * 100 + 'vw';
+        snow.style.animationDuration = (Math.random() * 5 + 5) + 's'; // 5-10s
+        snow.style.animationDelay = (Math.random() * 5) + 's';
+        snow.style.opacity = Math.random() * 0.5 + 0.1;
+        snowContainer.appendChild(snow);
       }
     }
 
-    function renderFood(){
-      foodBox.innerHTML = mealPlan.map(p => {
-        const rows = p.meals.map(m => {
-          const links = (m.links||[]).map(l => `
-            <a href="${escapeHtml(l.url)}" target="_blank" rel="noopener">${escapeHtml(l.label)}</a>
-          `).join("");
+    function renderItinerary(filterDay = 'all', query = '') {
+      container.innerHTML = '';
+      const q = query.toLowerCase();
 
-          return `
-            <div class="mealRow">
-              <div class="head">
-                <div class="what">${escapeHtml(m.type)}：${escapeHtml(m.title)}</div>
-                <div class="when">${escapeHtml(m.time || "")}</div>
+      const filtered = itineraryData.filter(item => {
+        const matchDay = filterDay === 'all' || item.day == filterDay;
+        const textContent = (item.title + item.bullets.join('') + item.note).toLowerCase();
+        const matchQuery = !q || textContent.includes(q);
+        return matchDay && matchQuery;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="card"><div class="card-body" style="text-align:center;color:var(--text-muted)">找不到相關行程 ❄️</div></div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const el = document.createElement('div');
+        el.className = `t-item ${item.highlight ? 'highlight' : ''}`;
+        
+        // Tags
+        const tagsHtml = item.tags.map(t => {
+          let cls = 'tag';
+          if(t === '自駕' || t === '玩雪') cls += ' drive';
+          if(t === '重點日') cls += ' imp';
+          return `<span class="${cls}">${t}</span>`;
+        }).join('');
+
+        // Meals
+        let mealsHtml = '';
+        if (item.meals && item.meals.length > 0) {
+          const mealItems = item.meals.map(m => `
+            <div class="meal-item">
+              <div class="meal-type">${m.type}</div>
+              <div style="font-weight:700; margin-bottom:4px;">${m.title}</div>
+              ${m.time ? `<div style="font-size:12px;color:var(--text-muted)">${m.time}</div>` : ''}
+              ${m.desc ? `<div style="font-size:12px;opacity:0.8; margin-top:2px;">${m.desc}</div>` : ''}
+              ${m.link ? `
+                <div class="meal-links">
+                  <a href="${m.link}" target="_blank" class="link-mini">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    地圖
+                  </a>
+                </div>` : ''}
+            </div>
+          `).join('');
+          
+          mealsHtml = `
+            <div class="meal-box">
+              <div class="meal-head">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                飲食補給
               </div>
-              ${m.desc ? `<div class="desc">${escapeHtml(m.desc)}</div>` : ""}
-              ${links ? `<div class="mealLinks">${links}</div>` : ""}
+              <div class="meal-grid">${mealItems}</div>
             </div>
           `;
-        }).join("");
+        }
 
-        return `
-          <article class="item" data-day="${p.day}">
-            <div class="itemHead">
-              <div>
-                <h3>Day ${p.day} 飲食：${escapeHtml(p.date)}</h3>
-                <div class="date">早餐 / 午餐 / 晚餐 / 補給</div>
-              </div>
-              <div class="tags">
-                <span class="tag">飲食</span>
+        // Note
+        let noteHtml = '';
+        if (item.note) {
+          const noteType = item.noteType || ''; 
+          noteHtml = `
+            <div class="note ${noteType}">
+              <svg class="icon" style="flex-shrink:0; margin-top:2px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <div>${item.note}</div>
+            </div>`;
+        }
+
+        el.innerHTML = `
+          <div class="t-head">
+            <div class="t-title">
+              <h3>${item.title}</h3>
+              <div class="t-date">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Day ${item.day} · ${item.date}
               </div>
             </div>
-            <div class="itemBody">
-              <div class="mealGrid">${rows}</div>
-            </div>
-          </article>
+            <div class="tags">${tagsHtml}</div>
+          </div>
+          <div class="t-body">
+            <ul class="t-list">
+              ${item.bullets.map(b => `<li>${b}</li>`).join('')}
+            </ul>
+            ${mealsHtml}
+            ${noteHtml}
+          </div>
         `;
-      }).join("");
-    }
-
-    // Tabs
-    let currentDay = "all";
-    function setActiveDay(day){
-      currentDay = day;
-      $$(".seg button").forEach(btn => {
-        const on = btn.dataset.day === String(day);
-        btn.classList.toggle("active", on);
-        btn.setAttribute("aria-selected", on ? "true" : "false");
+        container.appendChild(el);
       });
-      renderTimeline({day: currentDay, q: qEl.value});
     }
 
-    $$(".seg button").forEach(btn => {
-      btn.addEventListener("click", () => setActiveDay(btn.dataset.day));
+    // Events
+    dayBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        dayBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderItinerary(btn.dataset.day, searchInput.value);
+      });
     });
 
-    qEl.addEventListener("input", () => renderTimeline({day: currentDay, q: qEl.value}));
-    clearBtn.addEventListener("click", () => { qEl.value=""; qEl.focus(); renderTimeline({day: currentDay, q:""}); });
-
-    // Theme
-    const THEME_KEY = "hokkaido_2026_theme";
-    function applyTheme(theme){
-      document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem(THEME_KEY, theme);
-    }
-    function toggleTheme(){
-      const now = document.documentElement.getAttribute("data-theme") || "dark";
-      applyTheme(now === "dark" ? "light" : "dark");
-    }
-    $("#themeBtn").addEventListener("click", toggleTheme);
-
-    // Print
-    $("#printBtn").addEventListener("click", () => window.print());
-
+    searchInput.addEventListener('input', (e) => {
+      const activeDay = document.querySelector('.day-btn.active').dataset.day;
+      renderItinerary(activeDay, e.target.value);
+    });
+    
     // Shortcuts
-    document.addEventListener("keydown", (e) => {
-      if(e.key === "/" && document.activeElement !== qEl){
+    document.addEventListener('keydown', (e) => {
+      // Search
+      if (e.key === '/' && document.activeElement !== searchInput) {
         e.preventDefault();
-        qEl.focus();
+        searchInput.focus();
       }
-      if(e.key === "Escape"){
-        qEl.value = "";
-        renderTimeline({day: currentDay, q: ""});
-      }
-      if((e.key === "p" || e.key === "P") && !e.ctrlKey && !e.metaKey && !e.altKey){
-        if(document.activeElement === qEl) return;
+      // Print
+      if (e.key === 'p' && !e.metaKey && !e.ctrlKey && document.activeElement !== searchInput) {
         e.preventDefault();
         window.print();
       }
+      // Overview (Scroll top)
+      if (e.key === 'o' && !e.metaKey && !e.ctrlKey && document.activeElement !== searchInput) {
+        e.preventDefault();
+        window.scrollTo(0, 0);
+      }
+      // Food (Scroll to #food)
+      if (e.key === 'f' && !e.metaKey && !e.ctrlKey && document.activeElement !== searchInput) {
+        e.preventDefault();
+        document.getElementById('food').scrollIntoView();
+      }
+    });
+
+    // Theme Toggle
+    const themeBtn = document.getElementById('themeBtn');
+    themeBtn.addEventListener('click', () => {
+       const isDark = !document.documentElement.hasAttribute('data-theme');
+       if(isDark) {
+         document.documentElement.setAttribute('data-theme', 'light');
+       } else {
+         document.documentElement.removeAttribute('data-theme');
+       }
     });
 
     // Init
-    (function init(){
-      const savedTheme = localStorage.getItem(THEME_KEY);
-      if(savedTheme === "light" || savedTheme === "dark"){
-        applyTheme(savedTheme);
-      }else{
-        applyTheme("dark");
-      }
+    createSnow();
+    renderItinerary();
+    
+    // Print Button
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
 
-      renderTimeline({day:"all", q:""});
-      renderFood();
-
-      // If maps link is not set, disable it
-      const maps = $("#mapsLink");
-      if(maps.getAttribute("href") === "PASTE_YOUR_GOOGLE_MAPS_LINK_HERE"){
-        maps.setAttribute("href", "#");
-        maps.addEventListener("click", (e) => {
-          e.preventDefault();
-          alert("請先在 index.html 搜尋 PASTE_YOUR_GOOGLE_MAPS_LINK_HERE，替換成你的 Google Maps 行程清單連結。");
-        });
-      }
-    })();
   </script>
 </body>
 </html>
